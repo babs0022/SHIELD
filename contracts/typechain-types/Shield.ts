@@ -38,7 +38,7 @@ export interface ShieldInterface extends Interface {
 
   encodeFunctionData(
     functionFragment: "createPolicy",
-    values: [BytesLike, BigNumberish, BigNumberish]
+    values: [BytesLike, AddressLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "isPolicyValid",
@@ -66,18 +66,21 @@ export namespace PolicyCreatedEvent {
   export type InputTuple = [
     policyId: BytesLike,
     sender: AddressLike,
+    recipient: AddressLike,
     expiry: BigNumberish,
     maxAttempts: BigNumberish
   ];
   export type OutputTuple = [
     policyId: string,
     sender: string,
+    recipient: string,
     expiry: bigint,
     maxAttempts: bigint
   ];
   export interface OutputObject {
     policyId: string;
     sender: string;
+    recipient: string;
     expiry: bigint;
     maxAttempts: bigint;
   }
@@ -144,7 +147,12 @@ export interface Shield extends BaseContract {
   ): Promise<this>;
 
   createPolicy: TypedContractMethod<
-    [policyId: BytesLike, expiry: BigNumberish, maxAttempts: BigNumberish],
+    [
+      policyId: BytesLike,
+      recipient: AddressLike,
+      expiry: BigNumberish,
+      maxAttempts: BigNumberish
+    ],
     [void],
     "nonpayable"
   >;
@@ -160,8 +168,9 @@ export interface Shield extends BaseContract {
   policies: TypedContractMethod<
     [arg0: BytesLike],
     [
-      [string, bigint, bigint, bigint, boolean] & {
+      [string, string, bigint, bigint, bigint, boolean] & {
         sender: string;
+        recipient: string;
         expiry: bigint;
         maxAttempts: bigint;
         attempts: bigint;
@@ -178,7 +187,12 @@ export interface Shield extends BaseContract {
   getFunction(
     nameOrSignature: "createPolicy"
   ): TypedContractMethod<
-    [policyId: BytesLike, expiry: BigNumberish, maxAttempts: BigNumberish],
+    [
+      policyId: BytesLike,
+      recipient: AddressLike,
+      expiry: BigNumberish,
+      maxAttempts: BigNumberish
+    ],
     [void],
     "nonpayable"
   >;
@@ -197,8 +211,9 @@ export interface Shield extends BaseContract {
   ): TypedContractMethod<
     [arg0: BytesLike],
     [
-      [string, bigint, bigint, bigint, boolean] & {
+      [string, string, bigint, bigint, bigint, boolean] & {
         sender: string;
+        recipient: string;
         expiry: bigint;
         maxAttempts: bigint;
         attempts: bigint;
@@ -224,7 +239,7 @@ export interface Shield extends BaseContract {
   >;
 
   filters: {
-    "PolicyCreated(bytes32,address,uint256,uint256)": TypedContractEvent<
+    "PolicyCreated(bytes32,address,address,uint256,uint256)": TypedContractEvent<
       PolicyCreatedEvent.InputTuple,
       PolicyCreatedEvent.OutputTuple,
       PolicyCreatedEvent.OutputObject

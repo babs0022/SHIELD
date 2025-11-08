@@ -3,18 +3,18 @@
 import React from 'react';
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '@/lib/firebase';
 import styles from './UserMenu.module.css';
 import ChevronDownIcon from './ChevronDownIcon';
+import { useAccount, useDisconnect } from 'wagmi';
 
 export default function UserMenu() {
-  const [user] = useAuthState(auth);
+  const { address, isConnected } = useAccount();
+  const { disconnect } = useDisconnect();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const handleSignOut = async () => {
-    await auth.signOut();
+  const handleSignOut = () => {
+    disconnect();
   };
 
   // Close menu when clicking outside
@@ -30,12 +30,14 @@ export default function UserMenu() {
     };
   }, []);
 
-  if (!user) return null;
+  if (!isConnected || !address) return null;
+
+  const truncatedAddress = `${address.slice(0, 6)}...${address.slice(-4)}`;
 
   return (
     <div className={styles.menuContainer} ref={menuRef}>
       <button onClick={() => setIsOpen(!isOpen)} className={styles.menuButton}>
-        <span>{user.displayName || user.email}</span>
+        <span>{truncatedAddress}</span>
         <ChevronDownIcon />
       </button>
 

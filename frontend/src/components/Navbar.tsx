@@ -3,17 +3,16 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '@/lib/firebase';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import styles from './Navbar.module.css';
 import UserMenu from './UserMenu';
 import { useState } from 'react';
 import MenuIcon from './MenuIcon';
 import CloseIcon from './CloseIcon';
+import { useAccount } from 'wagmi';
 
 export default function Navbar() {
-  const [user] = useAuthState(auth);
+  const { isConnected } = useAccount();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -26,7 +25,7 @@ export default function Navbar() {
         {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
       </div>
       <div className={`${styles.links} ${isMenuOpen ? styles.active : ''}`}>
-        {user ? (
+        {isConnected ? (
           <>
             <div className="connect-wallet-button-selector">
               <ConnectButton />
@@ -34,9 +33,9 @@ export default function Navbar() {
             <UserMenu />
           </>
         ) : (
-          <Link href="/login" className={styles.link}>
-            Login
-          </Link>
+          <div className="connect-wallet-button-selector">
+            <ConnectButton />
+          </div>
         )}
       </div>
     </nav>

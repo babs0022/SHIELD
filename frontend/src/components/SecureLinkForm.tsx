@@ -1,16 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import toast from 'react-hot-toast';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '@/lib/firebase';
 import { useAccount } from 'wagmi';
+import { isAddress } from 'ethers/lib/utils';
 
 type ShareMode = 'file' | 'text';
 
 const SecureLinkForm = () => {
-  const [user] = useAuthState(auth);
   const { address } = useAccount();
 
   const [shareMode, setShareMode] = useState<ShareMode>('file');
@@ -21,8 +19,7 @@ const SecureLinkForm = () => {
   const [secureLink, setSecureLink] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   
-  const [recipientImage, setRecipientImage] = useState<File | null>(null);
-  const [feedbackMessage, setFeedbackMessage] = useState<string>('');
+  const [recipientAddress, setRecipientAddress] = useState<string>('');
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -30,16 +27,9 @@ const SecureLinkForm = () => {
     }
   };
 
-  const handleRecipientImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setRecipientImage(e.target.files[0]);
-      setFeedbackMessage('✅ Recipient photo selected.');
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
+    if (!address) {
       toast.error('You must be logged in to create a link.');
       return;
     }
@@ -47,13 +37,12 @@ const SecureLinkForm = () => {
       toast.error('Please provide the content you want to share.');
       return;
     }
-    if (!recipientImage) {
-      toast.error('Please provide a recipient photo.');
+    if (!isAddress(recipientAddress)) {
+      toast.error('Please provide a valid recipient address.');
       return;
     }
 
     setIsSubmitting(true);
-    setFeedbackMessage('Processing and encrypting on the server...');
 
     const formData = new FormData();
     if (shareMode === 'file' && file) {
@@ -63,11 +52,11 @@ const SecureLinkForm = () => {
       formData.append('content', textContent);
       formData.append('mimeType', 'text/plain');
     }
-    formData.append('recipientImage', recipientImage);
+    formData.append('recipientAddress', recipientAddress);
     formData.append('expiry', expiry.toString());
     formData.append('maxAttempts', maxAttempts.toString());
     formData.append('isText', (shareMode === 'text').toString());
-    formData.append('creatorId', user.uid);
+    formData.append('creatorId', address);
     
     try {
       const response = await fetch('/api/createLink', {
@@ -83,12 +72,10 @@ const SecureLinkForm = () => {
       const { link } = await response.json();
       setSecureLink(link);
       toast.success('Secure link generated successfully!');
-      setFeedbackMessage('');
 
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      toast.error(error.message || 'An error occurred.');
-      setFeedbackMessage('An error occurred. Please try again.');
+      toast.error((error as Error).message || 'An error occurred.');
     } finally {
       setIsSubmitting(false);
     }
@@ -126,10 +113,9 @@ const SecureLinkForm = () => {
           </label>
         )}
 
-        <label className="file-label recipient-face-selector">
-          <span>Recipient Face</span>
-          <input className="input" type="file" accept="image/*" onChange={handleRecipientImagesChange} required />
-          {feedbackMessage && <p className="feedback-message">{feedbackMessage}</p>}
+        <label>
+          <input className="input" type="text" value={recipientAddress} onChange={(e) => setRecipientAddress(e.target.value)} placeholder=" " required />
+          <span>Recipient Address</span>
         </label>
 
         <div className="flex access-rules-selector">
@@ -143,8 +129,8 @@ const SecureLinkForm = () => {
           </label>
         </div>  
         
-        <button className="submit generate-link-button-selector" type="submit" disabled={isSubmitting || !recipientImage || !user}>
-          {isSubmitting ? 'Generating...' : (user ? 'Generate Link' : 'Sign in to Generate Link')}
+        <button className="submit generate-link-button-selector" type="submit" disabled={isSubmitting || !address}>
+          {isSubmitting ? 'Generating...' : (address ? 'Generate Link' : 'Sign in to Generate Link')}
         </button>
 
         {secureLink && (
@@ -277,7 +263,7 @@ const StyledWrapper = styled.div`
     color: #00ff00;
     font-size: 0.75em;
     font-weight: 600;
-    margin-bottom: 5px;
+    margin-bottom: 5px; 
     display: block;
   }
 
@@ -361,3 +347,4 @@ const StyledWrapper = styled.div`
 `;
 
 export default SecureLinkForm;
+

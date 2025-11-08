@@ -3,14 +3,14 @@ import './globals.css';
 import StyledComponentsRegistry from '../lib/StyledComponentsRegistry';
 import { Toaster } from 'react-hot-toast';
 import Navbar from '@/components/Navbar';
-
+import dynamic from 'next/dynamic';
 
 export const metadata = {
   title: 'Shield - Secure Sharing',
   description: 'Decentralized and secure file and message sharing.',
 }
 
-import { Providers } from './providers';
+const DynamicProviders = dynamic(() => import('./providers').then(mod => mod.Providers), { ssr: false });
 import '@rainbow-me/rainbowkit/styles.css';
 
 export default function RootLayout({
@@ -26,14 +26,15 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/Shld.png" />
       </head>
       <body>
-        <Providers>
+        <DynamicProviders>
           <StyledComponentsRegistry>
             <Toaster />
             <Navbar />
             {children}
           </StyledComponentsRegistry>
-        </Providers>
+        </DynamicProviders>
       </body>
     </html>
   )
 }
+

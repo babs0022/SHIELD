@@ -18,6 +18,7 @@ import {
   base,
   sepolia,
   localhost,
+  baseSepolia,
 } from 'wagmi/chains';
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from 'react';
@@ -35,26 +36,24 @@ const connectors = connectorsForWallets(
   }
 );
 
+const chains = [
+  mainnet,
+  polygon,
+  optimism,
+  arbitrum,
+  base,
+  sepolia,
+  baseSepolia,
+  ...(process.env.NODE_ENV === 'development' ? [localhost] : [])
+] as const;
+
 const config = createConfig({
   connectors,
-  chains: [
-    mainnet,
-    polygon,
-    optimism,
-    arbitrum,
-    base,
-    sepolia,
-    ...(process.env.NODE_ENV === 'development' ? [localhost] : [])
-  ],
-  transports: {
-    [mainnet.id]: http(),
-    [polygon.id]: http(),
-    [optimism.id]: http(),
-    [arbitrum.id]: http(),
-    [base.id]: http(),
-    [sepolia.id]: http(),
-    ...(process.env.NODE_ENV === 'development' ? { [localhost.id]: http() } : {})
-  },
+  chains: chains,
+  transports: chains.reduce((acc, chain) => {
+    acc[chain.id] = http();
+    return acc;
+  }, {} as Record<number, ReturnType<typeof http>>),
 });
 
 const queryClient = new QueryClient();

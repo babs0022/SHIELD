@@ -33,3 +33,4 @@ yarn-error.log*
 
 # Next.js build output
 /frontend/.next/
+.vercel

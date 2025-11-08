@@ -4,27 +4,29 @@ pragma solidity ^0.8.24;
 contract Shield {
     struct AccessPolicy {
         address sender;
-        uint256 expiry;
-        uint256 maxAttempts;
-        uint256 attempts;
+        address recipient;
+        uint64 expiry;
+        uint32 maxAttempts;
+        uint32 attempts;
         bool valid;
     }
 
     mapping(bytes32 => AccessPolicy) public policies;
 
-    event PolicyCreated(bytes32 indexed policyId, address indexed sender, uint256 expiry, uint256 maxAttempts);
+    event PolicyCreated(bytes32 indexed policyId, address indexed sender, address indexed recipient, uint256 expiry, uint256 maxAttempts);
     event VerificationAttempt(bytes32 indexed policyId, bool success);
 
-    function createPolicy(bytes32 policyId, uint256 expiry, uint256 maxAttempts) external {
+    function createPolicy(bytes32 policyId, address recipient, uint256 expiry, uint256 maxAttempts) external {
         require(policies[policyId].sender == address(0), "Policy already exists");
         policies[policyId] = AccessPolicy({
             sender: msg.sender,
-            expiry: expiry,
-            maxAttempts: maxAttempts,
+            recipient: recipient,
+            expiry: uint64(expiry),
+            maxAttempts: uint32(maxAttempts),
             attempts: 0,
             valid: true
         });
-        emit PolicyCreated(policyId, msg.sender, expiry, maxAttempts);
+        emit PolicyCreated(policyId, msg.sender, recipient, expiry, maxAttempts);
     }
 
     function logAttempt(bytes32 policyId, bool success) external {

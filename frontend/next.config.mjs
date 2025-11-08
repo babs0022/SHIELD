@@ -6,11 +6,12 @@ const __dirname = dirname(__filename);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ['@metamask/sdk'],
   async rewrites() {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:3001/api/:path*',
+        destination: '/api/:path*',
       },
     ];
   },
@@ -21,7 +22,7 @@ const nextConfig = {
         fs: false,
         encoding: false,
       };
-      config.resolve.alias['@react-native-async-storage/async-storage'] = path.resolve(__dirname, 'dummy.js');
+      config.resolve.alias['@react-native-async-storage/async-storage'] = false;
     }
 
     return config;

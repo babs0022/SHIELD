@@ -1,0 +1,7 @@
+{
+  "build": {
+    "env": {
+      "VERCEL_BUILD_CACHE": "0"
+    }
+  }
+}
