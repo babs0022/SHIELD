@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import toast from 'react-hot-toast';
 import { useAccount, useWriteContract, usePublicClient } from 'wagmi';
 import { isAddress, Hex } from 'viem';
-import ShieldABI from '@/lib/Shield.json';
+import { ShieldABI } from '@/lib/ShieldABI';
 
 type ShareMode = 'file' | 'text';
 
@@ -272,17 +272,17 @@ const SecureLinkForm = () => {
       const { contentCid, secretKey, mimeType } = await prepareResponse.json();
 
       // Step 2: Generate unique policyId
-      let policyId: Hex;
+      let policyId: Hex = '0x'; // Initialize to satisfy TypeScript
       let policyExists = true;
       while (policyExists) {
         policyId = `0x${Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString('hex')}` as Hex;
-        const sender = await publicClient.readContract({
+        const existingPolicy = await publicClient.readContract({
           address: contractAddress,
-          abi: ShieldABI.abi,
+          abi: ShieldABI,
           functionName: 'policies',
           args: [policyId],
-        }) as [string, ...unknown[]];
-        if (sender[0] === '0x0000000000000000000000000000000000000000') {
+        });
+        if (existingPolicy[0] === '0x0000000000000000000000000000000000000000') {
           policyExists = false;
         }
       }
@@ -295,7 +295,7 @@ const SecureLinkForm = () => {
 
       const txHash = await writeContractAsync({
         address: contractAddress,
-        abi: ShieldABI.abi,
+        abi: ShieldABI,
         functionName: 'createPolicy',
         args: [policyId, recipientAddress, expiryTimestamp, maxAttemptsBigInt],
       });

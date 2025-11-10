@@ -4,7 +4,7 @@ import { Pool } from 'pg';
 import { createPublicClient, createWalletClient, http, Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { base } from 'viem/chains';
-import ShieldABI from '@/lib/Shield.json';
+import { ShieldABI } from '@/lib/ShieldABI';
 
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URL,
@@ -65,10 +65,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Signer address does not match recipient address." }, { status: 401 });
     }
 
+    if (!contractAddress) {
+      throw new Error("Contract address is not configured.");
+    }
+
     // Pre-flight check to see if the policy is still valid on-chain
     const isStillValid = await publicClient.readContract({
       address: contractAddress,
-      abi: ShieldABI.abi,
+      abi: ShieldABI,
       functionName: 'isPolicyValid',
       args: [policyId],
     });
@@ -80,7 +84,7 @@ export async function POST(request: Request) {
     const { request: simRequest } = await publicClient.simulateContract({
         account,
         address: contractAddress,
-        abi: ShieldABI.abi,
+        abi: ShieldABI,
         functionName: 'logAttempt',
         args: [policyId, true],
     });
