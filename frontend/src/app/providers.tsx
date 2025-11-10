@@ -18,7 +18,6 @@ import {
   base,
   sepolia,
   localhost,
-  baseSepolia,
 } from 'wagmi/chains';
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from 'react';
@@ -43,7 +42,6 @@ const chains = [
   arbitrum,
   base,
   sepolia,
-  baseSepolia,
   ...(process.env.NODE_ENV === 'development' ? [localhost] : [])
 ] as const;
 

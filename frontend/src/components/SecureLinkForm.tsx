@@ -3,149 +3,13 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import toast from 'react-hot-toast';
-import { useAccount } from 'wagmi';
-import { isAddress } from 'ethers/lib/utils';
+import { useAccount, useWriteContract, usePublicClient } from 'wagmi';
+import { isAddress, Hex } from 'viem';
+import ShieldABI from '@/lib/Shield.json';
 
 type ShareMode = 'file' | 'text';
 
-const SecureLinkForm = () => {
-  const { address } = useAccount();
-
-  const [shareMode, setShareMode] = useState<ShareMode>('file');
-  const [file, setFile] = useState<File | null>(null);
-  const [textContent, setTextContent] = useState<string>('');
-  const [expiry, setExpiry] = useState<number>(3600);
-  const [maxAttempts, setMaxAttempts] = useState<number>(3);
-  const [secureLink, setSecureLink] = useState<string>('');
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  
-  const [recipientAddress, setRecipientAddress] = useState<string>('');
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFile(e.target.files[0]);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!address) {
-      toast.error('You must be logged in to create a link.');
-      return;
-    }
-    if ((shareMode === 'file' && !file) || (shareMode === 'text' && !textContent.trim())) {
-      toast.error('Please provide the content you want to share.');
-      return;
-    }
-    if (!isAddress(recipientAddress)) {
-      toast.error('Please provide a valid recipient address.');
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    const formData = new FormData();
-    if (shareMode === 'file' && file) {
-      formData.append('content', file);
-      formData.append('mimeType', file.type);
-    } else {
-      formData.append('content', textContent);
-      formData.append('mimeType', 'text/plain');
-    }
-    formData.append('recipientAddress', recipientAddress);
-    formData.append('expiry', expiry.toString());
-    formData.append('maxAttempts', maxAttempts.toString());
-    formData.append('isText', (shareMode === 'text').toString());
-    formData.append('creatorId', address);
-    
-    try {
-      const response = await fetch('/api/createLink', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const { error } = await response.json();
-        throw new Error(error || 'Failed to create secure link.');
-      }
-
-      const { link } = await response.json();
-      setSecureLink(link);
-      toast.success('Secure link generated successfully!');
-
-    } catch (error) {
-      console.error(error);
-      toast.error((error as Error).message || 'An error occurred.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-  
-  const handleCopy = () => {
-    navigator.clipboard.writeText(secureLink).then(() => {
-      toast.success('Link copied to clipboard!');
-    }, (err) => {
-      console.error('Could not copy text: ', err);
-      toast.error('Failed to copy link.');
-    });
-  };
-
-  return (
-    <StyledWrapper>
-      <form className="form secure-link-form-selector" onSubmit={handleSubmit}>
-        <p className="title">Create a Secure Link</p>
-        <p className="message">Upload a resource and define the terms for access.</p>
-        
-        <div className="toggle-container">
-          <button type="button" onClick={() => setShareMode('file')} className={shareMode === 'file' ? 'active' : ''}>File</button>
-          <button type="button" onClick={() => setShareMode('text')} className={shareMode === 'text' ? 'active' : ''}>Text</button>
-        </div>
-
-        {shareMode === 'file' ? (
-          <label className="file-label">
-            <span>Confidential File</span>
-            <input className="input" type="file" onChange={handleFileChange} required />
-          </label>
-        ) : (
-          <label>
-            <textarea className="input textarea" value={textContent} onChange={(e) => setTextContent(e.target.value)} placeholder=" " required />
-            <span>Confidential Text</span>
-          </label>
-        )}
-
-        <label>
-          <input className="input" type="text" value={recipientAddress} onChange={(e) => setRecipientAddress(e.target.value)} placeholder=" " required />
-          <span>Recipient Address</span>
-        </label>
-
-        <div className="flex access-rules-selector">
-          <label>
-            <input className="input" type="number" value={expiry} onChange={(e) => setExpiry(Number(e.target.value))} placeholder=" " required />
-            <span>Time Limit (seconds)</span>
-          </label>
-          <label>
-            <input className="input" type="number" value={maxAttempts} onChange={(e) => setMaxAttempts(Number(e.target.value))} placeholder=" " required />
-            <span>Max Attempts</span>
-          </label>
-        </div>  
-        
-        <button className="submit generate-link-button-selector" type="submit" disabled={isSubmitting || !address}>
-          {isSubmitting ? 'Generating...' : (address ? 'Generate Link' : 'Sign in to Generate Link')}
-        </button>
-
-        {secureLink && (
-          <div className="secureLinkContainer">
-            <span className="secureLinkTitle">Your Secure Link</span>
-            <div className="link-wrapper">
-              <input type="text" readOnly value={secureLink} />
-              <button type="button" onClick={handleCopy}>Copy</button>
-            </div>
-          </div>
-        )}
-      </form>
-    </StyledWrapper>
-  );
-}
+const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as Hex | undefined;
 
 const StyledWrapper = styled.div`
   .form {
@@ -346,5 +210,195 @@ const StyledWrapper = styled.div`
   }
 `;
 
-export default SecureLinkForm;
+const SecureLinkForm = () => {
+  const { address } = useAccount();
+  const publicClient = usePublicClient();
+  const { data: hash, writeContractAsync } = useWriteContract();
+  
+  const [shareMode, setShareMode] = useState<ShareMode>('file');
+  const [file, setFile] = useState<File | null>(null);
+  const [textContent, setTextContent] = useState<string>('');
+  const [expiry, setExpiry] = useState<number>(3600);
+  const [maxAttempts, setMaxAttempts] = useState<number>(3);
+  const [secureLink, setSecureLink] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [status, setStatus] = useState<string>('');
+  const [recipientAddress, setRecipientAddress] = useState<string>('');
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!address) {
+      toast.error('You must be logged in to create a link.');
+      return;
+    }
+    if ((shareMode === 'file' && !file) || (shareMode === 'text' && !textContent.trim())) {
+      toast.error('Please provide the content you want to share.');
+      return;
+    }
+    if (!isAddress(recipientAddress)) {
+      toast.error('Please provide a valid recipient address.');
+      return;
+    }
+    if (!contractAddress || !publicClient) {
+      toast.error('Contract or client is not ready. Please try again.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    const toastId = toast.loading('Preparing content...');
+    
+    try {
+      // Step 1: Prepare content
+      setStatus('Preparing...');
+      const formData = new FormData();
+      if (shareMode === 'file' && file) {
+        formData.append('content', file);
+        formData.append('mimeType', file.type);
+      } else {
+        formData.append('content', textContent);
+        formData.append('mimeType', 'text/plain');
+      }
+      const isText = shareMode === 'text';
+      formData.append('isText', isText.toString());
+
+      const prepareResponse = await fetch('/api/prepareContent', { method: 'POST', body: formData });
+      if (!prepareResponse.ok) throw new Error((await prepareResponse.json()).error || 'Failed to prepare content.');
+      const { contentCid, secretKey, mimeType } = await prepareResponse.json();
+
+      // Step 2: Generate unique policyId
+      let policyId: Hex;
+      let policyExists = true;
+      while (policyExists) {
+        policyId = `0x${Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString('hex')}` as Hex;
+        const sender = await publicClient.readContract({
+          address: contractAddress,
+          abi: ShieldABI.abi,
+          functionName: 'policies',
+          args: [policyId],
+        }) as [string, ...unknown[]];
+        if (sender[0] === '0x0000000000000000000000000000000000000000') {
+          policyExists = false;
+        }
+      }
+
+      // Step 3: Sign transaction
+      setStatus('Confirming...');
+      toast.loading('Please confirm in your wallet...', { id: toastId });
+      const expiryTimestamp = BigInt(Math.floor(Date.now() / 1000) + expiry);
+      const maxAttemptsBigInt = BigInt(maxAttempts);
+
+      const txHash = await writeContractAsync({
+        address: contractAddress,
+        abi: ShieldABI.abi,
+        functionName: 'createPolicy',
+        args: [policyId, recipientAddress, expiryTimestamp, maxAttemptsBigInt],
+      });
+
+      // Step 4: Wait for transaction receipt
+      setStatus('Processing...');
+      toast.loading('Processing transaction...', { id: toastId });
+      await publicClient.waitForTransactionReceipt({ hash: txHash });
+
+      // Step 5: Store metadata
+      const storeResponse = await fetch('/api/storeMetadata', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          policyId, creatorId: address, contentCid, recipientAddress,
+          secretKey, mimeType, isText, expiry: expiry.toString(), maxAttempts: maxAttempts.toString(),
+        }),
+      });
+      if (!storeResponse.ok) throw new Error((await storeResponse.json()).error || 'Failed to store metadata.');
+      const { link } = await storeResponse.json();
+
+      setSecureLink(link);
+      toast.success('Secure link generated successfully!', { id: toastId });
+
+    } catch (error) {
+      console.error(error);
+      toast.error((error as Error).message || 'An error occurred.', { id: toastId });
+    } finally {
+      setIsSubmitting(false);
+      setStatus('');
+    }
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(secureLink).then(() => {
+      toast.success('Link copied to clipboard!');
+    }, (err) => {
+      console.error('Could not copy text: ', err);
+      toast.error('Failed to copy link.');
+    });
+  };
+
+  const getButtonText = () => {
+    if (status) return status;
+    if (!address) return 'Sign in to Generate Link';
+    return 'Generate Link';
+  };
+
+  return (
+    <StyledWrapper>
+      <form className="form secure-link-form-selector" onSubmit={handleSubmit}>
+        <p className="title">Create a Secure Link</p>
+        <p className="message">Upload a resource and define the terms for access.</p>
+        
+        <div className="toggle-container">
+          <button type="button" onClick={() => setShareMode('file')} className={shareMode === 'file' ? 'active' : ''}>File</button>
+          <button type="button" onClick={() => setShareMode('text')} className={shareMode === 'text' ? 'active' : ''}>Text</button>
+        </div>
+
+        {shareMode === 'file' ? (
+          <label className="file-label">
+            <span>Confidential File</span>
+            <input className="input" type="file" onChange={handleFileChange} required />
+          </label>
+        ) : (
+          <label>
+            <textarea className="input textarea" value={textContent} onChange={(e) => setTextContent(e.target.value)} placeholder=" " required />
+            <span>Confidential Text</span>
+          </label>
+        )}
+
+        <label>
+          <input className="input" type="text" value={recipientAddress} onChange={(e) => setRecipientAddress(e.target.value)} placeholder=" " required />
+          <span>Recipient Address</span>
+        </label>
+
+        <div className="flex access-rules-selector">
+          <label>
+            <input className="input" type="number" value={expiry} onChange={(e) => setExpiry(Number(e.target.value))} placeholder=" " required />
+            <span>Time Limit (seconds)</span>
+          </label>
+          <label>
+            <input className="input" type="number" value={maxAttempts} onChange={(e) => setMaxAttempts(Number(e.target.value))} placeholder=" " required />
+            <span>Max Attempts</span>
+          </label>
+        </div>  
+        
+        <button className="submit generate-link-button-selector" type="submit" disabled={isSubmitting || !address}>
+          {getButtonText()}
+        </button>
+
+        {secureLink && (
+          <div className="secureLinkContainer">
+            <span className="secureLinkTitle">Your Secure Link</span>
+            <div className="link-wrapper">
+              <input type="text" readOnly value={secureLink} />
+              <button type="button" onClick={handleCopy}>Copy</button>
+            </div>
+          </div>
+        )}
+      </form>
+    </StyledWrapper>
+  );
+}
+
+export default SecureLinkForm;

@@ -76,6 +76,7 @@ export default function ReceiverPage() {
 
       const signature = await signMessageAsync({ message: message.prepareMessage() });
 
+      setInfo('Hang on...we\'re verifying if this is for you');
       const response = await fetch('/api/verify-siwe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -89,7 +90,7 @@ export default function ReceiverPage() {
 
       const { secretKey } = await response.json();
       toast.success('Verification successful!');
-      setInfo('Decrypting resource...');
+      setInfo('YAH!...It\'s yours, decrypting now...');
       await decryptAndSetResource({ ...policy, secretKey });
       setVerificationStatus('success');
 
@@ -102,18 +103,26 @@ export default function ReceiverPage() {
   };
 
   const decryptAndSetResource = async (policyData: Policy) => {
-    const resourceUrl = `https://ipfs.io/ipfs/${policyData.resourceCid}`;
+    const resourceUrl = `https://cloudflare-ipfs.com/ipfs/${policyData.resourceCid}`;
     const encryptedResponse = await fetch(resourceUrl);
     const encryptedData = await encryptedResponse.text();
     const decryptedBytes = CryptoJS.AES.decrypt(encryptedData, policyData.secretKey);
-    const decryptedBase64 = decryptedBytes.toString(CryptoJS.enc.Utf8);
-    setDecryptedDataUrl(decryptedBase64);
+    const decryptedBase64 = decryptedBytes.toString(CryptoJS.enc.Base64);
+    
+    if (policyData.isText) {
+      // For text, we just need the decoded string
+      setDecryptedDataUrl(atob(decryptedBase64));
+    } else {
+      // For files, we construct a full data URL
+      const dataUrl = `data:${policyData.mimeType};base64,${decryptedBase64}`;
+      setDecryptedDataUrl(dataUrl);
+    }
   };
 
   const renderContent = () => {
     if (!decryptedDataUrl) return null;
     if (policy?.isText) {
-      return <p className={styles.decryptedText}>{atob(decryptedDataUrl)}</p>;
+      return <p className={styles.decryptedText}>{decryptedDataUrl}</p>;
     }
     return <img src={decryptedDataUrl} alt="Decrypted content" className={styles.decryptedImage} />;
   };
@@ -125,6 +134,8 @@ export default function ReceiverPage() {
       case 'failed':
       case 'invalid':
         return <p className={styles.error}>{error}</p>;
+      case 'verifying':
+        return <p className={styles.info}>{info}</p>;
       default:
         return (
           <div>

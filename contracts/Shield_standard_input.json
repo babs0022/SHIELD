@@ -1,1 +1,23 @@
-{"language":"Solidity","sources":{"contracts/Shield.sol":{"content":"// SPDX-License-Identifier: MIT\npragma solidity ^0.8.24;\n\ncontract Shield {\n    struct AccessPolicy {\n        address sender;\n        uint256 expiry;\n        uint256 maxAttempts;\n        uint256 attempts;\n        bool valid;\n    }\n\n    mapping(bytes32 => AccessPolicy) public policies;\n\n    event PolicyCreated(bytes32 indexed policyId, address indexed sender, uint256 expiry, uint256 maxAttempts);\n    event VerificationAttempt(bytes32 indexed policyId, bool success);\n\n    function createPolicy(bytes32 policyId, uint256 expiry, uint256 maxAttempts) external {\n        require(policies[policyId].sender == address(0), \"Policy already exists\");\n        policies[policyId] = AccessPolicy({\n            sender: msg.sender,\n            expiry: expiry,\n            maxAttempts: maxAttempts,\n            attempts: 0,\n            valid: true\n        });\n        emit PolicyCreated(policyId, msg.sender, expiry, maxAttempts);\n    }\n\n    function logAttempt(bytes32 policyId, bool success) external {\n        AccessPolicy storage policy = policies[policyId];\n        require(policy.sender != address(0), \"Policy does not exist\");\n        require(policy.valid, \"Policy is not valid\");\n        require(block.timestamp < policy.expiry, \"Policy has expired\");\n        require(policy.attempts < policy.maxAttempts, \"Max attempts reached\");\n\n        policy.attempts++;\n\n        if (!success) {\n            if (policy.attempts >= policy.maxAttempts) {\n                policy.valid = false;\n            }\n        }\n\n        emit VerificationAttempt(policyId, success);\n\n        if (success) {\n            policy.valid = false; // Invalidate after successful access\n        }\n    }\n\n    function isPolicyValid(bytes32 policyId) external view returns (bool) {\n        AccessPolicy storage policy = policies[policyId];\n        return policy.valid && block.timestamp < policy.expiry && policy.attempts < policy.maxAttempts;\n    }\n}"}},"settings":{"optimizer":{"enabled":false,"runs":200},"outputSelection":{"*":{"*":["abi","evm.bytecode","evm.deployedBytecode","evm.methodIdentifiers","metadata"]}},"evmVersion":"paris"}}
+{
+  "language": "Solidity",
+  "sources": {
+    "Shield.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.24;\n\ncontract Shield {\n    struct AccessPolicy {\n        address sender;\n        address recipient;\n        uint64 expiry;\n        uint32 maxAttempts;\n        uint32 attempts;\n        bool valid;\n    }\n\n    mapping(bytes32 => AccessPolicy) public policies;\n\n    event PolicyCreated(bytes32 indexed policyId, address indexed sender, address indexed recipient, uint256 expiry, uint256 maxAttempts);\n    event VerificationAttempt(bytes32 indexed policyId, bool success);\n\n    function createPolicy(bytes32 policyId, address recipient, uint256 expiry, uint256 maxAttempts) external {\n        require(policies[policyId].sender == address(0), \"Policy already exists\");\n        policies[policyId] = AccessPolicy({\n            sender: msg.sender,\n            recipient: recipient,\n            expiry: uint64(expiry),\n            maxAttempts: uint32(maxAttempts),\n            attempts: 0,\n            valid: true\n        });\n        emit PolicyCreated(policyId, msg.sender, recipient, expiry, maxAttempts);\n    }\n\n    function logAttempt(bytes32 policyId, bool success) external {\n        AccessPolicy storage policy = policies[policyId];\n        require(policy.sender != address(0), \"Policy does not exist\");\n        require(policy.valid, \"Policy is not valid\");\n        require(block.timestamp < policy.expiry, \"Policy has expired\");\n        require(policy.attempts < policy.maxAttempts, \"Max attempts reached\");\n\n        policy.attempts++;\n\n        if (!success) {\n            if (policy.attempts >= policy.maxAttempts) {\n                policy.valid = false;\n            }\n        }\n\n        emit VerificationAttempt(policyId, success);\n\n        if (success) {\n            policy.valid = false; // Invalidate after successful access\n        }\n    }\n\n    function isPolicyValid(bytes32 policyId) external view returns (bool) {\n        AccessPolicy storage policy = policies[policyId];\n        return policy.valid && block.timestamp < policy.expiry && policy.attempts < policy.maxAttempts;\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode"
+        ]
+      }
+    }
+  }
+}
