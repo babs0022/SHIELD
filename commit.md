@@ -1,5 +1,0 @@
-feat: Implement client-side signing and enhance application stability
-Refactored the application to a decentralized, client-side signing model, moving transaction signing from the server to the user's wallet. This involved creating new backend endpoints (`/api/prepareContent`, `/api/storeMetadata`) for secure content preparation and metadata storage, and updating the frontend `SecureLinkForm` to orchestrate this new flow.
-Replaced `ethers.js` with `viem` in all backend API routes (`/api/verify-siwe` and the former `/api/createLink`) to resolve persistent network and fetch-related errors in the Next.js server environment.
-Addressed database schema issues by providing the necessary SQL for the `policies` table.
-Improved the recipient page (`ReceiverPage`) by correcting decryption logic for various content types, switching to a more reliable IPFS gateway, and enhancing user feedback messages during the verification and decryption process.
