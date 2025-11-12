@@ -39,7 +39,11 @@ export async function POST(request: Request) {
       buffer = Buffer.from(bytes);
     }
 
-    const encryptedContent = CryptoJS.AES.encrypt(buffer.toString('base64'), secretKey).toString();
+    // Convert buffer to WordArray
+    const wordArray = CryptoJS.lib.WordArray.create(buffer as any);
+    // Encrypt the WordArray
+    const encryptedContent = CryptoJS.AES.encrypt(wordArray, secretKey).toString();
+
     const contentCid = await pinToIPFS(Buffer.from(encryptedContent), `content-${uuidv4()}`);
 
     return NextResponse.json({ success: true, contentCid, secretKey, mimeType });

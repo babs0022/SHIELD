@@ -22,7 +22,15 @@ export async function GET(
   try {
     const result = await client.query('SELECT * FROM policies WHERE policy_id = $1', [policyId]);
     if (result.rows.length > 0) {
-      return NextResponse.json(result.rows[0]);
+      const policy = result.rows[0];
+      const mappedPolicy = {
+        resourceCid: policy.resource_cid,
+        recipient_address: policy.recipient_address,
+        secretKey: policy.secret_key,
+        mimeType: policy.mime_type,
+        isText: policy.is_text,
+      };
+      return NextResponse.json(mappedPolicy);
     } else {
       return NextResponse.json({ error: "Policy not found." }, { status: 404 });
     }

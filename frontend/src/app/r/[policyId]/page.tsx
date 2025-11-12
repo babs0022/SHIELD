@@ -49,6 +49,15 @@ export default function ReceiverPage() {
     if (policyId) loadInitialData();
   }, [policyId]);
 
+  // Effect to clean up the object URL to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (decryptedDataUrl && decryptedDataUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(decryptedDataUrl);
+      }
+    };
+  }, [decryptedDataUrl]);
+
   const handleVerify = async () => {
     if (!isConnected || !address || !policy) {
       toast.error('Please connect your wallet.');
@@ -103,28 +112,67 @@ export default function ReceiverPage() {
   };
 
   const decryptAndSetResource = async (policyData: Policy) => {
-    const resourceUrl = `https://cloudflare-ipfs.com/ipfs/${policyData.resourceCid}`;
-    const encryptedResponse = await fetch(resourceUrl);
-    const encryptedData = await encryptedResponse.text();
-    const decryptedBytes = CryptoJS.AES.decrypt(encryptedData, policyData.secretKey);
-    const decryptedBase64 = decryptedBytes.toString(CryptoJS.enc.Base64);
-    
-    if (policyData.isText) {
-      // For text, we just need the decoded string
-      setDecryptedDataUrl(atob(decryptedBase64));
-    } else {
-      // For files, we construct a full data URL
-      const dataUrl = `data:${policyData.mimeType};base64,${decryptedBase64}`;
-      setDecryptedDataUrl(dataUrl);
+    try {
+      const response = await fetch(`/api/getEncryptedContent/${policyData.resourceCid}`);
+      if (!response.ok) {
+        const { error, details } = await response.json();
+        throw new Error(error || details || 'Failed to fetch encrypted content.');
+      }
+      
+      const { encryptedData } = await response.json();
+      
+      const decryptedWordArray = CryptoJS.AES.decrypt(encryptedData, policyData.secretKey);
+
+      if (policyData.isText) {
+        const decryptedText = decryptedWordArray.toString(CryptoJS.enc.Utf8);
+        setDecryptedDataUrl(decryptedText);
+      } else {
+        const decryptedBase64 = decryptedWordArray.toString(CryptoJS.enc.Base64);
+        const fetchRes = await fetch(`data:${policyData.mimeType};base64,${decryptedBase64}`);
+        const blob = await fetchRes.blob();
+        const url = URL.createObjectURL(blob);
+        setDecryptedDataUrl(url);
+      }
+    } catch (err) {
+      const error = err as Error;
+      setError(`Decryption failed: ${error.message}`);
+      setVerificationStatus('failed');
+      toast.error(`Decryption failed: ${error.message}`);
     }
   };
 
   const renderContent = () => {
-    if (!decryptedDataUrl) return null;
-    if (policy?.isText) {
+    if (!decryptedDataUrl || !policy) return null;
+
+    if (policy.isText) {
       return <p className={styles.decryptedText}>{decryptedDataUrl}</p>;
     }
-    return <img src={decryptedDataUrl} alt="Decrypted content" className={styles.decryptedImage} />;
+
+    if (policy.mimeType.startsWith('image/')) {
+      return <img src={decryptedDataUrl} alt="Decrypted content" className={styles.decryptedImage} />;
+    }
+
+    if (policy.mimeType === 'application/pdf') {
+      return (
+        <embed 
+          src={decryptedDataUrl} 
+          type="application/pdf" 
+          width="100%" 
+          height="600px" 
+          className={styles.decryptedPdf}
+        />
+      );
+    }
+
+    const fileName = `decrypted_file.${policy.mimeType.split('/')[1] || 'bin'}`;
+    return (
+      <div className={styles.downloadContainer}>
+        <p>Content type: {policy.mimeType}</p>
+        <a href={decryptedDataUrl} download={fileName} className={styles.downloadButton}>
+          Download File
+        </a>
+      </div>
+    );
   };
 
   const renderStatus = () => {
