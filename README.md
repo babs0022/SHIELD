@@ -1,4 +1,4 @@
-# Shield: Decentralized Trustless File Sharing System
+# Shield: Decentralized Trustless File and Message Sharing System
 
 Shield is a decentralized application for sharing confidential files and messages with unparalleled security and privacy. It leverages blockchain technology and decentralized storage to ensure that your private data is only ever seen by the intended recipient.
 
