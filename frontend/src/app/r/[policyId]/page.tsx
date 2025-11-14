@@ -9,6 +9,7 @@ import { useAccount, useSignMessage } from 'wagmi';
 import { SiweMessage } from 'siwe';
 import { toast } from 'react-hot-toast';
 import styles from './ReceiverPage.module.css';
+import CopyIcon from '@/components/CopyIcon';
 
 type VerificationStatus = 'idle' | 'verifying' | 'success' | 'failed' | 'invalid';
 interface Policy {
@@ -141,11 +142,25 @@ export default function ReceiverPage() {
     }
   };
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(decryptedDataUrl).then(() => {
+      toast.success('Copied to clipboard!');
+    }, (err) => {
+      toast.error('Failed to copy!');
+      console.error('Could not copy text: ', err);
+    });
+  };
+
   const renderContent = () => {
     if (!decryptedDataUrl || !policy) return null;
 
     if (policy.isText) {
-      return <p className={styles.decryptedText}>{decryptedDataUrl}</p>;
+      return (
+        <div className={styles.textContainer}>
+          <p className={styles.decryptedText}>{decryptedDataUrl}</p>
+          <CopyIcon className={styles.copyIcon} onClick={handleCopy} />
+        </div>
+      );
     }
 
     if (policy.mimeType.startsWith('image/')) {
