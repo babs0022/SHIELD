@@ -22,7 +22,7 @@
     ],
     "primaryCategory": "utilities",
     "tags": ["security", "privacy", "decentralization", "file sharing"],
-    "heroImageUrl": "https://your-app-domain.com/Shld.png",
+    "heroImageUrl": "https://shield-app.vercel.app/Shld.png",
     "tagline": "Share Securely",
     "ogTitle": "Shield - Secure Sharing",
     "ogDescription": "Decentralized and secure file and message sharing.",
