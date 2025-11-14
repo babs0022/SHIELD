@@ -26,7 +26,7 @@
     "tagline": "Share Securely",
     "ogTitle": "Shield - Secure Sharing",
     "ogDescription": "Decentralized and secure file and message sharing.",
-    "ogImageUrl": "https://your-app-domain.com/Shld.png",
+    "ogImageUrl": "https://shield-app.vercel.app/Shld.png",
     "noindex": true
   }
 }
