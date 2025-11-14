@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import { SUPER_ADMIN_ADDRESSES, TEAM_ADMIN_ADDRESSES } from '@/config/admin';
-import { getAuth } from '@clerk/nextjs/server';
+import jwt from 'jsonwebtoken';
 
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URL,
@@ -18,19 +18,25 @@ const isAdmin = (address: string | null | undefined) => {
 };
 
 export async function GET(req: NextRequest) {
-  const { userId, sessionClaims } = getAuth(req);
-
-  if (!userId || !sessionClaims?.public_metadata?.wallet_address) {
+  const token = req.headers.get('authorization')?.split(' ')[1];
+  if (!token) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const userWalletAddress = sessionClaims.public_metadata.wallet_address as string;
-
-  if (!isAdmin(userWalletAddress)) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-  }
-
   try {
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET is not defined');
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (typeof decoded === 'string' || !decoded.address) {
+      return NextResponse.json({ error: 'Unauthorized: Invalid token payload' }, { status: 401 });
+    }
+    const userWalletAddress = decoded.address as string;
+
+    if (!isAdmin(userWalletAddress)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const client = await pool.connect();
     const result = await client.query('SELECT * FROM policies ORDER BY created_at DESC');
     client.release();
@@ -42,25 +48,36 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const { userId, sessionClaims } = getAuth(req);
-
-  if (!userId || !sessionClaims?.public_metadata?.wallet_address) {
+  const token = req.headers.get('authorization')?.split(' ')[1];
+  if (!token) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const userWalletAddress = sessionClaims.public_metadata.wallet_address as string;
-
-  if (!isAdmin(userWalletAddress)) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-  }
-
-  const { policyId, action } = await req.json();
-
-  if (!policyId || action !== 'revoke') {
-    return NextResponse.json({ error: 'Invalid request parameters' }, { status: 400 });
-  }
+  let policyId: string | undefined;
+  let action: string | undefined;
 
   try {
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET is not defined');
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (typeof decoded === 'string' || !decoded.address) {
+      return NextResponse.json({ error: 'Unauthorized: Invalid token payload' }, { status: 401 });
+    }
+    const userWalletAddress = decoded.address as string;
+
+    if (!isAdmin(userWalletAddress)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const body = await req.json();
+    policyId = body.policyId;
+    action = body.action;
+
+    if (!policyId || action !== 'revoke') {
+      return NextResponse.json({ error: 'Invalid request parameters' }, { status: 400 });
+    }
+
     const client = await pool.connect();
     // Assuming 'status' column exists in 'policies' table
     await client.query('UPDATE policies SET status = $1 WHERE policy_id = $2', ['revoked', policyId]);

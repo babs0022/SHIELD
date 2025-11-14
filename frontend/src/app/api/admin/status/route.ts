@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import { SUPER_ADMIN_ADDRESSES, TEAM_ADMIN_ADDRESSES } from '@/config/admin';
-import { getAuth } from '@clerk/nextjs/server';
+import jwt from 'jsonwebtoken';
 
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URL,
@@ -18,19 +18,25 @@ const isAdmin = (address: string | null | undefined) => {
 };
 
 export async function GET(req: NextRequest) {
-  const { userId, sessionClaims } = getAuth(req);
-
-  if (!userId || !sessionClaims?.public_metadata?.wallet_address) {
+  const token = req.headers.get('authorization')?.split(' ')[1];
+  if (!token) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const userWalletAddress = sessionClaims.public_metadata.wallet_address as string;
-
-  if (!isAdmin(userWalletAddress)) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-  }
-
   try {
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET is not defined');
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (typeof decoded === 'string' || !decoded.address) {
+      return NextResponse.json({ error: 'Unauthorized: Invalid token payload' }, { status: 401 });
+    }
+    const userWalletAddress = decoded.address as string;
+
+    if (!isAdmin(userWalletAddress)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const client = await pool.connect();
     
     // Total Users (unique recipient addresses)

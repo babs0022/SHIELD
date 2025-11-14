@@ -22,7 +22,7 @@ interface Policy {
 
 export default function ReceiverPage() {
   const params = useParams();
-  const policyId = params.policyId as `0x${string}`;
+  const policyId = params?.policyId as `0x${string}`;
   const { address, isConnected } = useAccount();
   const { signMessageAsync } = useSignMessage();
 

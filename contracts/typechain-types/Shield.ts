@@ -3,52 +3,67 @@
 /* eslint-disable */
 import type {
   BaseContract,
+  BigNumber,
   BigNumberish,
   BytesLike,
-  FunctionFragment,
-  Result,
-  Interface,
-  EventFragment,
-  AddressLike,
-  ContractRunner,
-  ContractMethod,
-  Listener,
+  CallOverrides,
+  ContractTransaction,
+  Overrides,
+  PopulatedTransaction,
+  Signer,
+  utils,
 } from "ethers";
 import type {
-  TypedContractEvent,
-  TypedDeferredTopicFilter,
-  TypedEventLog,
-  TypedLogDescription,
+  FunctionFragment,
+  Result,
+  EventFragment,
+} from "@ethersproject/abi";
+import type { Listener, Provider } from "@ethersproject/providers";
+import type {
+  TypedEventFilter,
+  TypedEvent,
   TypedListener,
-  TypedContractMethod,
+  OnEvent,
+  PromiseOrValue,
 } from "./common";
 
-export interface ShieldInterface extends Interface {
+export interface ShieldInterface extends utils.Interface {
+  functions: {
+    "createPolicy(bytes32,address,uint256,uint256)": FunctionFragment;
+    "isPolicyValid(bytes32)": FunctionFragment;
+    "logAttempt(bytes32,bool)": FunctionFragment;
+    "policies(bytes32)": FunctionFragment;
+  };
+
   getFunction(
-    nameOrSignature:
+    nameOrSignatureOrTopic:
       | "createPolicy"
       | "isPolicyValid"
       | "logAttempt"
       | "policies"
   ): FunctionFragment;
 
-  getEvent(
-    nameOrSignatureOrTopic: "PolicyCreated" | "VerificationAttempt"
-  ): EventFragment;
-
   encodeFunctionData(
     functionFragment: "createPolicy",
-    values: [BytesLike, AddressLike, BigNumberish, BigNumberish]
+    values: [
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "isPolicyValid",
-    values: [BytesLike]
+    values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
     functionFragment: "logAttempt",
-    values: [BytesLike, boolean]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<boolean>]
   ): string;
-  encodeFunctionData(functionFragment: "policies", values: [BytesLike]): string;
+  encodeFunctionData(
+    functionFragment: "policies",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "createPolicy",
@@ -60,205 +75,246 @@ export interface ShieldInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "logAttempt", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "policies", data: BytesLike): Result;
+
+  events: {
+    "PolicyCreated(bytes32,address,address,uint256,uint256)": EventFragment;
+    "VerificationAttempt(bytes32,bool)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "PolicyCreated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "VerificationAttempt"): EventFragment;
 }
 
-export namespace PolicyCreatedEvent {
-  export type InputTuple = [
-    policyId: BytesLike,
-    sender: AddressLike,
-    recipient: AddressLike,
-    expiry: BigNumberish,
-    maxAttempts: BigNumberish
-  ];
-  export type OutputTuple = [
-    policyId: string,
-    sender: string,
-    recipient: string,
-    expiry: bigint,
-    maxAttempts: bigint
-  ];
-  export interface OutputObject {
-    policyId: string;
-    sender: string;
-    recipient: string;
-    expiry: bigint;
-    maxAttempts: bigint;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface PolicyCreatedEventObject {
+  policyId: string;
+  sender: string;
+  recipient: string;
+  expiry: BigNumber;
+  maxAttempts: BigNumber;
 }
+export type PolicyCreatedEvent = TypedEvent<
+  [string, string, string, BigNumber, BigNumber],
+  PolicyCreatedEventObject
+>;
 
-export namespace VerificationAttemptEvent {
-  export type InputTuple = [policyId: BytesLike, success: boolean];
-  export type OutputTuple = [policyId: string, success: boolean];
-  export interface OutputObject {
-    policyId: string;
-    success: boolean;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export type PolicyCreatedEventFilter = TypedEventFilter<PolicyCreatedEvent>;
+
+export interface VerificationAttemptEventObject {
+  policyId: string;
+  success: boolean;
 }
+export type VerificationAttemptEvent = TypedEvent<
+  [string, boolean],
+  VerificationAttemptEventObject
+>;
+
+export type VerificationAttemptEventFilter =
+  TypedEventFilter<VerificationAttemptEvent>;
 
 export interface Shield extends BaseContract {
-  connect(runner?: ContractRunner | null): Shield;
-  waitForDeployment(): Promise<this>;
+  connect(signerOrProvider: Signer | Provider | string): this;
+  attach(addressOrName: string): this;
+  deployed(): Promise<this>;
 
   interface: ShieldInterface;
 
-  queryFilter<TCEvent extends TypedContractEvent>(
-    event: TCEvent,
+  queryFilter<TEvent extends TypedEvent>(
+    event: TypedEventFilter<TEvent>,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TypedEventLog<TCEvent>>>;
-  queryFilter<TCEvent extends TypedContractEvent>(
-    filter: TypedDeferredTopicFilter<TCEvent>,
-    fromBlockOrBlockhash?: string | number | undefined,
-    toBlock?: string | number | undefined
-  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  ): Promise<Array<TEvent>>;
 
-  on<TCEvent extends TypedContractEvent>(
-    event: TCEvent,
-    listener: TypedListener<TCEvent>
-  ): Promise<this>;
-  on<TCEvent extends TypedContractEvent>(
-    filter: TypedDeferredTopicFilter<TCEvent>,
-    listener: TypedListener<TCEvent>
-  ): Promise<this>;
+  listeners<TEvent extends TypedEvent>(
+    eventFilter?: TypedEventFilter<TEvent>
+  ): Array<TypedListener<TEvent>>;
+  listeners(eventName?: string): Array<Listener>;
+  removeAllListeners<TEvent extends TypedEvent>(
+    eventFilter: TypedEventFilter<TEvent>
+  ): this;
+  removeAllListeners(eventName?: string): this;
+  off: OnEvent<this>;
+  on: OnEvent<this>;
+  once: OnEvent<this>;
+  removeListener: OnEvent<this>;
 
-  once<TCEvent extends TypedContractEvent>(
-    event: TCEvent,
-    listener: TypedListener<TCEvent>
-  ): Promise<this>;
-  once<TCEvent extends TypedContractEvent>(
-    filter: TypedDeferredTopicFilter<TCEvent>,
-    listener: TypedListener<TCEvent>
-  ): Promise<this>;
+  functions: {
+    createPolicy(
+      policyId: PromiseOrValue<BytesLike>,
+      recipient: PromiseOrValue<string>,
+      expiry: PromiseOrValue<BigNumberish>,
+      maxAttempts: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  listeners<TCEvent extends TypedContractEvent>(
-    event: TCEvent
-  ): Promise<Array<TypedListener<TCEvent>>>;
-  listeners(eventName?: string): Promise<Array<Listener>>;
-  removeAllListeners<TCEvent extends TypedContractEvent>(
-    event?: TCEvent
-  ): Promise<this>;
+    isPolicyValid(
+      policyId: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
-  createPolicy: TypedContractMethod<
-    [
-      policyId: BytesLike,
-      recipient: AddressLike,
-      expiry: BigNumberish,
-      maxAttempts: BigNumberish
-    ],
-    [void],
-    "nonpayable"
-  >;
+    logAttempt(
+      policyId: PromiseOrValue<BytesLike>,
+      success: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  isPolicyValid: TypedContractMethod<[policyId: BytesLike], [boolean], "view">;
-
-  logAttempt: TypedContractMethod<
-    [policyId: BytesLike, success: boolean],
-    [void],
-    "nonpayable"
-  >;
-
-  policies: TypedContractMethod<
-    [arg0: BytesLike],
-    [
-      [string, string, bigint, bigint, bigint, boolean] & {
+    policies(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<
+      [string, string, BigNumber, number, number, boolean] & {
         sender: string;
         recipient: string;
-        expiry: bigint;
-        maxAttempts: bigint;
-        attempts: bigint;
+        expiry: BigNumber;
+        maxAttempts: number;
+        attempts: number;
         valid: boolean;
       }
-    ],
-    "view"
+    >;
+  };
+
+  createPolicy(
+    policyId: PromiseOrValue<BytesLike>,
+    recipient: PromiseOrValue<string>,
+    expiry: PromiseOrValue<BigNumberish>,
+    maxAttempts: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  isPolicyValid(
+    policyId: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  logAttempt(
+    policyId: PromiseOrValue<BytesLike>,
+    success: PromiseOrValue<boolean>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  policies(
+    arg0: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<
+    [string, string, BigNumber, number, number, boolean] & {
+      sender: string;
+      recipient: string;
+      expiry: BigNumber;
+      maxAttempts: number;
+      attempts: number;
+      valid: boolean;
+    }
   >;
 
-  getFunction<T extends ContractMethod = ContractMethod>(
-    key: string | FunctionFragment
-  ): T;
+  callStatic: {
+    createPolicy(
+      policyId: PromiseOrValue<BytesLike>,
+      recipient: PromiseOrValue<string>,
+      expiry: PromiseOrValue<BigNumberish>,
+      maxAttempts: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-  getFunction(
-    nameOrSignature: "createPolicy"
-  ): TypedContractMethod<
-    [
-      policyId: BytesLike,
-      recipient: AddressLike,
-      expiry: BigNumberish,
-      maxAttempts: BigNumberish
-    ],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "isPolicyValid"
-  ): TypedContractMethod<[policyId: BytesLike], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "logAttempt"
-  ): TypedContractMethod<
-    [policyId: BytesLike, success: boolean],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "policies"
-  ): TypedContractMethod<
-    [arg0: BytesLike],
-    [
-      [string, string, bigint, bigint, bigint, boolean] & {
+    isPolicyValid(
+      policyId: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    logAttempt(
+      policyId: PromiseOrValue<BytesLike>,
+      success: PromiseOrValue<boolean>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    policies(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<
+      [string, string, BigNumber, number, number, boolean] & {
         sender: string;
         recipient: string;
-        expiry: bigint;
-        maxAttempts: bigint;
-        attempts: bigint;
+        expiry: BigNumber;
+        maxAttempts: number;
+        attempts: number;
         valid: boolean;
       }
-    ],
-    "view"
-  >;
-
-  getEvent(
-    key: "PolicyCreated"
-  ): TypedContractEvent<
-    PolicyCreatedEvent.InputTuple,
-    PolicyCreatedEvent.OutputTuple,
-    PolicyCreatedEvent.OutputObject
-  >;
-  getEvent(
-    key: "VerificationAttempt"
-  ): TypedContractEvent<
-    VerificationAttemptEvent.InputTuple,
-    VerificationAttemptEvent.OutputTuple,
-    VerificationAttemptEvent.OutputObject
-  >;
+    >;
+  };
 
   filters: {
-    "PolicyCreated(bytes32,address,address,uint256,uint256)": TypedContractEvent<
-      PolicyCreatedEvent.InputTuple,
-      PolicyCreatedEvent.OutputTuple,
-      PolicyCreatedEvent.OutputObject
-    >;
-    PolicyCreated: TypedContractEvent<
-      PolicyCreatedEvent.InputTuple,
-      PolicyCreatedEvent.OutputTuple,
-      PolicyCreatedEvent.OutputObject
-    >;
+    "PolicyCreated(bytes32,address,address,uint256,uint256)"(
+      policyId?: PromiseOrValue<BytesLike> | null,
+      sender?: PromiseOrValue<string> | null,
+      recipient?: PromiseOrValue<string> | null,
+      expiry?: null,
+      maxAttempts?: null
+    ): PolicyCreatedEventFilter;
+    PolicyCreated(
+      policyId?: PromiseOrValue<BytesLike> | null,
+      sender?: PromiseOrValue<string> | null,
+      recipient?: PromiseOrValue<string> | null,
+      expiry?: null,
+      maxAttempts?: null
+    ): PolicyCreatedEventFilter;
 
-    "VerificationAttempt(bytes32,bool)": TypedContractEvent<
-      VerificationAttemptEvent.InputTuple,
-      VerificationAttemptEvent.OutputTuple,
-      VerificationAttemptEvent.OutputObject
-    >;
-    VerificationAttempt: TypedContractEvent<
-      VerificationAttemptEvent.InputTuple,
-      VerificationAttemptEvent.OutputTuple,
-      VerificationAttemptEvent.OutputObject
-    >;
+    "VerificationAttempt(bytes32,bool)"(
+      policyId?: PromiseOrValue<BytesLike> | null,
+      success?: null
+    ): VerificationAttemptEventFilter;
+    VerificationAttempt(
+      policyId?: PromiseOrValue<BytesLike> | null,
+      success?: null
+    ): VerificationAttemptEventFilter;
+  };
+
+  estimateGas: {
+    createPolicy(
+      policyId: PromiseOrValue<BytesLike>,
+      recipient: PromiseOrValue<string>,
+      expiry: PromiseOrValue<BigNumberish>,
+      maxAttempts: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    isPolicyValid(
+      policyId: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    logAttempt(
+      policyId: PromiseOrValue<BytesLike>,
+      success: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    policies(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+  };
+
+  populateTransaction: {
+    createPolicy(
+      policyId: PromiseOrValue<BytesLike>,
+      recipient: PromiseOrValue<string>,
+      expiry: PromiseOrValue<BigNumberish>,
+      maxAttempts: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    isPolicyValid(
+      policyId: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    logAttempt(
+      policyId: PromiseOrValue<BytesLike>,
+      success: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    policies(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
   };
 }

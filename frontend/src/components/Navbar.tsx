@@ -12,29 +12,19 @@ import CloseIcon from './CloseIcon';
 import { useAccount } from 'wagmi';
 import { SUPER_ADMIN_ADDRESSES, TEAM_ADMIN_ADDRESSES } from '@/config/admin';
 import { useEffect } from 'react';
+import { SIWXUtil } from '@reown/appkit-controllers/utils';
 
 export default function Navbar() {
   const { address, isConnected } = useAccount();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
-    const signIn = async () => {
-      if (isConnected && address) {
-        try {
-          await fetch('/api/signIn', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ walletAddress: address }),
-          });
-        } catch (error) {
-          console.error('Failed to sign in:', error);
-        }
-      }
-    };
-    signIn();
+    if (isConnected && address) {
+      SIWXUtil.requestSignMessage();
+    }
   }, [isConnected, address]);
+
+
 
   const connectedAddress = address?.toLowerCase();
   const isSuperAdmin = SUPER_ADMIN_ADDRESSES.map(addr => addr.toLowerCase()).includes(connectedAddress || '');

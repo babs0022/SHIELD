@@ -21,6 +21,8 @@ import {
 } from 'wagmi/chains';
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
+import { appkit } from '@/lib/reown';
+
 const chains = [
   mainnet,
   polygon,

@@ -19,20 +19,8 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!isConnected) {
       router.push('/'); // Redirect to home if not connected
-    } else if (address) {
-      // User is connected, so log their sign-in
-      fetch('/api/signIn', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ walletAddress: address }),
-      }).catch(error => {
-        console.error('Failed to log sign-in:', error);
-        // Non-critical error, so we don't need to show a toast
-      });
     }
-  }, [isConnected, address, router]);
+  }, [isConnected, router]);
 
   const finishOnboarding = () => {
     setShowOnboarding(false);

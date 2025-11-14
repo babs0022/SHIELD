@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
-import { clerkClient } from '@clerk/nextjs/server';
+import { SiweMessage } from 'siwe';
+import { ReownAuthentication } from '@reown/appkit-siwx';
+import jwt from 'jsonwebtoken';
 
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URL,
@@ -9,7 +11,6 @@ const pool = new Pool({
   },
 });
 
-// Function to create the users table if it doesn't exist
 const createUserTable = async () => {
   const client = await pool.connect();
   try {
@@ -25,47 +26,51 @@ const createUserTable = async () => {
   }
 };
 
-// Ensure the table is created when the server starts
 createUserTable().catch(console.error);
 
 export async function POST(request: NextRequest) {
-  const { walletAddress, userId } = await request.json();
+  const { message, signature } = await request.json();
+  const siweMessage = new SiweMessage(message);
 
-  if (!userId) {
-    return NextResponse.json({ error: 'User not authenticated.' }, { status: 401 });
-  }
-
-  if (!walletAddress || !/^0x[a-fA-F0-9]{40}$/.test(walletAddress)) {
-    return NextResponse.json({ error: 'Valid wallet address is required.' }, { status: 400 });
-  }
-
-  // Update Clerk user metadata
   try {
-    await clerkClient.users.updateUser(userId, {
-      publicMetadata: { wallet_address: walletAddress },
+    const { success } = await siweMessage.verify({
+      signature,
+      domain: process.env.NEXT_PUBLIC_URL,
     });
-  } catch (error) {
-    console.error('Error updating Clerk user metadata:', error);
-    return NextResponse.json({ error: 'Failed to update user metadata.' }, { status: 500 });
+
+    if (!success) {
+      return NextResponse.json({ error: 'Invalid signature.' }, { status: 401 });
+    }
+
+    const walletAddress = siweMessage.address;
+    const client = await pool.connect();
+    try {
+      const now = new Date();
+      const result = await client.query(
+        `INSERT INTO users (wallet_address, first_login_at, last_login_at)
+         VALUES ($1, $2, $3)
+         ON CONFLICT (wallet_address)
+         DO UPDATE SET last_login_at = $3
+         RETURNING *;`,
+        [walletAddress, now, now]
+      );
+
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is not defined in environment variables.');
   }
+  const token = jwt.sign({ address: walletAddress }, process.env.JWT_SECRET, {
+        expiresIn: '1d',
+      });
 
-  const client = await pool.connect();
-  try {
-    const now = new Date();
-    const result = await client.query(
-      `INSERT INTO users (wallet_address, first_login_at, last_login_at)
-       VALUES ($1, $2, $3)
-       ON CONFLICT (wallet_address)
-       DO UPDATE SET last_login_at = $3
-       RETURNING *;`,
-      [walletAddress, now, now]
-    );
-
-    return NextResponse.json({ success: true, user: result.rows[0] });
+      return NextResponse.json({ success: true, user: result.rows[0], token });
+    } catch (error) {
+      console.error('Error in signIn API:', error);
+      return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
+    } finally {
+      client.release();
+    }
   } catch (error) {
-    console.error('Error in signIn API:', error);
-    return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
-  } finally {
-    client.release();
+    console.error('Error verifying SIWE message:', error);
+    return NextResponse.json({ error: 'Invalid signature.' }, { status: 401 });
   }
 }

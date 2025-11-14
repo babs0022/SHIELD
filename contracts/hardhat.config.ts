@@ -1,6 +1,9 @@
 import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
-import "@nomicfoundation/hardhat-toolbox";
+import "@nomicfoundation/hardhat-verify";
+import "@nomicfoundation/hardhat-chai-matchers";
+import "@nomiclabs/hardhat-ethers";
+import "hardhat-gas-reporter";
+import "solidity-coverage";
 import "dotenv/config";
 
 const config: HardhatUserConfig = {
@@ -11,12 +14,33 @@ const config: HardhatUserConfig = {
       accounts: [process.env.PRIVATE_KEY || ""],
     },
     baseMainnet: {
-      url: "https://base-mainnet.g.alchemy.com/v2/1rH8dhkFuS0-xg2SvpuKib39RtL3Bb_S", // PASTE YOUR RPC URL HERE
+      url: "https://mainnet.base.org",
       accounts: [process.env.PRIVATE_KEY || ""],
     },
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY || "", // PASTE YOUR ETHERSCAN API KEY HERE
+    apiKey: process.env.ETHERSCAN_API_KEY || "",
+    customChains: [
+      {
+        network: "baseSepolia",
+        chainId: 84532,
+        urls: {
+          apiURL: "https://api-sepolia.basescan.org/api",
+          browserURL: "https://sepolia.basescan.org"
+        }
+      },
+      {
+        network: "baseMainnet",
+        chainId: 8453,
+        urls: {
+          apiURL: "https://api.basescan.org/api",
+          browserURL: "https://basescan.org"
+        }
+      }
+    ]
+  },
+  sourcify: {
+    enabled: true
   },
 };
 
