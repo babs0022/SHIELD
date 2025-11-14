@@ -6,6 +6,9 @@ const __dirname = dirname(__filename);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  compiler: {
+    styledComponents: true,
+  },
   transpilePackages: ['@metamask/sdk'],
   async rewrites() {
     return [

@@ -1,15 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import toast from 'react-hot-toast';
-import { useAccount, useWriteContract, usePublicClient } from 'wagmi';
+import { useAccount, useWriteContract, usePublicClient, useSwitchChain } from 'wagmi';
+import { base } from 'wagmi/chains';
 import { isAddress, Hex } from 'viem';
 import { ShieldABI } from '@/lib/ShieldABI';
+import Spinner from './Spinner';
 
 type ShareMode = 'file' | 'text';
 
 const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as Hex | undefined;
+const baseChainId = base.id;
 
 const StyledWrapper = styled.div`
   .form {
@@ -93,6 +96,13 @@ const StyledWrapper = styled.div`
   .form label .input:placeholder-shown + span { top: 15px; font-size: 1em; }
   .form label .input:focus + span, .form label .input:valid + span { color: #00ff00; top: 4px; font-size: 0.75em; font-weight: 600; }
 
+  .error-message {
+    color: #ff4d4d;
+    font-size: 12px;
+    margin-top: 5px;
+    padding-left: 10px;
+  }
+
   .input { font-size: medium; }
 
   .submit { 
@@ -107,6 +117,10 @@ const StyledWrapper = styled.div`
     box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
     font-weight: bold; 
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
   }
   .submit:hover { 
     transform: scale(1.05);
@@ -119,6 +133,15 @@ const StyledWrapper = styled.div`
     transform: scale(1);
   }
   
+  .switch-network-button {
+    background-image: linear-gradient(45deg, #ff8c00, #ff4500);
+    box-shadow: 0 0 15px rgba(255, 140, 0, 0.4);
+  }
+  .switch-network-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(255, 140, 0, 0.7);
+  }
+
   .secureLinkContainer {
     margin-top: 10px;
   }
@@ -211,8 +234,9 @@ const StyledWrapper = styled.div`
 `;
 
 const SecureLinkForm = () => {
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
   const publicClient = usePublicClient();
+  const { switchChain } = useSwitchChain();
   const { data: hash, writeContractAsync } = useWriteContract();
   
   const [shareMode, setShareMode] = useState<ShareMode>('file');
@@ -224,6 +248,17 @@ const SecureLinkForm = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [status, setStatus] = useState<string>('');
   const [recipientAddress, setRecipientAddress] = useState<string>('');
+  const [recipientAddressError, setRecipientAddressError] = useState<string>('');
+
+  const isWrongNetwork = address && chainId !== baseChainId;
+
+  useEffect(() => {
+    if (recipientAddress && !isAddress(recipientAddress)) {
+      setRecipientAddressError('Please enter a valid Ethereum address.');
+    } else {
+      setRecipientAddressError('');
+    }
+  }, [recipientAddress]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -233,8 +268,16 @@ const SecureLinkForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (recipientAddressError) {
+      toast.error('Please correct the errors before submitting.');
+      return;
+    }
     if (!address) {
       toast.error('You must be logged in to create a link.');
+      return;
+    }
+    if (isWrongNetwork) {
+      toast.error('Please switch to the Base network to create a link.');
       return;
     }
     if ((shareMode === 'file' && !file) || (shareMode === 'text' && !textContent.trim())) {
@@ -320,9 +363,15 @@ const SecureLinkForm = () => {
       setSecureLink(link);
       toast.success('Secure link generated successfully!', { id: toastId });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      toast.error((error as Error).message || 'An error occurred.', { id: toastId });
+      let errorMessage = 'An unexpected error occurred.';
+      if (error.message && error.message.includes('User rejected the request')) {
+        errorMessage = 'Wallet signature rejected. Please confirm the transaction in your wallet to create the link.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      toast.error(errorMessage, { id: toastId });
     } finally {
       setIsSubmitting(false);
       setStatus('');
@@ -338,8 +387,16 @@ const SecureLinkForm = () => {
     });
   };
 
-  const getButtonText = () => {
-    if (status) return status;
+  const getButtonContent = () => {
+    if (isSubmitting) {
+      return (
+        <>
+          <Spinner />
+          {status || 'Processing...'}
+        </>
+      );
+    }
+    if (isWrongNetwork) return 'Wrong Network';
     if (!address) return 'Sign in to Generate Link';
     return 'Generate Link';
   };
@@ -370,6 +427,7 @@ const SecureLinkForm = () => {
         <label>
           <input className="input" type="text" value={recipientAddress} onChange={(e) => setRecipientAddress(e.target.value)} placeholder=" " required />
           <span>Recipient Address</span>
+          {recipientAddressError && <p className="error-message">{recipientAddressError}</p>}
         </label>
 
         <div className="flex access-rules-selector">
@@ -383,9 +441,15 @@ const SecureLinkForm = () => {
           </label>
         </div>  
         
-        <button className="submit generate-link-button-selector" type="submit" disabled={isSubmitting || !address}>
-          {getButtonText()}
-        </button>
+        {isWrongNetwork ? (
+          <button className="submit switch-network-button" type="button" onClick={() => switchChain({ chainId: baseChainId })}>
+            Switch to Base Network
+          </button>
+        ) : (
+          <button className="submit generate-link-button-selector" type="submit" disabled={isSubmitting || !address || !!recipientAddressError}>
+            {getButtonContent()}
+          </button>
+        )}
 
         {secureLink && (
           <div className="secureLinkContainer">

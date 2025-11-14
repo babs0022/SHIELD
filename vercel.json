@@ -1,7 +1,23 @@
 {
-  "build": {
-    "env": {
-      "VERCEL_BUILD_CACHE": "0"
+  "version": 2,
+  "builds": [
+    {
+      "src": "frontend/next.config.mjs",
+      "use": "@vercel/next"
+    },
+    {
+      "src": "backend/package.json",
+      "use": "@vercel/node"
     }
-  }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/notifications/webhook",
+      "destination": "/backend"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/frontend/:path*"
+    }
+  ]
 }

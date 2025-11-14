@@ -34,6 +34,10 @@ export async function GET(
     } else {
       return NextResponse.json({ error: "Policy not found." }, { status: 404 });
     }
+  } catch (error) {
+    console.error("Error in /api/getPolicy:", error);
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+    return NextResponse.json({ error: "Failed to retrieve policy.", details: errorMessage }, { status: 500 });
   } finally {
     client.release();
   }
