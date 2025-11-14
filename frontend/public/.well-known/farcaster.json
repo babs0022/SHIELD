@@ -12,7 +12,7 @@
     "name": "Shield",
     "homeUrl": "https://shield-app.vercel.app",
     "iconUrl": "https://shield-app.vercel.app/Shld.png",
-    "splashImageUrl": "https://your-app-domain.com/Shld.png",
+    "splashImageUrl": "https://shield-app.vercel.app/Shld.png",
     "splashBackgroundColor": "#000000",
     "webhookUrl": "https://your-app-domain.com/api/webhook",
     "subtitle": "Decentralized and secure file and message sharing.",
