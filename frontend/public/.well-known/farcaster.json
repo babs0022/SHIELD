@@ -11,8 +11,8 @@
     "version": "1",
     "name": "Shield",
     "homeUrl": "https://shield-app.vercel.app",
-    "iconUrl": "https://your-app-domain.com/Shld.png",
-    "splashImageUrl": "https://your-app-domain.com/Shld.png",
+    "iconUrl": "https://shield-app.vercel.app/Shld.png",
+    "splashImageUrl": "https://shield-app.vercel.app/Shld.png",
     "splashBackgroundColor": "#000000",
     "webhookUrl": "https://your-app-domain.com/api/webhook",
     "subtitle": "Decentralized and secure file and message sharing.",
@@ -22,11 +22,11 @@
     ],
     "primaryCategory": "utilities",
     "tags": ["security", "privacy", "decentralization", "file sharing"],
-    "heroImageUrl": "https://your-app-domain.com/Shld.png",
+    "heroImageUrl": "https://shield-app.vercel.app/Shld.png",
     "tagline": "Share Securely",
     "ogTitle": "Shield - Secure Sharing",
     "ogDescription": "Decentralized and secure file and message sharing.",
-    "ogImageUrl": "https://your-app-domain.com/Shld.png",
+    "ogImageUrl": "https://shield-app.vercel.app/Shld.png",
     "noindex": true
   }
 }
