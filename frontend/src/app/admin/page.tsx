@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/navigation';
 import { SUPER_ADMIN_ADDRESSES, TEAM_ADMIN_ADDRESSES } from '@/config/admin';
-import Navbar from '@/components/Navbar';
 import Pattern from '@/components/Pattern';
 import styles from './AdminPage.module.css';
 import { toast } from 'react-hot-toast';
@@ -223,7 +222,6 @@ export default function AdminPage() {
 
   return (
     <div className="flex flex-col items-center min-h-screen p-4">
-      <Navbar />
       <Pattern />
       <div className={styles.contentWrapper}>
         <h1 className={styles.title}>Admin Dashboard</h1>

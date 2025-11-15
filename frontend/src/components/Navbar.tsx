@@ -33,19 +33,24 @@ export default function Navbar() {
 
   return (
     <nav className={styles.navbar}>
+      {/* Left Section: Brand */}
       <Link href="/" className={styles.brand}>
         <Image src="/Shld.png" alt="Shield Logo" width={32} height={32} />
         <span className={styles.brandText}>Shield</span>
       </Link>
+
+      {/* Mobile Menu Toggle Button */}
       <div className={styles.menuToggle} onClick={() => setIsMenuOpen(!isMenuOpen)}>
         {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
       </div>
-      <div className={`${styles.links} ${isMenuOpen ? styles.active : ''}`}>
+
+      {/* Right Section: Links and User Actions */}
+      <div className={`${styles.linksContainer} ${isMenuOpen ? styles.active : ''}`}>
         {isAdmin && (
-          <Link href="/admin" className={styles.link}>
-            Admin
-          </Link>
+          <Link href="/admin" className={styles.link}>Admin</Link>
         )}
+        <Link href="/docs" className={styles.link}>Docs</Link>
+        
         {isConnected ? (
           <>
             <div className="connect-wallet-button-selector">

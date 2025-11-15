@@ -1,23 +1,9 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "frontend/next.config.mjs",
-      "use": "@vercel/next"
-    },
-    {
-      "src": "backend/package.json",
-      "use": "@vercel/node"
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/api/notifications/webhook",
-      "destination": "/backend"
-    },
-    {
-      "source": "/:path*",
-      "destination": "/frontend/:path*"
-    }
-  ]
-}
+    "rewrites": [
+      {
+        "source": "/.well-known/farcaster/farcaster.json",
+        "destination": "/farcaster.json"
+      }
+    ]
+  }
+  

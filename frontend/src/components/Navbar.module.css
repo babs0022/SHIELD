@@ -3,15 +3,13 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  position: fixed;
+  background-color: #1a1a1a;
+  border-bottom: 1px solid #2a2a2a;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
   z-index: 1000;
-  box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
+  height: 80px;
+  width: 100%;
 }
 
 .brand {
@@ -22,49 +20,50 @@
   font-weight: 600;
   color: #00ff00;
   text-decoration: none;
-  letter-spacing: -0.5px;
 }
 
 .brandText {
   display: inline;
 }
 
-@media (max-width: 768px) {
-  .brandText {
-    display: none;
-  }
-}
-
-.links {
+.linksContainer {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem; /* A bit closer */
 }
 
 .menuToggle {
   display: none;
   cursor: pointer;
+  z-index: 1001;
 }
 
 @media (max-width: 768px) {
+  .brandText {
+    display: none;
+  }
+
   .menuToggle {
     display: block;
   }
 
-  .links {
-    display: none;
-    flex-direction: column;
+  .linksContainer {
+    display: none; /* Hidden by default on mobile */
     position: absolute;
-    top: 70px;
-    left: 0;
-    right: 0;
-    background-color: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
+    top: 80px; /* Position below the navbar */
+    right: 1rem; /* Align to the right */
+    background-color: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
     padding: 1rem;
+    flex-direction: column;
+    align-items: flex-start; /* Align items to the left within the dropdown */
+    gap: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
-  .links.active {
-    display: flex;
+  .linksContainer.active {
+    display: flex; /* Show when active */
   }
 }
 
@@ -72,7 +71,6 @@
   font-size: 1rem;
   color: rgba(255, 255, 255, 0.7);
   text-decoration: none;
-  transition: color 0.2s;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   transition: background-color 0.3s, color 0.3s;
@@ -81,27 +79,4 @@
 .link:hover {
   color: #fff;
   background-color: rgba(0, 255, 0, 0.1);
-}
-
-.button {
-  border: none;
-  outline: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 10px;
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  background-image: linear-gradient(45deg, #00ff00, #008000);
-  box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
-  transition: all 0.3s ease;
-}
-
-.button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 25px rgba(0, 255, 0, 0.7);
-}
-
-.userInfo {
-  color: rgba(255, 255, 255, 0.7);
 }

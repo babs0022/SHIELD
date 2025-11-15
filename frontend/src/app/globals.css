@@ -33,3 +33,7 @@ body {
   animation: scan 2s linear infinite alternate;
 }
 
+main {
+  padding-top: 80px; /* Match the navbar height */
+}
+
