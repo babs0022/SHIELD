@@ -16,7 +16,7 @@
 .header h1 {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
-  background: -webkit-linear-gradient(45deg, #00ff00, #008000);
+  background: -webkit-linear-gradient(45deg, #16A34A, #008000);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -72,7 +72,7 @@
 
 .faqItem h4 {
   font-size: 1.2rem;
-  color: #00ff00; /* Green for FAQ titles */
+  color: #16A34A; /* Green for FAQ titles */
   margin-bottom: 0.5rem;
 }
 

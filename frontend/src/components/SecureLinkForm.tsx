@@ -31,7 +31,7 @@ const StyledWrapper = styled.div`
 
   .feedback-message {
     font-size: 14px;
-    color: #00ff00;
+    color: #16A34A;
     margin-top: 10px;
     text-align: center;
   }
@@ -44,7 +44,7 @@ const StyledWrapper = styled.div`
     display: flex;
     align-items: center;
     padding-left: 30px;
-    color: #00ff00;
+    color: #16A34A;
   }
 
   .title::before { width: 18px; height: 18px; }
@@ -56,7 +56,7 @@ const StyledWrapper = styled.div`
     width: 16px;
     border-radius: 50%;
     left: 0px;
-    background-color: #00ff00;
+    background-color: #16A34A;
   }
 
   .message { font-size: 15px; color: rgba(255, 255, 255, 0.7); }
@@ -80,7 +80,7 @@ const StyledWrapper = styled.div`
     resize: none;
   }
 
-  .file-label span { color: #00ff00; font-size: 0.75em; font-weight: 600; margin-bottom: 5px; display: block; }
+  .file-label span { color: #16A34A; font-size: 0.75em; font-weight: 600; margin-bottom: 5px; display: block; }
   .file-label .input { padding: 10px; }
 
   .form label .input + span {
@@ -94,7 +94,7 @@ const StyledWrapper = styled.div`
   }
 
   .form label .input:placeholder-shown + span { top: 15px; font-size: 1em; }
-  .form label .input:focus + span, .form label .input:valid + span { color: #00ff00; top: 4px; font-size: 0.75em; font-weight: 600; }
+  .form label .input:focus + span, .form label .input:valid + span { color: #16A34A; top: 4px; font-size: 0.75em; font-weight: 600; }
 
   .error-message {
     color: #ff4d4d;
@@ -113,8 +113,8 @@ const StyledWrapper = styled.div`
     color: #fff; 
     font-size: 16px; 
     transform: .3s ease; 
-    background-image: linear-gradient(45deg, #00ff00, #008000);
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+    background-image: linear-gradient(45deg, #16A34A, #008000);
+    box-shadow: 0 0 15px rgba(22, 163, 74, 0.4);
     font-weight: bold; 
     transition: all 0.3s ease;
     display: flex;
@@ -124,7 +124,7 @@ const StyledWrapper = styled.div`
   }
   .submit:hover { 
     transform: scale(1.05);
-    box-shadow: 0 0 25px rgba(0, 255, 0, 0.7);
+    box-shadow: 0 0 25px rgba(22, 163, 74, 0.7);
   }
   .submit:disabled {
     background-image: linear-gradient(45deg, #4b5563, #6b7280);
@@ -147,7 +147,7 @@ const StyledWrapper = styled.div`
   }
 
   .secureLinkTitle {
-    color: #00ff00;
+    color: #16A34A;
     font-size: 0.75em;
     font-weight: 600;
     margin-bottom: 5px; 
@@ -179,13 +179,13 @@ const StyledWrapper = styled.div`
     border-radius: 10px;
     color: #fff;
     font-size: 14px;
-    background-color: rgba(0, 255, 0, 0.5);
+    background-color: rgba(22, 163, 74, 0.5);
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
 
   .link-wrapper button:hover {
-    background-color: rgba(0, 255, 0, 0.8);
+    background-color: rgba(22, 163, 74, 0.8);
   }
 
   .toggle-container {
@@ -210,9 +210,9 @@ const StyledWrapper = styled.div`
     transition: background-color 0.3s ease;
   }
   .toggle-container button.active {
-    background-color: #00ff00;
+    background-color: #16A34A;
     color: #fff;
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    box-shadow: 0 0 10px rgba(22, 163, 74, 0.5);
   }
 
   @keyframes pulse { from { transform: scale(0.9); opacity: 1; } to { transform: scale(1.8); opacity: 0; } }
@@ -252,6 +252,9 @@ const SecureLinkForm = () => {
 
   const isWrongNetwork = address && chainId !== baseChainId;
 
+  const MAX_FILE_SIZE_MB = 50;
+  const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
   useEffect(() => {
     if (recipientAddress && !isAddress(recipientAddress)) {
       setRecipientAddressError('Please enter a valid Ethereum address.');
@@ -261,8 +264,15 @@ const SecureLinkForm = () => {
   }, [recipientAddress]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFile(e.target.files[0]);
+    if (e.target.files && e.target.files.length > 0) {
+      const selectedFile = e.target.files[0];
+      if (selectedFile.size > MAX_FILE_SIZE_BYTES) {
+        toast.error(`File size exceeds the maximum limit of ${MAX_FILE_SIZE_MB}MB.`);
+        e.target.value = ''; // Clear the file input
+        setFile(null);
+      } else {
+        setFile(selectedFile);
+      }
     }
   };
 

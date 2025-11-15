@@ -99,11 +99,11 @@
   cursor: pointer; 
   transition: all 0.3s ease; 
   width: 100%;
-  background-image: linear-gradient(45deg, #00ff00, #008000);
-  box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+  background-image: linear-gradient(45deg, #16A34A, #008000);
+  box-shadow: 0 0 15px rgba(22, 163, 74, 0.4);
 }
 
 .button:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 25px rgba(0, 255, 0, 0.7);
+  box-shadow: 0 0 25px rgba(22, 163, 74, 0.7);
 }

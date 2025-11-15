@@ -17,7 +17,7 @@
 }
 
 .menuButton:hover {
-  background-color: rgba(0, 255, 0, 0.1);
+  background-color: rgba(22, 163, 74, 0.1);
   color: #fff;
 }
 
@@ -52,7 +52,7 @@
 }
 
 .dropdownItem:hover {
-  background-color: rgba(0, 255, 0, 0.1);
+  background-color: rgba(22, 163, 74, 0.1);
   color: #fff;
 }
 

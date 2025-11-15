@@ -28,8 +28,8 @@ body {
   left: 0;
   width: 100%;
   height: 3px;
-  background: linear-gradient(to right, transparent, #00ff00, transparent);
-  box-shadow: 0 0 10px #00ff00;
+  background: linear-gradient(to right, transparent, #16A34A, transparent);
+  box-shadow: 0 0 10px #16A34A;
   animation: scan 2s linear infinite alternate;
 }
 
