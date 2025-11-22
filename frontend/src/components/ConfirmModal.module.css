@@ -25,7 +25,6 @@
 
 .title {
   font-size: 1.5rem;
-  font-weight: 600;
   margin-bottom: 15px;
   color: #ffffff;
 }
@@ -48,7 +47,6 @@
   padding: 10px 20px;
   border-radius: 8px;
   font-size: 1rem;
-  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
 }

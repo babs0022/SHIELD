@@ -15,7 +15,6 @@
 
 .title {
   font-size: 2rem;
-  font-weight: bold;
   margin-bottom: 20px;
   color: #fff;
 }
@@ -32,7 +31,6 @@
   padding: 12px 24px;
   border-radius: 10px;
   font-size: 1rem;
-  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
@@ -72,7 +70,6 @@
 .statCard h3,
 .fullWidthCard h3 {
   font-size: 1.2rem;
-  font-weight: 500;
   margin-bottom: 10px;
   color: #16A34A;
 }
@@ -80,7 +77,6 @@
 .statCard p,
 .fullWidthCard p {
   font-size: 1.8rem;
-  font-weight: bold;
 }
 
 .fullWidthCard {
@@ -113,7 +109,6 @@
 
 .sectionTitle {
   font-size: 1.8rem;
-  font-weight: bold;
   color: #fff;
   margin-top: 40px;
   margin-bottom: 20px;
@@ -174,7 +169,6 @@
 
 .table th {
   color: rgba(255, 255, 255, 0.7);
-  font-weight: 500;
 }
 
 .policyId,
@@ -206,7 +200,6 @@
 .statusBadge {
   padding: 4px 8px;
   border-radius: 12px;
-  font-weight: 500;
   font-size: 0.8rem;
 }
 

@@ -6,7 +6,6 @@
 
 .dangerTitle {
   font-size: 1.2rem;
-  font-weight: 500;
   color: #ff8a80;
   padding: 15px 20px;
   border-bottom: 1px solid #ff8a80;
@@ -34,7 +33,6 @@
   cursor: pointer;
   background-color: #d32f2f;
   box-shadow: 0 0 15px rgba(211, 47, 47, 0.4);
-  font-weight: 500;
   transition: all 0.3s ease;
 }
 

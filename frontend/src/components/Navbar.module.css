@@ -22,7 +22,6 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 1.5rem;
-  font-weight: 600;
   color: #16A34A;
   text-decoration: none;
 }
@@ -73,7 +72,6 @@
   border: none;
   padding: 10px 20px;
   border-radius: 8px;
-  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease;
   margin-left: 10px;

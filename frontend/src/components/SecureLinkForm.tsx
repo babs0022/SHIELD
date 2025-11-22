@@ -38,7 +38,6 @@ const StyledWrapper = styled.div`
 
   .title {
     font-size: 32px;
-    font-weight: 600;
     letter-spacing: -1px;
     position: relative;
     display: flex;
@@ -80,7 +79,7 @@ const StyledWrapper = styled.div`
     resize: none;
   }
 
-  .file-label span { color: #16A34A; font-size: 0.75em; font-weight: 600; margin-bottom: 5px; display: block; }
+  .file-label span { color: #16A34A; font-size: 0.75em; margin-bottom: 5px; display: block; }
   .file-label .input { padding: 10px; }
 
   .form label .input + span {
@@ -94,7 +93,7 @@ const StyledWrapper = styled.div`
   }
 
   .form label .input:placeholder-shown + span { top: 15px; font-size: 1em; }
-  .form label .input:focus + span, .form label .input:valid + span { color: #16A34A; top: 4px; font-size: 0.75em; font-weight: 600; }
+  .form label .input:focus + span, .form label .input:valid + span { color: #16A3A4; top: 4px; font-size: 0.75em; }
 
   .error-message {
     color: #ff4d4d;
@@ -115,7 +114,6 @@ const StyledWrapper = styled.div`
     transform: .3s ease; 
     background-image: linear-gradient(45deg, #16A34A, #008000);
     box-shadow: 0 0 15px rgba(22, 163, 74, 0.4);
-    font-weight: bold; 
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
@@ -149,7 +147,6 @@ const StyledWrapper = styled.div`
   .secureLinkTitle {
     color: #16A34A;
     font-size: 0.75em;
-    font-weight: 600;
     margin-bottom: 5px; 
     display: block;
   }
@@ -205,7 +202,6 @@ const StyledWrapper = styled.div`
     background-color: transparent;
     color: rgba(255, 255, 255, 0.7);
     font-size: 14px;
-    font-weight: 500;
     cursor: pointer;
     transition: background-color 0.3s ease;
   }

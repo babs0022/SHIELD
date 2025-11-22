@@ -37,7 +37,6 @@
 
 .title {
   font-size: 1.8rem;
-  font-weight: 700;
   margin-bottom: 1rem;
   color: #fff;
 }
@@ -58,7 +57,6 @@
 }
 
 .steps p {
-  font-weight: 600;
   margin-bottom: 0.75rem;
   color: #fff;
 }
@@ -85,7 +83,6 @@
   align-items: center;
   justify-content: center;
   margin-right: 10px;
-  font-weight: 700;
 }
 
 .button {
@@ -95,7 +92,6 @@
   border-radius: 8px; 
   color: #fff; 
   font-size: 1rem; 
-  font-weight: 600; 
   cursor: pointer; 
   transition: all 0.3s ease; 
   width: 100%;
