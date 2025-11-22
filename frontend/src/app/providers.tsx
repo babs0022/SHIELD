@@ -28,12 +28,12 @@ const metadata = {
 };
 
 // Create the modal
-import type { AppKitNetwork } from '@reown/appkit';
+import type { AppKitNetwork } from '@reown/appkit-common';
 
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: chains as [AppKitNetwork, ...AppKitNetwork[]],
+  networks: chains as unknown as [AppKitNetwork, ...AppKitNetwork[]],
   defaultNetwork: base,
   metadata: metadata,
 });
