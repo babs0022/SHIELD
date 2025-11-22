@@ -95,6 +95,10 @@ const StyledWrapper = styled.div`
   .form label .input:placeholder-shown + span { top: 15px; font-size: 1em; }
   .form label .input:focus + span, .form label .input:valid + span { color: #16A3A4; top: 4px; font-size: 0.75em; }
 
+  .form label .timeLimitLabel, .form label .maxAttemptsLabel {
+    color: #16A34A;
+  }
+
   .error-message {
     color: #ff4d4d;
     font-size: 12px;
@@ -439,11 +443,11 @@ const SecureLinkForm = () => {
         <div className="flex access-rules-selector">
           <label>
             <input className="input" type="number" value={expiry} onChange={(e) => setExpiry(Number(e.target.value))} placeholder=" " required />
-            <span>Time Limit (seconds)</span>
+            <span className="timeLimitLabel">Time Limit (seconds)</span>
           </label>
           <label>
             <input className="input" type="number" value={maxAttempts} onChange={(e) => setMaxAttempts(Number(e.target.value))} placeholder=" " required />
-            <span>Max Attempts</span>
+            <span className="maxAttemptsLabel">Max Attempts</span>
           </label>
         </div>  
         

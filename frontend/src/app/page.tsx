@@ -7,18 +7,33 @@ import SecureLinkForm from '@/components/SecureLinkForm';
 import OnboardingInstructions from '@/components/OnboardingInstructions';
 import { useSearchParams } from 'next/navigation';
 
+import { useProfile } from '@/contexts/ProfileContext';
+
 export default function HomePage() {
+  const { showOnboarding, setShowOnboarding } = useProfile();
   const searchParams = useSearchParams();
   const showTour = searchParams.get('tour') === 'true';
 
+  const finishOnboarding = () => {
+    setShowOnboarding(false);
+  };
+
+  const handleSurveyComplete = async () => {
+    toast.success('Thank you for your feedback!');
+    finishOnboarding();
+  };
+
+  if (showOnboarding) {
+    return <OnboardingSurvey onComplete={handleSurveyComplete} onSkip={finishOnboarding} />;
+  }
+
   return (
     <main className={styles.container}>
-      <Pattern />
       <div className={styles.content}>
         <div className={styles.formContainer}>
           <SecureLinkForm />
         </div>
-        {showTour && <OnboardingInstructions onDismiss={() => {}} />}
+        {showTour && <OnboardingInstructions onDismiss={finishOnboarding} />}
       </div>
     </main>
   );

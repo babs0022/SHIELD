@@ -48,8 +48,17 @@
   cursor: pointer;
   font-size: 0.95rem;
   text-decoration: none;
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   transition: background-color 0.2s, color 0.2s;
+}
+
+.dropdownIcon {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+  margin-right: 5px;
 }
 
 .dropdownItem:hover {

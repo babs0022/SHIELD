@@ -11,6 +11,8 @@ interface ProfileContextType {
   profile: Profile | null;
   isLoading: boolean;
   fetchProfile: (address: string) => Promise<void>;
+  showOnboarding: boolean;
+  setShowOnboarding: (show: boolean) => void;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -18,6 +20,7 @@ const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const fetchProfile = useCallback(async (address: string) => {
     if (!address) return;
@@ -39,7 +42,7 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <ProfileContext.Provider value={{ profile, isLoading, fetchProfile }}>
+    <ProfileContext.Provider value={{ profile, isLoading, fetchProfile, showOnboarding, setShowOnboarding }}>
       {children}
     </ProfileContext.Provider>
   );

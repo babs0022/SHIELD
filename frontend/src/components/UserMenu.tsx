@@ -5,6 +5,10 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import styles from './UserMenu.module.css';
 import ChevronDownIcon from './ChevronDownIcon';
+import ProfileIcon from './ProfileIcon';
+import DocsIcon from './DocsIcon';
+import AdminIcon from './AdminIcon';
+import SignOutIcon from './SignOutIcon';
 import { useAccount, useDisconnect } from 'wagmi';
 import { useProfile } from '@/contexts/ProfileContext';
 import { SUPER_ADMIN_ADDRESSES, TEAM_ADMIN_ADDRESSES } from '@/config/admin';
@@ -34,6 +38,19 @@ export default function UserMenu({ onSignOut }: { onSignOut: () => void }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleScroll = () => {
+      setIsOpen(false);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [isOpen]);
+
   if (!isConnected || !address) return null;
 
   const truncatedAddress = `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -62,18 +79,22 @@ export default function UserMenu({ onSignOut }: { onSignOut: () => void }) {
       {isOpen && (
         <div className={styles.dropdown}>
           <Link href="/profile" className={styles.dropdownItem} onClick={() => setIsOpen(false)}>
+            <ProfileIcon className={styles.dropdownIcon} />
             Profile
           </Link>
           <Link href="/docs" className={styles.dropdownItem} onClick={() => setIsOpen(false)}>
+            <DocsIcon className={styles.dropdownIcon} />
             Docs
           </Link>
           {isAdmin && (
             <Link href="/admin" className={styles.dropdownItem} onClick={() => setIsOpen(false)}>
+              <AdminIcon className={styles.dropdownIcon} />
               Admin
             </Link>
           )}
           <div className={styles.separator}></div>
           <button onClick={handleSignOut} className={`${styles.dropdownItem} ${styles.signOut}`}>
+            <SignOutIcon className={styles.dropdownIcon} />
             Sign Out
           </button>
         </div>
