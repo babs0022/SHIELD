@@ -4,9 +4,7 @@ async function main() {
   const Shield = await ethers.getContractFactory("Shield");
   const shield = await Shield.deploy();
 
-  await shield.waitForDeployment();
-
-  console.log(`Shield deployed to: ${await shield.getAddress()}`);
+  console.log(`Shield deployed to: ${shield.address}`);
 }
 
 main().catch((error) => {

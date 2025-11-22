@@ -9,6 +9,7 @@ import { useAccount, useSignMessage } from 'wagmi';
 import { SiweMessage } from 'siwe';
 import { toast } from 'react-hot-toast';
 import styles from './ReceiverPage.module.css';
+import DownloadIcon from '@/components/DownloadIcon';
 import CopyIcon from '@/components/CopyIcon';
 
 type VerificationStatus = 'idle' | 'verifying' | 'success' | 'failed' | 'invalid';
@@ -23,7 +24,7 @@ export interface Policy {
 export default function ReceiverPageClient({ policy: initialPolicy }: { policy: Policy | null }) {
   const params = useParams();
   const policyId = params?.policyId as `0x${string}`;
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, status } = useAccount();
   const { signMessageAsync } = useSignMessage();
 
   const [verificationStatus, setVerificationStatus] = useState<VerificationStatus>('idle');
@@ -34,12 +35,18 @@ export default function ReceiverPageClient({ policy: initialPolicy }: { policy: 
 
   useEffect(() => {
     if (initialPolicy) {
-      setInfo('Please connect your wallet to verify ownership.');
+      if (status === 'connecting' || status === 'reconnecting') {
+        setInfo('Connecting to wallet...');
+      } else if (status === 'disconnected') {
+        setInfo('Please connect your wallet to verify ownership.');
+      } else if (status === 'connected') {
+        setInfo('Please verify your wallet to access the content.');
+      }
     } else {
       setVerificationStatus('invalid');
       setError('Policy not found or backend error.');
     }
-  }, [initialPolicy]);
+  }, [initialPolicy, status]);
 
   // Effect to clean up the object URL to prevent memory leaks
   useEffect(() => {
@@ -51,7 +58,7 @@ export default function ReceiverPageClient({ policy: initialPolicy }: { policy: 
   }, [decryptedDataUrl]);
 
   const handleVerify = async () => {
-    if (!isConnected || !address || !policy) {
+    if (status !== 'connected' || !address || !policy) {
       toast.error('Please connect your wallet first.');
       return;
     }
@@ -159,6 +166,7 @@ export default function ReceiverPageClient({ policy: initialPolicy }: { policy: 
 
   const renderContent = () => {
     if (!decryptedDataUrl || !policy) return null;
+    const fileName = `decrypted_image.${policy.mimeType.split('/')[1] || 'png'}`;
 
     if (policy.isText) {
       return (
@@ -170,7 +178,14 @@ export default function ReceiverPageClient({ policy: initialPolicy }: { policy: 
     }
 
     if (policy.mimeType.startsWith('image/')) {
-      return <img src={decryptedDataUrl} alt="Decrypted content" className={styles.decryptedImage} />;
+      return (
+        <div className={styles.imageContainer}>
+          <img src={decryptedDataUrl} alt="Decrypted content" className={styles.decryptedImage} />
+          <a href={decryptedDataUrl} download={fileName} className={styles.downloadIcon}>
+            <DownloadIcon />
+          </a>
+        </div>
+      );
     }
 
     if (policy.mimeType === 'application/pdf') {
@@ -185,11 +200,11 @@ export default function ReceiverPageClient({ policy: initialPolicy }: { policy: 
       );
     }
 
-    const fileName = `decrypted_file.${policy.mimeType.split('/')[1] || 'bin'}`;
+    const downloadFileName = `decrypted_file.${policy.mimeType.split('/')[1] || 'bin'}`;
     return (
       <div className={styles.downloadContainer}>
         <p>Content type: {policy.mimeType}</p>
-        <a href={decryptedDataUrl} download={fileName} className={styles.downloadButton}>
+        <a href={decryptedDataUrl} download={downloadFileName} className={styles.downloadButton}>
           Download File
         </a>
       </div>
@@ -209,7 +224,7 @@ export default function ReceiverPageClient({ policy: initialPolicy }: { policy: 
         return (
           <div>
             <p className={styles.info}>{info}</p>
-            <button onClick={handleVerify} className={styles.button} disabled={!isConnected || !policy}>
+            <button onClick={handleVerify} className={styles.button} disabled={status !== 'connected' || !policy}>
               Verify Wallet Ownership
             </button>
           </div>

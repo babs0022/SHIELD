@@ -8,8 +8,13 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  height: 80px;
   width: 100%;
+}
+
+.navLeft {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
 
 .brand {
@@ -23,47 +28,28 @@
 }
 
 .brandText {
-  display: inline;
+  display: none; /* Hidden on mobile by default */
+}
+
+.navLinks {
+  display: none; /* Hidden on mobile by default */
 }
 
 .linksContainer {
   display: flex;
   align-items: center;
-  gap: 1rem; /* A bit closer */
+  gap: 1rem;
 }
 
-.menuToggle {
-  display: none;
-  cursor: pointer;
-  z-index: 1001;
-}
-
-@media (max-width: 768px) {
+/* Tablet and Desktop styles */
+@media (min-width: 768px) {
   .brandText {
-    display: none;
+    display: inline;
   }
 
-  .menuToggle {
-    display: block;
-  }
-
-  .linksContainer {
-    display: none; /* Hidden by default on mobile */
-    position: absolute;
-    top: 80px; /* Position below the navbar */
-    right: 1rem; /* Align to the right */
-    background-color: #1a1a1a;
-    border: 1px solid #2a2a2a;
-    border-radius: 8px;
-    padding: 1rem;
-    flex-direction: column;
-    align-items: flex-start; /* Align items to the left within the dropdown */
-    gap: 1rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  }
-
-  .linksContainer.active {
-    display: flex; /* Show when active */
+  .navLinks {
+    display: flex;
+    gap: 1.5rem;
   }
 }
 
@@ -71,7 +57,7 @@
   font-size: 1rem;
   color: rgba(255, 255, 255, 0.7);
   text-decoration: none;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem;
   border-radius: 8px;
   transition: background-color 0.3s, color 0.3s;
 }
@@ -79,4 +65,25 @@
 .link:hover {
   color: #fff;
   background-color: rgba(22, 163, 74, 0.1);
+}
+
+.connectButton {
+  background-color: #16A34A;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 10px;
+}
+
+.connectButton:hover {
+  background-color: #148a3f;
+}
+
+.connectButton:disabled {
+  background-color: #4b5563;
+  cursor: not-allowed;
 }

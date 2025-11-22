@@ -19,14 +19,21 @@ const nextConfig = {
     ];
   },
   webpack: (config, { isServer }) => {
-    if (!isServer) {
-      // Fixes npm packages that depend on `fs` module
-      config.resolve.fallback = {
-        fs: false,
-        encoding: false,
-      };
-      config.resolve.alias['@react-native-async-storage/async-storage'] = false;
+    if (isServer) {
+      config.externals.push('pino-pretty', 'lokijs', 'encoding');
     }
+
+    // Apply fallbacks and aliases to both server and client builds
+    config.resolve.fallback = {
+      ...(config.resolve.fallback || {}),
+      fs: false,
+      encoding: false,
+    };
+
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      '@react-native-async-storage/async-storage': false,
+    };
 
     return config;
   },

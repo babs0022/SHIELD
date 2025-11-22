@@ -1,15 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Pool } from 'pg';
 import { SiweMessage } from 'siwe';
-import { ReownAuthentication } from '@reown/appkit-siwx';
 import jwt from 'jsonwebtoken';
-
-const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
+import pool from '@/lib/db';
 
 const createUserTable = async () => {
   const client = await pool.connect();

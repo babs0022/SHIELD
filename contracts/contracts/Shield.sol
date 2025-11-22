@@ -38,17 +38,11 @@ contract Shield {
 
         policy.attempts++;
 
-        if (!success) {
-            if (policy.attempts >= policy.maxAttempts) {
-                policy.valid = false;
-            }
+        if (policy.attempts >= policy.maxAttempts) {
+            policy.valid = false;
         }
 
         emit VerificationAttempt(policyId, success);
-
-        if (success) {
-            policy.valid = false; // Invalidate after successful access
-        }
     }
 
     function isPolicyValid(bytes32 policyId) external view returns (bool) {

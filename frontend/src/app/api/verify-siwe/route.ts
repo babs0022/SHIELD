@@ -1,17 +1,10 @@
 import { NextResponse } from 'next/server';
 import { SiweMessage } from 'siwe';
-import { Pool } from 'pg';
+import pool from '@/lib/db';
 import { createPublicClient, createWalletClient, http, Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { base } from 'viem/chains';
 import { ShieldABI } from '@/lib/ShieldABI';
-
-const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
 
 const rpcUrl = process.env.BASE_MAINNET_RPC_URL;
 const privateKey = process.env.SERVER_WALLET_PRIVATE_KEY as Hex | undefined;

@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Pool } from 'pg';
 import jwt from 'jsonwebtoken';
-
-const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
+import pool from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   const token = request.headers.get('authorization')?.split(' ')[1];
@@ -32,12 +25,13 @@ export async function GET(request: NextRequest) {
         [walletAddress]
       );
       
+      const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
       const links = result.rows.map(row => ({
         id: row.policy_id,
         createdAt: row.created_at,
         expiry: row.expiry,
         maxAttempts: row.max_attempts,
-        url: `${process.env.NEXT_PUBLIC_URL}/r/${row.policy_id}`,
+        url: `${baseUrl}/r/${row.policy_id}`,
       }));
 
       return NextResponse.json({ links });

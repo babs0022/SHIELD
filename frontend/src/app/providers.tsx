@@ -1,81 +1,53 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import '@rainbow-me/rainbowkit/styles.css';
-import { connectorsForWallets, RainbowKitProvider, lightTheme } from '@rainbow-me/rainbowkit';
-import {
-  injectedWallet,
-  metaMaskWallet,
-  safeWallet,
-  walletConnectWallet,
-} from '@rainbow-me/rainbowkit/wallets';
-import { WagmiProvider, createConfig, http } from 'wagmi';
-import {
-  mainnet,
-  polygon,
-  optimism,
-  arbitrum,
-  base,
-  sepolia,
-  localhost,
-} from 'wagmi/chains';
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import React, { useState, type ReactNode } from 'react';
+import { WagmiProvider, type Config, State } from 'wagmi';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { createAppKit } from '@reown/appkit/react';
+import { wagmiAdapter } from '@/config/reown';
+import { chains } from '@/config/chains';
+import { base } from 'wagmi/chains';
+import { ProfileProvider } from '@/contexts/ProfileContext';
+import { cookieToInitialState } from '@wagmi/core';
 
-import { appkit } from '@/lib/reown';
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_REOWN_PROJECT_ID';
 
-const chains = [
-  mainnet,
-  polygon,
-  optimism,
-  arbitrum,
-  base,
-  sepolia,
-  ...(process.env.NODE_ENV === 'development' ? [localhost] : [])
-] as const;
+// Set up queryClient
+const queryClient = new QueryClient();
 
-export function Providers({ children }: { children: React.ReactNode }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+if (!projectId) {
+  throw new Error('Project ID is not defined');
+}
 
-  const [queryClient] = useState(() => new QueryClient());
-  const [config] = useState(() => {
-    const connectors = connectorsForWallets(
-      [
-        {
-          groupName: 'Recommended',
-          wallets: [injectedWallet, metaMaskWallet, safeWallet, walletConnectWallet],
-        },
-      ],
-      {
-        appName: 'Shield',
-        projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '',
-      }
-    );
+// Set up metadata
+const metadata = {
+  name: 'Shield',
+  description: 'Decentralized and secure file and message sharing.',
+  url: 'https://shield-app.vercel.app',
+  icons: ['https://shield-app.vercel.app/Shld.png']
+};
 
-    return createConfig({
-      connectors,
-      chains: chains,
-      transports: chains.reduce((acc, chain) => {
-        acc[chain.id] = http();
-        return acc;
-      }, {} as Record<number, ReturnType<typeof http>>),
-    });
-  });
+// Create the modal
+const modal = createAppKit({
+  adapters: [wagmiAdapter],
+  projectId,
+  networks: chains,
+  defaultNetwork: base,
+  metadata: metadata,
+});
 
-  if (!mounted) {
-    return null;
-  }
+function ContextProvider({ children, cookies }: { children: ReactNode; cookies: string | null }) {
+  const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig as Config, cookies);
 
   return (
-    <WagmiProvider config={config}>
+    <WagmiProvider config={wagmiAdapter.wagmiConfig as Config} initialState={initialState}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider theme={lightTheme({
-          accentColor: '#16A34A',
-          accentColorForeground: 'white',
-        })}>
+        <ProfileProvider>
           {children}
-        </RainbowKitProvider>
+        </ProfileProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
 }
+
+export default ContextProvider;
