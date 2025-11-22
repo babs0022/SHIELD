@@ -16,4 +16,4 @@ export const chains = [
   base,
   sepolia,
   ...(process.env.NODE_ENV === 'development' ? [localhost] : [])
-] as const;
+];
