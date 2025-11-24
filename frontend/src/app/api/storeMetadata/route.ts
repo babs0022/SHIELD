@@ -47,7 +47,13 @@ export async function POST(request: NextRequest) {
       client.release();
     }
 
-    const link = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/r/${policyId}`;
+    const baseUrl = process.env.FRONTEND_URL
+      ? process.env.FRONTEND_URL
+      : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000';
+
+    const link = `${baseUrl}/r/${policyId}`;
     return NextResponse.json({ success: true, link });
 
   } catch (error) {

@@ -25,7 +25,11 @@ export async function GET(request: NextRequest) {
         [walletAddress]
       );
       
-      const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+      const baseUrl = process.env.FRONTEND_URL
+        ? process.env.FRONTEND_URL
+        : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : 'http://localhost:3000';
       const links = result.rows.map(row => ({
         id: row.policy_id,
         createdAt: row.created_at,

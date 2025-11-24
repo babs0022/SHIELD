@@ -1,48 +1,29 @@
 'use client';
 
-import React, { useState, type ReactNode } from 'react';
-import { WagmiProvider, type Config, State } from 'wagmi';
+import React, { useState, useEffect } from 'react';
+import { WagmiProvider } from 'wagmi';
+import { wagmiConfig } from '@/config/web3modal';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { createAppKit } from '@reown/appkit/react';
-import { wagmiAdapter } from '@/config/reown';
-import { chains } from '@/config/chains';
-import { base } from 'wagmi/chains';
+import { createWeb3Modal } from '@web3modal/wagmi/react';
 import { ProfileProvider } from '@/contexts/ProfileContext';
-import { cookieToInitialState } from '@wagmi/core';
 
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_REOWN_PROJECT_ID';
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_WALLETCONNECT_PROJECT_ID';
 
-// Set up queryClient
-const queryClient = new QueryClient();
+export function Providers({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+  const [queryClient] = useState(() => new QueryClient());
 
-if (!projectId) {
-  throw new Error('Project ID is not defined');
-}
+  useEffect(() => {
+    createWeb3Modal({ wagmiConfig, projectId });
+    setMounted(true);
+  }, []);
 
-// Set up metadata
-const metadata = {
-  name: 'Shield',
-  description: 'Decentralized and secure file and message sharing.',
-  url: 'https://shield-app.vercel.app',
-  icons: ['https://shield-app.vercel.app/Shld.png']
-};
-
-// Create the modal
-import type { AppKitNetwork } from '@reown/appkit-common';
-
-const modal = createAppKit({
-  adapters: [wagmiAdapter],
-  projectId,
-  networks: chains as unknown as [AppKitNetwork, ...AppKitNetwork[]],
-  defaultNetwork: base,
-  metadata: metadata,
-});
-
-function ContextProvider({ children, cookies }: { children: ReactNode; cookies: string | null }) {
-  const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig as Config, cookies);
+  if (!mounted) {
+    return null;
+  }
 
   return (
-    <WagmiProvider config={wagmiAdapter.wagmiConfig as Config} initialState={initialState}>
+    <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <ProfileProvider>
           {children}
@@ -51,5 +32,3 @@ function ContextProvider({ children, cookies }: { children: ReactNode; cookies: 
     </WagmiProvider>
   );
 }
-
-export default ContextProvider;

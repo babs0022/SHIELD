@@ -5,7 +5,9 @@ import styles from './page.module.css';
 import Pattern from '@/components/Pattern';
 import SecureLinkForm from '@/components/SecureLinkForm';
 import OnboardingInstructions from '@/components/OnboardingInstructions';
+import OnboardingSurvey from '@/components/OnboardingSurvey';
 import { useSearchParams } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 
 import { useProfile } from '@/contexts/ProfileContext';
 

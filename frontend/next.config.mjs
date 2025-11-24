@@ -33,6 +33,14 @@ const nextConfig = {
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
       '@react-native-async-storage/async-storage': false,
+      'porto/internal': false,
+      'porto': false,
+      '@base-org/account': false,
+      '@coinbase/wallet-sdk': false,
+      '@gemini-wallet/core': false,
+      '@metamask/sdk': false,
+      '@safe-global/safe-apps-sdk': false,
+      '@safe-global/safe-apps-provider': false,
     };
 
     return config;

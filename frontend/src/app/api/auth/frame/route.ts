@@ -60,7 +60,11 @@ export async function POST(request: NextRequest) {
   }
 
   // Redirect to the main app with the token
-  const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+  const baseUrl = process.env.FRONTEND_URL
+    ? process.env.FRONTEND_URL
+    : process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'http://localhost:3000';
   const redirectUrl = `${baseUrl}/?token=${token}`;
   return NextResponse.redirect(redirectUrl, { status: 302 });
 }

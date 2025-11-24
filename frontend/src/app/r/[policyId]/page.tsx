@@ -4,8 +4,13 @@ import { Policy } from './ReceiverPageClient';
 
 async function getPolicy(policyId: string): Promise<Policy | null> {
   try {
-    // TODO: use a better way to get the base URL
-    const res = await fetch(`https://shield-app.vercel.app/api/getPolicy/${policyId}`);
+    const baseUrl = process.env.FRONTEND_URL
+      ? process.env.FRONTEND_URL
+      : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000';
+    
+    const res = await fetch(`${baseUrl}/api/getPolicy/${policyId}`);
     if (!res.ok) {
       return null;
     }
@@ -24,10 +29,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const policyId = params.policyId;
   const policy = await getPolicy(policyId);
 
+  const baseUrl = process.env.FRONTEND_URL
+    ? process.env.FRONTEND_URL
+    : process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'http://localhost:3000';
+
   const title = 'Shield: Unlockable Content';
   const description = 'You have received unlockable content. Verify your wallet to view it.';
-  const imageUrl = 'https://shield-app.vercel.app/ogimage.png'; 
-  const url = `https://shield-app.vercel.app/r/${policyId}`;
+  const imageUrl = `${baseUrl}/ogimage.png`; 
+  const url = `${baseUrl}/r/${policyId}`;
 
   if (!policy) {
     return {
