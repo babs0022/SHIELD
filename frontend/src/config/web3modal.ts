@@ -20,4 +20,5 @@ export const wagmiConfig = createConfig({
     walletConnect({ projectId, metadata, showQrModal: false }),
     injected({ shimDisconnect: true }),
   ],
+  ssr: true,
 })
