@@ -46,6 +46,8 @@ export const viewport: Viewport = {
   initialScale: 1.0,
 };
 
+import { Analytics } from "@vercel/analytics/next";
+
 export default function RootLayout({
   children,
 }: {
@@ -60,6 +62,7 @@ export default function RootLayout({
               <Toaster />
               <Navbar />
               {children}
+              <Analytics />
             </StyledComponentsRegistry>
           </ProfileProvider>
         </DynamicProviders>

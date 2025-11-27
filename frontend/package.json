@@ -22,6 +22,7 @@
     "@tanstack/react-query": "^5.90.9",
     "@types/crypto-js": "^4.2.2",
     "@types/react-joyride": "^2.0.2",
+    "@vercel/analytics": "^1.5.0",
     "@vercel/blob": "^2.0.0",
     "@walletconnect/modal": "^2.7.0",
     "@web3modal/wagmi": "^5.1.11",
