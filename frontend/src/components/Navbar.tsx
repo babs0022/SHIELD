@@ -5,40 +5,22 @@ import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Navbar.module.css';
 import UserMenu from './UserMenu';
-import { useAccount, useSignMessage, useConnect } from 'wagmi';
-import { injected } from 'wagmi/connectors';
+import { useAccount, useSignMessage } from 'wagmi';
 import { SUPER_ADMIN_ADDRESSES, TEAM_ADMIN_ADDRESSES } from '@/config/admin';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { SiweMessage } from 'siwe';
 import { toast } from 'react-hot-toast';
 import { useProfile } from '@/contexts/ProfileContext';
-import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
   const { address, isConnected, chainId } = useAccount();
   const { open } = useWeb3Modal();
   const { signMessageAsync } = useSignMessage();
-  const { connect } = useConnect();
   const { fetchProfile } = useProfile();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   const profileFetchedForAddress = React.useRef<string | null>(null);
-  const router = useRouter();
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const farcasterToken = urlParams.get('token');
-
-    if (farcasterToken) {
-      localStorage.setItem('reown-siwe-token', farcasterToken);
-      setIsAuthenticated(true);
-      router.replace(window.location.pathname); // Clean the URL
-      toast.success('Signed in via Farcaster!');
-
-      if (!isConnected) {
-        connect({ connector: injected() });
-      }
-    }
-
+  React.useEffect(() => {
     const token = localStorage.getItem('reown-siwe-token');
     const handleSignIn = async () => {
       if (isConnected && address && chainId && !token) {
@@ -70,11 +52,10 @@ export default function Navbar() {
           const { token: newToken, user } = await response.json();
           localStorage.setItem('reown-siwe-token', newToken);
           setIsAuthenticated(true);
-          await fetchProfile(address);
+          await fetchProfile();
           profileFetchedForAddress.current = address;
           toast.success('Signed in successfully!', { id: toastId });
 
-          // Check if the user is new and trigger onboarding
           if (user && user.first_login_at === user.last_login_at) {
             // This logic will be handled by the ProfileContext
           }
@@ -89,15 +70,15 @@ export default function Navbar() {
     if (token) {
       setIsAuthenticated(true);
       if (address && profileFetchedForAddress.current !== address) {
-        fetchProfile(address);
+        fetchProfile();
         profileFetchedForAddress.current = address;
       }
     }
-    else if (!farcasterToken) { // Only attempt SIWE if no Farcaster token was found
+    else {
       setIsAuthenticated(false);
       handleSignIn();
     }
-  }, [isConnected, address, chainId, signMessageAsync, fetchProfile, router]);
+  }, [isConnected, address, chainId, signMessageAsync, fetchProfile]);
 
   const handleSignOut = () => {
     localStorage.removeItem('reown-siwe-token');

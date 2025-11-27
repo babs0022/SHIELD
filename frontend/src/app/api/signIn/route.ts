@@ -13,6 +13,9 @@ const createUserTable = async () => {
         last_login_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
       );
     `);
+    // Add columns if they don't exist
+    await client.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS display_name TEXT;');
+    await client.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS pfp_url TEXT;');
   } finally {
     client.release();
   }

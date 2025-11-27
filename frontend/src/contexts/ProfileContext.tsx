@@ -10,23 +10,41 @@ interface Profile {
 interface ProfileContextType {
   profile: Profile | null;
   isLoading: boolean;
-  fetchProfile: (address: string) => Promise<void>;
+  fetchProfile: () => Promise<void>;
+  updateProfile: (newProfile: Partial<Profile>) => Promise<void>;
   showOnboarding: boolean;
   setShowOnboarding: (show: boolean) => void;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
+import { toast } from 'react-hot-toast';
+
+
+
+// ... (keep existing interfaces and context creation) ...
+
+
+
 export const ProfileProvider = ({ children }: { children: ReactNode }) => {
+
   const [profile, setProfile] = useState<Profile | null>(null);
+
   const [isLoading, setIsLoading] = useState(false);
+
   const [showOnboarding, setShowOnboarding] = useState(false);
 
-  const fetchProfile = useCallback(async (address: string) => {
-    if (!address) return;
+
+
+  const fetchProfile = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/user/profile?address=${address}`);
+      const token = localStorage.getItem('reown-siwe-token');
+      const response = await fetch(`/api/user/profile`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setProfile(data);
@@ -41,8 +59,35 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
+
+
+  const updateProfile = useCallback(async (newProfile: Partial<Profile>) => {
+    const toastId = toast.loading('Updating profile...');
+    try {
+      const token = localStorage.getItem('reown-siwe-token');
+      const response = await fetch('/api/user/profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(newProfile),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update profile.');
+      }
+
+      await fetchProfile();
+      toast.success('Profile updated successfully!', { id: toastId });
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      toast.error('Could not update profile.', { id: toastId });
+    }
+  }, [fetchProfile]);
+
   return (
-    <ProfileContext.Provider value={{ profile, isLoading, fetchProfile, showOnboarding, setShowOnboarding }}>
+    <ProfileContext.Provider value={{ profile, isLoading, fetchProfile, updateProfile, showOnboarding, setShowOnboarding }}>
       {children}
     </ProfileContext.Provider>
   );
@@ -55,3 +100,6 @@ export const useProfile = () => {
   }
   return context;
 };
+
+
+

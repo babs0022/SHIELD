@@ -1,0 +1,28 @@
+/* src/components/StatsCard.module.css */
+.card {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.statValue {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.statLabel {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 5px;
+}

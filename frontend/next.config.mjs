@@ -9,6 +9,16 @@ const nextConfig = {
   compiler: {
     styledComponents: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'n9ukziiprpemarxa.public.blob.vercel-storage.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
   transpilePackages: ['@metamask/sdk'],
   async rewrites() {
     return [

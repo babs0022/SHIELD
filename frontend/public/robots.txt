@@ -1,0 +1,9 @@
+# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+#
+# To allow most search engines to crawl your entire site, use the following:
+User-agent: *
+Allow: /
+
+# To disallow all search engines from crawling your site, use the following:
+# User-agent: *
+# Disallow: /

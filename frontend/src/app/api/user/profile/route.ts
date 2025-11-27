@@ -1,55 +1,84 @@
 import { NextRequest, NextResponse } from 'next/server';
+import jwt from 'jsonwebtoken';
+import pool from '@/lib/db';
+
+async function getAddressFromToken(request: NextRequest): Promise<string | null> {
+  const token = request.headers.get('authorization')?.split(' ')[1];
+  if (!token) {
+    return null;
+  }
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is not defined');
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (typeof decoded === 'string' || !decoded.address) {
+      return null;
+    }
+    return decoded.address;
+  } catch (error) {
+    return null;
+  }
+}
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const address = searchParams.get('address');
-
+  const address = await getAddressFromToken(request);
   if (!address) {
-    return NextResponse.json({ error: 'Address is required.' }, { status: 400 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  if (!process.env.NEYNAR_API_KEY) {
-    console.error('NEYNAR_API_KEY is not set.');
-    return NextResponse.json({ error: 'Server configuration error.' }, { status: 500 });
-  }
-
-  const options = {
-    method: 'GET',
-    headers: {
-      accept: 'application/json',
-      api_key: process.env.NEYNAR_API_KEY,
-    },
-  };
-
+  const client = await pool.connect();
   try {
-    const response = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk-by-address?addresses=${address}`, options);
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Neynar API error:', errorData);
-      return NextResponse.json({ error: 'Failed to fetch user from Neynar.' }, { status: response.status });
+    // Check if the new columns exist to prevent crashing on old schemas
+    const columnCheck = await client.query(`
+      SELECT column_name
+      FROM information_schema.columns
+      WHERE table_name = 'users' AND column_name = 'display_name'
+    `);
+
+    let profile;
+    if (columnCheck.rows.length > 0) {
+      // Columns exist, fetch the full profile
+      const result = await client.query('SELECT display_name as "displayName", pfp_url as "pfpUrl" FROM users WHERE wallet_address = $1', [address]);
+      if (result.rows.length > 0) {
+        profile = result.rows[0];
+      }
     }
 
-    const data = await response.json();
-    
-    // Neynar API returns an object where keys are addresses, and values are arrays of users
-    const usersForAddress = data[address.toLowerCase()];
-
-    if (!usersForAddress || usersForAddress.length === 0) {
-      return NextResponse.json({ error: 'User not found.' }, { status: 404 });
+    // If profile wasn't found or columns don't exist, return a default profile
+    if (!profile) {
+      return NextResponse.json({ displayName: address, pfpUrl: '' });
     }
 
-    const user = usersForAddress[0];
+    return NextResponse.json(profile);
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found.' }, { status: 404 });
-    }
-
-    return NextResponse.json({
-      displayName: user.display_name,
-      pfpUrl: user.pfp_url,
-    });
   } catch (error) {
-    console.error('Error fetching from Neynar:', error);
+    console.error('Error fetching user profile:', error);
     return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
+  } finally {
+    client.release();
+  }
+}
+
+export async function POST(request: NextRequest) {
+  const address = await getAddressFromToken(request);
+  if (!address) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { displayName, pfpUrl } = await request.json();
+
+  const client = await pool.connect();
+  try {
+    await client.query(
+      'UPDATE users SET display_name = $1, pfp_url = $2 WHERE wallet_address = $3',
+      [displayName, pfpUrl, address]
+    );
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
+  } finally {
+    client.release();
   }
 }
