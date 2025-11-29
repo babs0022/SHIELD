@@ -12,22 +12,13 @@ import { toast } from 'react-hot-toast';
 import { useProfile } from '@/contexts/ProfileContext';
 
 export default function HomePage() {
-  const { showOnboarding, setShowOnboarding } = useProfile();
+  const { setShowOnboarding } = useProfile();
   const searchParams = useSearchParams();
   const showTour = searchParams.get('tour') === 'true';
 
   const finishOnboarding = () => {
     setShowOnboarding(false);
   };
-
-  const handleSurveyComplete = async () => {
-    toast.success('Thank you for your feedback!');
-    finishOnboarding();
-  };
-
-  if (showOnboarding) {
-    return <OnboardingSurvey onComplete={handleSurveyComplete} onSkip={finishOnboarding} />;
-  }
 
   return (
     <main className={styles.container}>

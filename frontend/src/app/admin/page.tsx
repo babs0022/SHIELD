@@ -55,10 +55,26 @@ export default function AdminPage() {
   const [newAdminRole, setNewAdminRole] = useState<'SUPER_ADMIN' | 'TEAM_ADMIN'>('TEAM_ADMIN');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [linksPerPage] = useState(10);
+
+  const baseUrl = `https://${process.env.NEXT_PUBLIC_FRONTEND_URL || process.env.NEXT_PUBLIC_VERCEL_URL || 'localhost:3000'}`;
 
   const fetchAdminData = async () => {
+    const token = localStorage.getItem('reown-siwe-token');
+    if (!token) {
+      setError('Authentication token not found.');
+      toast.error('Authentication token not found.');
+      return;
+    }
+
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
+
     try {
-      const statusResponse = await fetch('/api/admin/status');
+      const statusResponse = await fetch('/api/admin/status', { headers });
       if (!statusResponse.ok) {
         const errorData = await statusResponse.json();
         throw new Error(errorData.error || 'Failed to fetch admin status');
@@ -66,7 +82,7 @@ export default function AdminPage() {
       const statusData: AdminStatus = await statusResponse.json();
       setAdminStatus(statusData);
 
-      const linksResponse = await fetch('/api/admin/links');
+      const linksResponse = await fetch('/api/admin/links', { headers });
       if (!linksResponse.ok) {
         const errorData = await linksResponse.json();
         throw new Error(errorData.error || 'Failed to fetch links');
@@ -75,7 +91,7 @@ export default function AdminPage() {
       setLinks(linksData);
 
       if (isSuperAdmin) {
-        const adminsResponse = await fetch('/api/admin/manage-admins');
+        const adminsResponse = await fetch('/api/admin/manage-admins', { headers });
         if (!adminsResponse.ok) {
           const errorData = await adminsResponse.json();
           throw new Error(errorData.error || 'Failed to fetch admins');
@@ -121,9 +137,13 @@ export default function AdminPage() {
     if (!confirm(`Are you sure you want to revoke link ${policyId}?`)) return;
 
     try {
+      const token = localStorage.getItem('reown-siwe-token');
       const response = await fetch('/api/admin/links', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ policyId, action: 'revoke' }),
       });
 
@@ -147,9 +167,13 @@ export default function AdminPage() {
     }
 
     try {
+      const token = localStorage.getItem('reown-siwe-token');
       const response = await fetch('/api/admin/manage-admins', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ address: newAdminAddress, role: newAdminRole }),
       });
 
@@ -170,9 +194,13 @@ export default function AdminPage() {
     if (!confirm(`Are you sure you want to remove admin ${addressToRemove}?`)) return;
 
     try {
+      const token = localStorage.getItem('reown-siwe-token');
       const response = await fetch('/api/admin/manage-admins', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ address: addressToRemove }),
       });
 
@@ -192,9 +220,15 @@ export default function AdminPage() {
     const matchesSearch = searchTerm === '' || 
                           link.policy_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           link.recipient_address.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === 'all' || link.status.toLowerCase() === filterStatus;
+    const matchesStatus = filterStatus === 'all' || (link.status || '').toLowerCase() === filterStatus;
     return matchesSearch && matchesStatus;
   });
+
+  // Pagination Logic
+  const indexOfLastLink = currentPage * linksPerPage;
+  const indexOfFirstLink = indexOfLastLink - linksPerPage;
+  const currentLinks = filteredLinks.slice(indexOfFirstLink, indexOfLastLink);
+  const totalPages = Math.ceil(filteredLinks.length / linksPerPage);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -305,18 +339,18 @@ export default function AdminPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredLinks.map((link) => (
+              {currentLinks.map((link) => (
                 <tr key={link.policy_id}>
                   <td className={styles.policyId}>
-                    {link.policy_id}
-                    <CopyIcon className={styles.copyIconSmall} onClick={() => handleCopy(link.policy_id)} />
+                    {link.policy_id.substring(0, 10)}... 
+                    <CopyIcon className={styles.copyIconSmall} onClick={() => handleCopy(`${baseUrl}/r/${link.policy_id}`)} />
                   </td>
                   <td className={styles.address}>
                     {link.recipient_address}
                     <CopyIcon className={styles.copyIconSmall} onClick={() => handleCopy(link.recipient_address)} />
                   </td>
                   <td>{new Date(link.created_at).toLocaleString()}</td>
-                  <td><span className={`${styles.statusBadge} ${styles[link.status.toLowerCase()]}`}>{link.status}</span></td>
+                  <td><span className={`${styles.statusBadge} ${styles[(link.status || 'unknown').toLowerCase()]}`}>{link.status || 'Unknown'}</span></td>
                   <td>{link.access_count}</td>
                   <td>
                     {link.status === 'active' && (
@@ -329,6 +363,27 @@ export default function AdminPage() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className={styles.pagination}>
+          <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+            Previous
+          </button>
+          <span>
+            Page
+            <input
+              type="number"
+              value={currentPage}
+              onChange={e => {
+                const page = e.target.value ? Number(e.target.value) : 1;
+                setCurrentPage(page > totalPages ? totalPages : page < 1 ? 1 : page);
+              }}
+              className={styles.pageInput}
+            />
+            of {totalPages}
+          </span>
+          <button onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
+            Next
+          </button>
         </div>
 
         {isSuperAdmin && (

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import { toast } from 'react-hot-toast';
 
 interface Profile {
   displayName: string;
@@ -18,23 +19,10 @@ interface ProfileContextType {
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
-import { toast } from 'react-hot-toast';
-
-
-
-// ... (keep existing interfaces and context creation) ...
-
-
-
 export const ProfileProvider = ({ children }: { children: ReactNode }) => {
-
   const [profile, setProfile] = useState<Profile | null>(null);
-
   const [isLoading, setIsLoading] = useState(false);
-
   const [showOnboarding, setShowOnboarding] = useState(false);
-
-
 
   const fetchProfile = useCallback(async () => {
     setIsLoading(true);
@@ -58,8 +46,6 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(false);
     }
   }, []);
-
-
 
   const updateProfile = useCallback(async (newProfile: Partial<Profile>) => {
     const toastId = toast.loading('Updating profile...');
@@ -92,6 +78,7 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
     </ProfileContext.Provider>
   );
 };
+
 
 export const useProfile = () => {
   const context = useContext(ProfileContext);

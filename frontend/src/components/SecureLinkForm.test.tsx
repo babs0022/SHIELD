@@ -148,7 +148,7 @@ describe('SecureLinkForm', () => {
     const mockContentCid = 'mockCid';
     const mockSecretKey = 'mockSecret';
     const mockMimeType = 'text/plain';
-    const mockLink = `https://shield-app.vercel.app/r/${mockPolicyId}`;
+    const mockLink = `https://shieldhq.xyz/r/${mockPolicyId}`;
 
     // Mock API responses
     mockFetch
@@ -279,7 +279,7 @@ describe('SecureLinkForm', () => {
     const mockContentCid = 'mockCid';
     const mockSecretKey = 'mockSecret';
     const mockMimeType = 'text/plain';
-    const mockLink = `https://shield-app.vercel.app/r/${mockPolicyId}`;
+    const mockLink = `https://shieldhq.xyz/r/${mockPolicyId}`;
 
     // Mock successful link creation
     mockFetch

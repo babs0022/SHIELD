@@ -1,20 +1,9 @@
-import { Pool } from 'pg';
+import { neon } from '@neondatabase/serverless';
 
 if (!process.env.POSTGRES_URL) {
   throw new Error('Missing POSTGRES_URL environment variable');
 }
 
-const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
+const sql = neon(process.env.POSTGRES_URL);
 
-// Add a global error handler to the pool to prevent crashes
-pool.on('error', (err, client) => {
-  console.error('Unexpected error on idle client', err);
-  // You might want to add more robust error handling or logging here
-});
-
-export default pool;
+export default sql;

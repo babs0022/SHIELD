@@ -1,5 +1,7 @@
 export const SUPER_ADMIN_ADDRESSES = [
-  "0x5E29A9Ce58f24118633A9dC64d89df0eC70dadeD",
+  "0x5E29A9Ce58f24118633A9dC64d89df0eC70dadeD"
 ];
 
-export const TEAM_ADMIN_ADDRESSES: string[] = [];
+export const TEAM_ADMIN_ADDRESSES: string[] = [
+  "0x5f196c82968cd097c352fb6d72cfc50fb3106745"
+];

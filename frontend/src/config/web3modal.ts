@@ -7,8 +7,8 @@ const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_WALL
 const metadata = {
   name: 'Shield',
   description: 'Decentralized and secure file and message sharing.',
-  url: 'https://shield-app.vercel.app',
-  icons: ['https://shield-app.vercel.app/Shld.png']
+  url: 'https://shieldhq.xyz',
+  icons: ['https://shieldhq.xyz/Shld.png']
 }
 
 export const wagmiConfig = createConfig({

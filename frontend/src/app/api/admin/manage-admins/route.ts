@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SUPER_ADMIN_ADDRESSES, TEAM_ADMIN_ADDRESSES } from '@/config/admin';
-import jwt from 'jsonwebtoken';
+import { jwtVerify } from 'jose';
 import fs from 'fs';
 import path from 'path';
 
@@ -16,14 +16,14 @@ const isSuperAdmin = (address: string | null | undefined) => {
 // Function to read and parse the admin config file
 const readAdminConfig = () => {
   const content = fs.readFileSync(ADMIN_CONFIG_PATH, 'utf-8');
-  const superAdminMatch = content.match(/export const SUPER_ADMIN_ADDRESSES = [\s\S]*?\];/);
-  const teamAdminMatch = content.match(/export const TEAM_ADMIN_ADDRESSES: string\[\] = [\s\S]*?\];/);
+  const superAdminMatch = content.match(/export const SUPER_ADMIN_ADDRESSES = \[([\s\S]*?)\];/);
+  const teamAdminMatch = content.match(/export const TEAM_ADMIN_ADDRESSES: string\[\] = \[([\s\S]*?)\];/);
 
   const superAdmins = superAdminMatch && superAdminMatch[1]
-    ? superAdminMatch[1].split(',').map(s => s.trim().replace(/'/g, '')).filter(Boolean)
+    ? superAdminMatch[1].split(',').map(s => s.trim().replace(/['"]/g, '')).filter(Boolean)
     : [];
   const teamAdmins = teamAdminMatch && teamAdminMatch[1]
-    ? teamAdminMatch[1].split(',').map(s => s.trim().replace(/'/g, '')).filter(Boolean)
+    ? teamAdminMatch[1].split(',').map(s => s.trim().replace(/['"]/g, '')).filter(Boolean)
     : [];
 
   return { superAdmins, teamAdmins };
@@ -55,11 +55,9 @@ export async function GET(req: NextRequest) {
     if (!process.env.JWT_SECRET) {
       throw new Error('JWT_SECRET is not defined');
     }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (typeof decoded === 'string' || !decoded.address) {
-      return NextResponse.json({ error: 'Unauthorized: Invalid token payload' }, { status: 401 });
-    }
-    const userWalletAddress = decoded.address as string;
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    const userWalletAddress = payload.address as string;
 
     if (!isSuperAdmin(userWalletAddress)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
@@ -82,11 +80,9 @@ export async function POST(req: NextRequest) {
     if (!process.env.JWT_SECRET) {
       throw new Error('JWT_SECRET is not defined');
     }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (typeof decoded === 'string' || !decoded.address) {
-      return NextResponse.json({ error: 'Unauthorized: Invalid token payload' }, { status: 401 });
-    }
-    const userWalletAddress = decoded.address as string;
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    const userWalletAddress = payload.address as string;
 
     if (!isSuperAdmin(userWalletAddress)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
@@ -129,11 +125,9 @@ export async function DELETE(req: NextRequest) {
     if (!process.env.JWT_SECRET) {
       throw new Error('JWT_SECRET is not defined');
     }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (typeof decoded === 'string' || !decoded.address) {
-      return NextResponse.json({ error: 'Unauthorized: Invalid token payload' }, { status: 401 });
-    }
-    const userWalletAddress = decoded.address as string;
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    const userWalletAddress = payload.address as string;
 
     if (!isSuperAdmin(userWalletAddress)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });

@@ -1,7 +1,8 @@
-// src/app/api/user/stats/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
-import pool from '@/lib/db';
+import { jwtVerify } from 'jose';
+import sql from '@/lib/db';
+
+// ... (runtime export remains the same)
 
 async function getAddressFromToken(request: NextRequest): Promise<string | null> {
   const token = request.headers.get('authorization')?.split(' ')[1];
@@ -12,11 +13,9 @@ async function getAddressFromToken(request: NextRequest): Promise<string | null>
     throw new Error('JWT_SECRET is not defined');
   }
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (typeof decoded === 'string' || !decoded.address) {
-      return null;
-    }
-    return decoded.address;
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    return payload.address as string | null;
   } catch (error) {
     return null;
   }
@@ -28,13 +27,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const client = await pool.connect();
   try {
-    const createdLinksResult = await client.query(
-      'SELECT COUNT(*) FROM policies WHERE creator_id = $1',
-      [address],
-    );
-    const totalLinksCreated = parseInt(createdLinksResult.rows[0].count, 10);
+    const results = await sql`
+      SELECT COUNT(*) 
+      FROM policies 
+      WHERE creator_id = ${address}
+    `;
+    const totalLinksCreated = parseInt(results[0].count, 10);
 
     let builderScore = 0; // Default score
     const talentApiKey = process.env.TALENT_PROTOCOL_API_KEY;
@@ -74,7 +73,5 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching user stats:', error);
     return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
-  } finally {
-    client.release();
   }
 }

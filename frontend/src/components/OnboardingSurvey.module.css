@@ -1,109 +1,89 @@
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(10px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-}
-
-.surveyModal {
-  background-color: #1a202c; /* A very dark blue-gray */
-  color: #e2e8f0;
-  padding: 40px;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 600px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  text-align: center;
+/* src/components/OnboardingSurvey.module.css */
+.container {
+  color: #fff;
 }
 
 .title {
-  font-size: 1.8rem;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
   margin-bottom: 10px;
 }
 
-.message {
-  font-size: 1rem;
-  color: #a0aec0; /* A lighter gray */
+.subtitle {
+  font-size: 1.1rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
   margin-bottom: 30px;
-}
-
-.progressBar {
-  width: 100%;
-  height: 8px;
-  background-color: #2d3748;
-  border-radius: 4px;
-  margin-bottom: 30px;
-  overflow: hidden;
-}
-
-.progress {
-  height: 100%;
-  background-color: #16A34A; /* Our green brand color */
-  border-radius: 4px;
-  transition: width 0.3s ease;
-}
-
-.question {
-  font-size: 1.25rem;
-  margin-bottom: 25px;
 }
 
 .options {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
+  margin-bottom: 30px;
 }
 
 .option {
-  background-color: #2d3748;
-  color: #e2e8f0;
-  border: 1px solid #4a5568;
-  padding: 15px;
-  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 20px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease-in-out;
+  text-align: center;
   font-size: 1rem;
 }
 
 .option:hover {
-  background-color: #4a5568;
-  border-color: #718096;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
-.otherInput {
-  width: 100%;
-  background-color: #2d3748;
-  border: 1px solid #4a5568;
-  color: #e2e8f0;
-  padding: 10px;
-  border-radius: 8px;
-  margin-top: 10px;
-  font-size: 0.9rem;
+.option.selected {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.02);
 }
 
-.footer {
-  margin-top: 30px;
+.actions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.skipButton, .submitButton {
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .skipButton {
-  background: none;
+  background: transparent;
   border: none;
-  color: #a0aec0;
-  cursor: pointer;
-  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .skipButton:hover {
-  text-decoration: underline;
+  color: #fff;
+}
+
+.submitButton {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.submitButton:disabled {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import sql from '@/lib/db';
 
 export const runtime = 'nodejs';
 
@@ -24,28 +24,10 @@ export async function POST(request: NextRequest) {
 
     const expiryTimestamp = Math.floor(Date.now() / 1000) + parseInt(expiry, 10);
 
-    const client = await pool.connect();
-    try {
-      await client.query(
-        `INSERT INTO policies (policy_id, creator_id, resource_cid, recipient_address, secret_key, mime_type, is_text, expiry, max_attempts, attempts, valid)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
-        [
-          policyId,
-          creatorId,
-          contentCid,
-          recipientAddress,
-          secretKey,
-          mimeType,
-          isText,
-          expiryTimestamp,
-          parseInt(maxAttempts, 10),
-          0,
-          true,
-        ]
-      );
-    } finally {
-      client.release();
-    }
+    await sql`
+      INSERT INTO policies (policy_id, creator_id, resource_cid, recipient_address, secret_key, mime_type, is_text, expiry, max_attempts, attempts, valid, status)
+      VALUES (${policyId}, ${creatorId}, ${contentCid}, ${recipientAddress}, ${secretKey}, ${mimeType}, ${isText}, ${expiryTimestamp}, ${parseInt(maxAttempts, 10)}, ${0}, ${true}, ${'active'})
+    `;
 
     const baseUrl = process.env.FRONTEND_URL
       ? process.env.FRONTEND_URL

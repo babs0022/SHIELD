@@ -1,13 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Pool } from 'pg';
+import sql from '@/lib/db';
 import { SUPER_ADMIN_ADDRESSES, TEAM_ADMIN_ADDRESSES } from '@/config/admin';
-import jwt from 'jsonwebtoken';
+import { jwtVerify } from 'jose';
 
-const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL,
-});
-
-// Helper to check if an address is an admin
 const isAdmin = (address: string | null | undefined) => {
   if (!address) return false;
   const lowerCaseAddress = address.toLowerCase();
@@ -18,8 +13,10 @@ const isAdmin = (address: string | null | undefined) => {
 };
 
 export async function GET(req: NextRequest) {
+  console.log('Admin status endpoint hit');
   const token = req.headers.get('authorization')?.split(' ')[1];
   if (!token) {
+    console.error('No token provided');
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -27,56 +24,118 @@ export async function GET(req: NextRequest) {
     if (!process.env.JWT_SECRET) {
       throw new Error('JWT_SECRET is not defined');
     }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (typeof decoded === 'string' || !decoded.address) {
-      return NextResponse.json({ error: 'Unauthorized: Invalid token payload' }, { status: 401 });
-    }
-    const userWalletAddress = decoded.address as string;
+    console.log('Verifying JWT...');
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    const userWalletAddress = payload.address as string;
+    console.log(`JWT verified for address: ${userWalletAddress}`);
 
     if (!isAdmin(userWalletAddress)) {
+      console.error(`Address ${userWalletAddress} is not an admin.`);
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
+    console.log('Admin check passed.');
 
-    const client = await pool.connect();
-    
-    // Total Users (unique recipient addresses)
-    const totalUsersResult = await client.query('SELECT COUNT(DISTINCT recipient_address) FROM policies');
-    const totalUsers = parseInt(totalUsersResult.rows[0].count, 10);
+    // Total Users
+    console.log('Fetching total users...');
+    const totalUsersResult = await sql`SELECT COUNT(DISTINCT recipient_address) FROM policies`;
+    const totalUsers = parseInt(totalUsersResult[0].count, 10);
+    console.log(`Total users: ${totalUsers}`);
 
     // Total Links Created
-    const totalLinksCreatedResult = await client.query('SELECT COUNT(*) FROM policies');
-    const totalLinksCreated = parseInt(totalLinksCreatedResult.rows[0].count, 10);
+    console.log('Fetching total links created...');
+    const totalLinksCreatedResult = await sql`SELECT COUNT(*) FROM policies`;
+    const totalLinksCreated = parseInt(totalLinksCreatedResult[0].count, 10);
+    console.log(`Total links created: ${totalLinksCreated}`);
 
-    // Total Links Opened (assuming a log_attempts table or similar)
-    // This requires a 'log_attempts' table with 'policy_id' and 'success' columns
-    const totalLinksOpenedResult = await client.query('SELECT COUNT(*) FROM log_attempts WHERE success = TRUE');
-    const totalLinksOpened = parseInt(totalLinksOpenedResult.rows[0].count, 10);
+    let totalLinksOpened = 0;
+    let activeUsers24h = 0;
+    let activeUsers7d = 0;
+    let activeUsers30d = 0;
 
-    // Active Users (last 24 hours, 7 days, 30 days)
-    const now = new Date();
-    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    try {
+      console.log('Checking for log_attempts table...');
+      const tableCheck = await sql`SELECT to_regclass('public.log_attempts')`;
+      if (tableCheck[0].to_regclass) {
+        console.log('log_attempts table found. Querying stats...');
+        // Total Links Opened
+        const openedResult = await sql`SELECT COUNT(*) FROM log_attempts WHERE success = TRUE`;
+        totalLinksOpened = parseInt(openedResult[0].count, 10);
+        console.log(`Total links opened: ${totalLinksOpened}`);
 
-    const activeUsers24hResult = await client.query(
-      'SELECT COUNT(DISTINCT recipient_address) FROM log_attempts WHERE timestamp >= $1 AND success = TRUE',
-      [oneDayAgo]
-    );
-    const activeUsers24h = parseInt(activeUsers24hResult.rows[0].count, 10);
+        // Active Users
+        const now = new Date();
+        const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-    const activeUsers7dResult = await client.query(
-      'SELECT COUNT(DISTINCT recipient_address) FROM log_attempts WHERE timestamp >= $1 AND success = TRUE',
-      [sevenDaysAgo]
-    );
-    const activeUsers7d = parseInt(activeUsers7dResult.rows[0].count, 10);
+        const active24hResult = await sql`SELECT COUNT(DISTINCT recipient_address) FROM log_attempts WHERE timestamp >= ${oneDayAgo} AND success = TRUE`;
+        activeUsers24h = parseInt(active24hResult[0].count, 10);
+        console.log(`Active users (24h): ${activeUsers24h}`);
 
-    const activeUsers30dResult = await client.query(
-      'SELECT COUNT(DISTINCT recipient_address) FROM log_attempts WHERE timestamp >= $1 AND success = TRUE',
-      [thirtyDaysAgo]
-    );
-    const activeUsers30d = parseInt(activeUsers30dResult.rows[0].count, 10);
+        const active7dResult = await sql`SELECT COUNT(DISTINCT recipient_address) FROM log_attempts WHERE timestamp >= ${sevenDaysAgo} AND success = TRUE`;
+        activeUsers7d = parseInt(active7dResult[0].count, 10);
+        console.log(`Active users (7d): ${activeUsers7d}`);
 
-    client.release();
+        const active30dResult = await sql`SELECT COUNT(DISTINCT recipient_address) FROM log_attempts WHERE timestamp >= ${thirtyDaysAgo} AND success = TRUE`;
+        activeUsers30d = parseInt(active30dResult[0].count, 10);
+        console.log(`Active users (30d): ${activeUsers30d}`);
+      } else {
+        console.warn('log_attempts table does not exist. Skipping related stats.');
+      }
+    } catch (dbError) {
+      console.error('Error querying log_attempts table:', dbError);
+    }
+    console.log('Stats queries complete. Sending response.');
+
+    // ... (database queries remain the same)
+
+    // Application Status Checks
+    const baseUrl = req.nextUrl.origin;
+    const endpointsToTest = [
+      '/api/signIn',
+      '/api/storeMetadata',
+      '/api/getPolicy',
+      '/api/verify-siwe',
+      '/api/health',
+      '/api/user/profile',
+      '/api/avatar/upload',
+      '/api/user/links',
+      '/api/admin/status',
+      '/api/admin/links',
+      '/api/admin/manage-admins',
+      '/api/user/stats',
+      '/api/createLink',
+      '/api/getEncryptedContent',
+      '/api/notifications',
+      '/api/prepareContent',
+      '/api/siwe',
+    ];
+    const endpointStatusPromises = endpointsToTest.map(async (endpoint) => {
+      const startTime = Date.now();
+      try {
+        const response = await fetch(`${baseUrl}${endpoint}`, { method: 'HEAD' });
+        const duration = Date.now() - startTime;
+        return {
+          name: endpoint,
+          status: response.ok ? 'responsive' : 'error',
+          avgResponseTime: `${duration}ms`,
+        };
+      } catch (error) {
+        const duration = Date.now() - startTime;
+        return {
+          name: endpoint,
+          status: 'unresponsive',
+          avgResponseTime: `${duration}ms`,
+        };
+      }
+    });
+
+    const endpoints = await Promise.all(endpointStatusPromises);
+    const avgResponseTime = (endpoints.reduce((acc, e) => acc + parseInt(e.avgResponseTime), 0) / endpoints.length).toFixed(0);
+
+    const healthResponse = await fetch(`${baseUrl}/api/health`);
+    const healthData = await healthResponse.json();
 
     return NextResponse.json({
       totalUsers,
@@ -87,14 +146,10 @@ export async function GET(req: NextRequest) {
         '7d': activeUsers7d,
         '30d': activeUsers30d,
       },
-      // Placeholder for application status (uptime, response times)
       applicationStatus: {
-        uptime: '99.9%', // This would come from a monitoring service
-        averageResponseTime: '150ms', // This would come from middleware/logs
-        endpoints: [
-          { name: '/api/getPolicy', status: 'responsive', avgResponseTime: '100ms' },
-          { name: '/api/verify-siwe', status: 'responsive', avgResponseTime: '200ms' },
-        ],
+        uptime: healthData.database === 'connected' ? '100%' : 'Partial Outage',
+        averageResponseTime: `${avgResponseTime}ms`,
+        endpoints,
       },
     });
   } catch (error) {

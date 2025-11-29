@@ -20,11 +20,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Shield - Secure Sharing',
     description: 'Decentralized and secure file and message sharing.',
-    url: 'https://shield-app.vercel.app',
+    url: 'https://shieldhq.xyz',
     siteName: 'Shield',
     images: [
       {
-        url: 'https://shield-app.vercel.app/ogimage.png',
+        url: 'https://shieldhq.xyz/ogimage.png',
         width: 1200,
         height: 630,
       },
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     title: 'Shield - Secure Sharing',
     description: 'Decentralized and secure file and message sharing.',
     creator: '@shieldapp',
-    images: ['https://shield-app.vercel.app/ogimage.png'],
+    images: ['https://shieldhq.xyz/ogimage.png'],
   },
 };
 
@@ -46,6 +46,7 @@ export const viewport: Viewport = {
   initialScale: 1.0,
 };
 
+import OnboardingModal from '@/components/OnboardingModal';
 import { Analytics } from "@vercel/analytics/next";
 
 export default function RootLayout({
@@ -62,6 +63,7 @@ export default function RootLayout({
               <Toaster />
               <Navbar />
               {children}
+              <OnboardingModal />
               <Analytics />
             </StyledComponentsRegistry>
           </ProfileProvider>

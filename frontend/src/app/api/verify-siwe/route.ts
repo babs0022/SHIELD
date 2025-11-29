@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { SiweMessage } from 'siwe';
-import pool from '@/lib/db';
+import sql from '@/lib/db';
 import { createPublicClient, createWalletClient, http, Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { base } from 'viem/chains';
@@ -41,18 +41,12 @@ export async function POST(request: Request) {
     const siweMessage = new SiweMessage(message);
     const { data: fields } = await siweMessage.verify({ signature });
 
-    const client = await pool.connect();
-    let policy;
-    try {
-      const result = await client.query('SELECT * FROM policies WHERE policy_id = $1', [policyId]);
-      if (result.rows.length > 0) {
-        policy = result.rows[0];
-      } else {
-        return NextResponse.json({ error: "Policy not found." }, { status: 404 });
-      }
-    } finally {
-      client.release();
+    const policies = await sql`SELECT * FROM policies WHERE policy_id = ${policyId}`;
+
+    if (policies.length === 0) {
+      return NextResponse.json({ error: "Policy not found." }, { status: 404 });
     }
+    const policy = policies[0];
 
     if (fields.address.toLowerCase() !== policy.recipient_address.toLowerCase()) {
       return NextResponse.json({ error: "Signer address does not match recipient address." }, { status: 401 });
@@ -62,7 +56,6 @@ export async function POST(request: Request) {
       throw new Error("Contract address is not configured.");
     }
 
-    // Pre-flight check to see if the policy is still valid on-chain
     const isStillValid = await publicClient.readContract({
       address: contractAddress,
       abi: ShieldABI,
