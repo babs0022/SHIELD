@@ -54,12 +54,12 @@ export async function GET(req: NextRequest) {
     let activeUsers30d = 0;
 
     try {
-      console.log('Checking for log_attempts table...');
-      const tableCheck = await sql`SELECT to_regclass('public.log_attempts')`;
+      console.log('Checking for attempts table...');
+      const tableCheck = await sql`SELECT to_regclass('public.attempts')`;
       if (tableCheck[0].to_regclass) {
-        console.log('log_attempts table found. Querying stats...');
+        console.log('attempts table found. Querying stats...');
         // Total Links Opened
-        const openedResult = await sql`SELECT COUNT(*) FROM log_attempts WHERE success = TRUE`;
+        const openedResult = await sql`SELECT COUNT(*) FROM attempts WHERE success = TRUE`;
         totalLinksOpened = parseInt(openedResult[0].count, 10);
         console.log(`Total links opened: ${totalLinksOpened}`);
 
@@ -69,22 +69,22 @@ export async function GET(req: NextRequest) {
         const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-        const active24hResult = await sql`SELECT COUNT(DISTINCT recipient_address) FROM log_attempts WHERE timestamp >= ${oneDayAgo} AND success = TRUE`;
+        const active24hResult = await sql`SELECT COUNT(DISTINCT recipient_address) FROM attempts WHERE timestamp >= ${oneDayAgo} AND success = TRUE`;
         activeUsers24h = parseInt(active24hResult[0].count, 10);
         console.log(`Active users (24h): ${activeUsers24h}`);
 
-        const active7dResult = await sql`SELECT COUNT(DISTINCT recipient_address) FROM log_attempts WHERE timestamp >= ${sevenDaysAgo} AND success = TRUE`;
+        const active7dResult = await sql`SELECT COUNT(DISTINCT recipient_address) FROM attempts WHERE timestamp >= ${sevenDaysAgo} AND success = TRUE`;
         activeUsers7d = parseInt(active7dResult[0].count, 10);
         console.log(`Active users (7d): ${activeUsers7d}`);
 
-        const active30dResult = await sql`SELECT COUNT(DISTINCT recipient_address) FROM log_attempts WHERE timestamp >= ${thirtyDaysAgo} AND success = TRUE`;
+        const active30dResult = await sql`SELECT COUNT(DISTINCT recipient_address) FROM attempts WHERE timestamp >= ${thirtyDaysAgo} AND success = TRUE`;
         activeUsers30d = parseInt(active30dResult[0].count, 10);
         console.log(`Active users (30d): ${activeUsers30d}`);
       } else {
-        console.warn('log_attempts table does not exist. Skipping related stats.');
+        console.warn('attempts table does not exist. Skipping related stats.');
       }
     } catch (dbError) {
-      console.error('Error querying log_attempts table:', dbError);
+      console.error('Error querying attempts table:', dbError);
     }
     console.log('Stats queries complete. Sending response.');
 
