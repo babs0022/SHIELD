@@ -1,207 +1,265 @@
-/* src/app/admin/AdminPage.module.css */
 .contentWrapper {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #fff;
+  padding: 2rem;
+  z-index: 1;
 }
 
 .title {
   font-size: 2.5rem;
-  font-weight: 700;
+  font-weight: 500;
+  color: #e4e4e7; /* zinc-200 */
+  margin-bottom: 2rem;
   text-align: center;
-  margin-bottom: 30px;
+}
+
+.error {
+  color: #f87171; /* red-400 */
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
 .sectionTitle {
-  font-size: 2rem;
-  font-weight: 600;
-  margin-top: 40px;
-  margin-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #a1a1aa; /* zinc-400 */
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 10px;
+  padding-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .dashboardGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-bottom: 40px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-.statCard {
-  background-color: rgba(255, 255, 255, 0.08);
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+.statCard, .fullWidthCard {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
 }
 
-.statCard h3 {
-  font-size: 1.2rem;
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 10px;
+.statCard h3, .fullWidthCard h3 {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #a1a1aa; /* zinc-400 */
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .statCard p {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #fff;
+  font-size: 2.2rem;
+  font-weight: 500;
+  color: #e4e4e7; /* zinc-200 */
 }
 
 .fullWidthCard {
   grid-column: 1 / -1;
-  background-color: rgba(255, 255, 255, 0.08);
-  padding: 20px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.fullWidthCard h3 {
-  font-size: 1.2rem;
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 10px;
+.fullWidthCard p, .fullWidthCard li {
+  font-size: 0.9rem;
+  color: #a1a1aa; /* zinc-400 */
+  margin-bottom: 0.5rem;
 }
 
 .fullWidthCard h4 {
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.8);
-  margin-top: 20px;
-  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #e4e4e7; /* zinc-200 */
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
 }
 
 .fullWidthCard ul {
-  list-style: none;
-  padding: 0;
+  list-style-type: none;
+  padding-left: 0;
 }
 
 .fullWidthCard li {
   display: flex;
   justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+  padding: 0.5rem;
+  border-radius: 6px;
 }
 
-.fullWidthCard li:last-child {
-  border-bottom: none;
+.fullWidthCard li span:first-child {
+  font-weight: 500;
 }
 
 .controls {
   display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
   flex-wrap: wrap;
 }
 
 .searchInput, .statusFilter {
-  padding: 10px 15px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
   background-color: rgba(0, 0, 0, 0.2);
-  color: #fff;
-  font-size: 1rem;
+  color: #e4e4e7;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s ease;
 }
 
-.searchInput::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+.searchInput:focus, .statusFilter:focus {
+  border-color: #6366f1; /* indigo-500 */
+}
+
+.searchInput {
+  flex-grow: 1;
 }
 
 .tableContainer {
   overflow-x: auto;
-  width: 100%;
-  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1rem;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
 }
 
-.table th,
-.table td {
-  padding: 12px 15px;
+.table th, .table td {
+  padding: 1rem;
   text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  vertical-align: middle;
+  white-space: nowrap;
 }
+
+.policyIdCell, .addressCell {
+  align-items: center;
+  gap: 0.5rem;
+  font-family: monospace;
+  min-width: 200px;
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
 
 .table th {
-  color: rgba(255, 255, 255, 0.7);
+  color: #a1a1aa; /* zinc-400 */
+  font-weight: 500;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.table td {
-  color: rgba(255, 255, 255, 0.9);
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(99, 102, 241, 0.1); /* indigo-500 */
 }
 
 .policyId, .address {
-  font-family: monospace;
-  font-size: 0.85rem;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 0.5rem;
+  font-family: monospace;
 }
 
 .copyIconSmall {
+  cursor: pointer;
   width: 16px;
   height: 16px;
-  cursor: pointer;
-  color: rgba(255, 255, 255, 0.5);
+  color: #a1a1aa; /* zinc-400 */
+  transition: color 0.2s ease;
 }
 
 .copyIconSmall:hover {
-  color: #fff;
+  color: #6366f1; /* indigo-500 */
 }
 
 .statusBadge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.active { background-color: rgba(74, 222, 128, 0.1); color: #4ade80; } /* green-400 */
+.expired { background-color: rgba(251, 191, 36, 0.1); color: #fbb_f24; } /* amber-400 */
+.revoked { background-color: rgba(156, 163, 175, 0.1); color: #9ca3af; } /* zinc-400 */
+.unknown { background-color: rgba(108, 117, 125, 0.1); color: #6c757d; } /* zinc-500 */
+
+.button, .revokeButton {
+  border: none;
+  outline: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.statusBadge.active { background-color: rgba(74, 222, 128, 0.1); color: #4ade80; }
-.statusBadge.expired { background-color: rgba(251, 191, 36, 0.1); color: #fbb_f24; }
-.statusBadge.revoked { background-color: rgba(156, 163, 175, 0.1); color: #9ca3af; }
+.button {
+  background-color: #6366f1; /* indigo-500 */
+}
+
+.button:hover {
+  background-color: #4f46e5; /* indigo-600 */
+}
+
+.revokeButton {
+  background-color: #ef4444; /* red-500 */
+}
+
+.revokeButton:hover {
+  background-color: #dc2626; /* red-600 */
+}
 
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 1.5rem;
   gap: 1rem;
-  margin-top: 20px;
 }
 
 .pagination button {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.pagination button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e4e4e7;
 }
 
 .pagination button:disabled {
-  background-color: #4b5563;
-  color: #9ca3af;
+  background-color: rgba(63, 63, 70, 0.5); /* zinc-700 */
+  color: #a1a1aa; /* zinc-400 */
   cursor: not-allowed;
 }
 
 .pageInput {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(0, 0, 0, 0.2);
   color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
   width: 50px;
-  padding: 8px;
-  border-radius: 8px;
   text-align: center;
+  margin: 0 0.5rem;
   -moz-appearance: textfield;
 }
 
@@ -212,50 +270,20 @@
 }
 
 .adminManagementContainer {
-  margin-top: 40px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-top: 1.5rem;
 }
 
 .addAdminForm {
   display: flex;
-  gap: 15px;
-  margin-bottom: 30px;
+  gap: 1rem;
+  margin-bottom: 2rem;
   flex-wrap: wrap;
 }
 
-.addAdminForm input, .addAdminForm select, .addAdminForm button {
-  padding: 10px 15px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background-color: rgba(0, 0, 0, 0.2);
-  color: #fff;
-  font-size: 1rem;
-}
-
-.addAdminForm input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.addAdminForm button {
-  background-color: #007bff;
-  border-color: #007bff;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.addAdminForm button:hover {
-  background-color: #0056b3;
-}
-
-.revokeButton {
-  background: rgba(255, 138, 128, 0.1);
-  border-color: rgba(255, 138, 128, 0.2);
-  color: #ff8a80;
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.revokeButton:hover {
-  background: rgba(255, 138, 128, 0.2);
+.addAdminForm .searchInput {
+  flex-grow: 2;
 }

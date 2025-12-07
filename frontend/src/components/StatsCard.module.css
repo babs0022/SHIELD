@@ -1,10 +1,9 @@
-/* src/components/StatsCard.module.css */
 .card {
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
   padding: 25px;
-  margin-bottom: 30px;
   display: flex;
   justify-content: space-around;
   text-align: center;
@@ -16,13 +15,15 @@
 }
 
 .statValue {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #fff;
+  font-size: 2.2rem;
+  font-weight: 500;
+  color: #e4e4e7; /* zinc-200 */
 }
 
 .statLabel {
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem;
+  color: #a1a1aa; /* zinc-400 */
   margin-top: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }

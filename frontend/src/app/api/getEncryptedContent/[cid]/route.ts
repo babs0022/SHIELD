@@ -1,10 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { cid: string } }
 ) {
-  const cid = params.cid;
+  const resolvedParams = await params;
+  const cid = resolvedParams.cid;
 
   if (!cid) {
     return NextResponse.json({ error: 'CID is required' }, { status: 400 });

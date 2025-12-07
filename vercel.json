@@ -1,9 +1,0 @@
-{
-    "rewrites": [
-      {
-        "source": "/.well-known/farcaster/farcaster.json",
-        "destination": "/farcaster.json"
-      }
-    ]
-  }
-  

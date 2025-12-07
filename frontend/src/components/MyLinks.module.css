@@ -1,3 +1,11 @@
+.container {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 30px;
+}
+
 .tableContainer {
   overflow-x: auto;
 }
@@ -12,15 +20,18 @@
 .table td {
   padding: 12px 15px;
   text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .table th {
-  color: rgba(255, 255, 255, 0.7);
+  color: #a1a1aa; /* zinc-400 */
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .table td {
-  color: rgba(255, 255, 255, 0.9);
+  color: #e4e4e7; /* zinc-200 */
 }
 
 .policyId {
@@ -37,28 +48,29 @@
   gap: 10px;
 }
 
-.actions button {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
+.button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e4e4e7;
   padding: 6px 12px;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s;
+  font-size: 12px;
 }
 
-.actions button:hover {
-  background: rgba(255, 255, 255, 0.2);
+.button:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .revokeButton {
-  background: rgba(255, 138, 128, 0.1);
-  border-color: rgba(255, 138, 128, 0.2);
-  color: #ff8a80;
+  background: rgba(239, 68, 68, 0.1); /* red-500 */
+  border-color: rgba(239, 68, 68, 0.2);
+  color: #f87171; /* red-400 */
 }
 
 .revokeButton:hover {
-  background: rgba(255, 138, 128, 0.2);
+  background: rgba(239, 68, 68, 0.2);
 }
 
 .pagination {
@@ -70,9 +82,9 @@
 }
 
 .pagination button {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e4e4e7;
   padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
@@ -84,14 +96,14 @@
 }
 
 .pagination button:disabled {
-  background-color: #4b5563;
-  color: #9ca3af;
+  background-color: rgba(63, 63, 70, 0.5); /* zinc-700 */
+  color: #a1a1aa; /* zinc-400 */
   cursor: not-allowed;
 }
 
 .pageInput {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: #fff;
   width: 50px;
   padding: 8px;
@@ -107,16 +119,17 @@
 }
 
 /* Status indicators */
-.active, .expired, .revoked {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.8rem;
+.status {
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
 }
-.active { background-color: rgba(74, 222, 128, 0.1); color: #4ade80; }
-.expired { background-color: rgba(251, 191, 36, 0.1); color: #fbb_f24; }
-.revoked { background-color: rgba(156, 163, 175, 0.1); color: #9ca3af; }
+.active { background-color: rgba(74, 222, 128, 0.1); color: #4ade80; } /* green-400 */
+.expired { background-color: rgba(251, 191, 36, 0.1); color: #fbb_f24; } /* amber-400 */
+.revoked { background-color: rgba(156, 163, 175, 0.1); color: #9ca3af; } /* zinc-400 */
 
-/* Responsive styles for mobile */
 @media (max-width: 768px) {
   .table thead {
     display: none;
@@ -127,12 +140,12 @@
   }
   .table tr {
     margin-bottom: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 15px;
   }
   .table td {
-    padding: 8px 0;
+    padding: 10px 0;
     border: none;
     display: flex;
     justify-content: space-between;
@@ -141,17 +154,10 @@
   .table td::before {
     content: attr(data-label);
     margin-right: 10px;
-    color: rgba(255, 255, 255, 0.7);
+    color: #a1a1aa; /* zinc-400 */
+    font-weight: 500;
   }
   .policyId {
     white-space: normal;
   }
-}
-
-.container {
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 25px;
-  margin-bottom: 30px;
 }

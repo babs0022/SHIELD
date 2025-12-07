@@ -1,0 +1,651 @@
+<html lang="en" class="scroll-smooth"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shield - Secure Sharing</title>
+    <meta name="description" content="Decentralized and secure file and message sharing.">
+    <link rel="icon" href="/Shld.png">
+    <meta name="keywords" content="secure sharing, decentralized, web3, crypto, file sharing, message sharing">
+    <meta property="og:title" content="Shield - Secure Sharing">
+    <meta property="og:description" content="Decentralized and secure file and message sharing.">
+    <meta property="og:url" content="https://shieldhq.xyz">
+    <meta property="og:site_name" content="Shield">
+    <meta property="og:image" content="https://shieldhq.xyz/ogimage.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Shield - Secure Sharing">
+    <meta name="twitter:description" content="Decentralized and secure file and message sharing.">
+    <meta name="twitter:creator" content="@shieldapp">
+    <meta name="twitter:image" content="https://shieldhq.xyz/ogimage.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: #e4e4e7; /* zinc-200 */
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .text-gradient {
+            background: linear-gradient(to bottom right, #ffffff, #a1a1aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        /* Custom Checkbox */
+        .checkbox-wrapper input:checked + div {
+            background-color: #ffffff;
+            border-color: #ffffff;
+        }
+        .checkbox-wrapper input:checked + div svg {
+            display: block;
+        }
+    </style>
+<link id="all-fonts-link-font-geist" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist">.font-geist { font-family: 'Geist', sans-family !important; }</style><link id="all-fonts-link-font-roboto" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-roboto">.font-roboto { font-family: 'Roboto', sans-serif !important; }</style><link id="all-fonts-link-font-montserrat" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-montserrat">.font-montserrat { font-family: 'Montserrat', sans-serif !important; }</style><link id="all-fonts-link-font-poppins" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-poppins">.font-poppins { font-family: 'Poppins', sans-serif !important; }</style><link id="all-fonts-link-font-playfair" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&amp;display=swap"><style id="all-fonts-style-font-playfair">.font-playfair { font-family: 'Playfair Display', serif !important; }</style><link id="all-fonts-link-font-instrument-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-instrument-serif">.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }</style><link id="all-fonts-link-font-merriweather" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&amp;display=swap"><style id="all-fonts-style-font-merriweather">.font-merriweather { font-family: 'Merriweather', serif !important; }</style>
+<body class="antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-white/5 bg-black/70 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="#" class="text-xl font-semibold tracking-tighter text-white hover:text-zinc-300 transition-colors flex items-center gap-2">
+                <img src="/Shld.png" alt="Shield Logo" class="w-5 h-5">
+                Shield
+            </a>
+            <div class="hidden md:flex items-center space-x-8 text-xs font-medium tracking-wide text-zinc-400">
+                <a href="#about" class="hover:text-white transition-colors">About</a>
+                <a href="#features" class="hover:text-white transition-colors">Features</a>
+                <a href="#security" class="hover:text-white transition-colors">Security</a>
+                <a href="#roadmap" class="hover:text-white transition-colors">Roadmap</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="https://app.shieldhq.xyz" class="hidden md:flex group relative overflow-hidden rounded-full bg-white text-black px-5 py-2 text-xs font-medium tracking-wide transition-all hover:bg-zinc-200">
+                    <span class="relative z-10">Launch App</span>
+                </a>
+                <button class="md:hidden text-white">
+                    <iconify-icon icon="lucide:menu" width="20" height="20" stroke-width="1.5"></iconify-icon>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative w-full h-screen flex items-center justify-center overflow-hidden">
+        <!-- Abstract Background -->
+        <div class="absolute inset-0 z-0">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-500/10 rounded-full blur-[120px]"></div>
+            <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" style="background-image: url('https://grainy-gradients.vercel.app/noise.svg');"></div>
+            <div class="bg-gradient-to-t from-black via-black/80 to-transparent absolute top-0 right-0 bottom-0 left-0"></div>
+        </div>
+
+        <div class="relative z-10 text-center px-4 max-w-4xl mx-auto space-y-8">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
+                <span class="relative flex h-1.5 w-1.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-indigo-500"></span>
+                </span>
+                <span class="text-[10px] font-medium text-zinc-300 tracking-wide uppercase">Shield dApp Live</span>
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-medium tracking-tighter leading-[1.1] text-gradient">
+                Privacy as the <br> <span class="italic text-zinc-500 font-normal">Default State</span>
+            </h1>
+            
+            <p class="text-zinc-400 text-base md:text-lg font-light max-w-lg mx-auto leading-relaxed">
+                The decentralized application for secure file sharing and ephemeral messaging. No servers, no tracking. Just you and your data.
+            </p>
+            
+            <div class="pt-6 flex flex-col md:flex-row items-center justify-center gap-4">
+                <a href="https://app.shieldhq.xyz" class="md:w-auto hover:bg-zinc-200 transition-all duration-300 flex items-center justify-center gap-2 text-xs font-medium text-black tracking-wide bg-white w-full rounded-full pt-3 pr-8 pb-3 pl-8 shadow-[0_0_20px_rgba(255,255,255,0.15)]">
+                    Launch App
+                    <iconify-icon icon="lucide:arrow-right" width="14" stroke-width="1.5"></iconify-icon>
+                </a>
+                <a href="https://docs.shieldhq.xyz" target="_blank" class="w-full md:w-auto px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-sm text-white text-xs font-medium tracking-wide rounded-full transition-all duration-300 flex items-center justify-center gap-2">
+                    <iconify-icon icon="lucide:book" width="14" stroke-width="1.5"></iconify-icon>
+                    Documentation
+                </a>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40 animate-pulse">
+            <span class="text-[10px] uppercase tracking-widest text-zinc-500">Explore</span>
+            <iconify-icon icon="lucide:chevron-down" width="16" class="text-white" stroke-width="1.5"></iconify-icon>
+        </div>
+    </header>
+
+    <!-- Stats Section -->
+    <section class="py-12 bg-zinc-900/20 border-y border-white/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div class="space-y-2">
+                    <iconify-icon icon="lucide:shield-check" class="text-indigo-400 mb-2 opacity-80" width="20" stroke-width="1.5"></iconify-icon>
+                    <div class="text-2xl font-medium text-white tracking-tight">AES-256</div>
+                    <div class="text-[10px] text-zinc-500 uppercase tracking-widest">Encryption Standard</div>
+                </div>
+                <div class="space-y-2">
+                    <iconify-icon icon="lucide:upload-cloud" class="text-indigo-400 mb-2 opacity-80" width="20" stroke-width="1.5"></iconify-icon>
+                    <div class="text-2xl font-medium text-white tracking-tight">70+</div>
+                    <div class="text-[10px] text-zinc-500 uppercase tracking-widest">Contents Secured</div>
+                </div>
+                <div class="space-y-2">
+                    <iconify-icon icon="lucide:zap" class="text-indigo-400 mb-2 opacity-80" width="20" stroke-width="1.5"></iconify-icon>
+                    <div class="text-2xl font-medium text-white tracking-tight">0.5s</div>
+                    <div class="text-[10px] text-zinc-500 uppercase tracking-widest">Encryption Time</div>
+                </div>
+                <div class="space-y-2">
+                    <iconify-icon icon="lucide:eye-off" class="text-indigo-400 mb-2 opacity-80" width="20" stroke-width="1.5"></iconify-icon>
+                    <div class="text-2xl font-medium text-white tracking-tight">0</div>
+                    <div class="text-[10px] text-zinc-500 uppercase tracking-widest">Data Logs Kept</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission / About Section -->
+    <section id="about" class="py-24 px-6 bg-black relative overflow-hidden">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <div class="relative order-2 lg:order-1 group">
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-indigo-600/20 rounded-full blur-[80px]"></div>
+                <!-- Abstract Code/Data visualization -->
+                <div class="relative rounded-lg bg-zinc-950 border border-white/10 p-1 shadow-2xl overflow-hidden aspect-square flex items-center justify-center">
+                    <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+                    <div class="w-2/3 h-2/3 border border-white/5 bg-zinc-900/50 backdrop-blur-md rounded flex items-center justify-center relative">
+                         <iconify-icon icon="lucide:lock" width="64" class="text-white/80 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" stroke-width="1"></iconify-icon>
+                         <div class="absolute top-4 left-4 w-2 h-2 bg-red-500 rounded-full"></div>
+                         <div class="absolute top-4 left-8 w-2 h-2 bg-yellow-500 rounded-full"></div>
+                         <div class="absolute top-4 left-12 w-2 h-2 bg-green-500 rounded-full"></div>
+                    </div>
+                </div>
+                <div class="absolute -bottom-6 -right-6 glass-panel p-6 rounded-lg shadow-xl z-20 max-w-xs">
+                    <p class="font-mono text-xs text-indigo-300 mb-2">&gt;&gt; encrypt_payload()</p>
+                    <p class="font-mono text-xs text-zinc-400">Client-side execution. Keys never leave device.</p>
+                </div>
+            </div>
+            
+            <div class="space-y-8 order-1 lg:order-2">
+                <div>
+                    <span class="text-indigo-400 text-[10px] font-semibold tracking-widest uppercase mb-2 block">The Application</span>
+                    <h2 class="text-4xl md:text-5xl font-medium text-white tracking-tighter leading-[1.1]">Trust in Math, <br><span class="text-zinc-500">Not Corporations</span></h2>
+                </div>
+                <div class="space-y-6 text-zinc-400 font-light leading-relaxed text-sm md:text-base">
+                    <p>
+                        In an age of surveillance capitalism, privacy is no longer a luxury, it's a necessity. Shield is a decentralized application that ensures your files and messages remain yours alone.
+                    </p>
+                    <p>
+                        We employ client-side Zero-Knowledge architectures to process transactions. Your keys are generated in your browser and never hit a server, ensuring that even we cannot access your data.
+                    </p>
+                </div>
+                <div class="flex items-center gap-4 pt-2">
+                    <div class="h-px flex-1 bg-gradient-to-r from-indigo-500/50 to-transparent"></div>
+                    <span class="font-mono text-xs text-zinc-500 tracking-wider">Web3 Native</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Technology -->
+    <section id="security" class="py-24 px-6 bg-zinc-950 border-t border-white/5">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row gap-12 items-center">
+                <div class="w-full md:w-1/3 relative group">
+                    <div class="absolute inset-0 bg-white/5 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                    <div class="relative w-full aspect-[4/5] rounded-2xl border border-white/5 overflow-hidden bg-black flex flex-col p-6 justify-between">
+                         <div class="font-mono text-[10px] text-zinc-600">
+                             -----BEGIN PGP PUBLIC KEY BLOCK-----
+                             mQINBF24...
+                             ...
+                             -----END PGP PUBLIC KEY BLOCK-----
+                         </div>
+                         <div class="space-y-2">
+                            <iconify-icon icon="lucide:fingerprint" width="48" class="text-indigo-500 opacity-80" stroke-width="1"></iconify-icon>
+                         </div>
+                    </div>
+                </div>
+                <div class="w-full md:w-2/3 space-y-8">
+                    <div class="space-y-2">
+                        <h3 class="text-3xl md:text-4xl font-medium tracking-tight text-white">End-to-End Encryption</h3>
+                        <p class="text-indigo-400 text-xs font-medium tracking-wider uppercase">Browser-Based Security</p>
+                    </div>
+                    <p class="text-lg md:text-xl font-light text-zinc-300 leading-relaxed border-l-2 border-indigo-500/30 pl-6 italic">
+                        "Your data is encrypted before it ever leaves your browser window. The decryption key is generated locally and shared only via the link you control."
+                    </p>
+                    <div class="grid grid-cols-2 gap-8 pt-4">
+                        <div>
+                            <h4 class="text-white font-medium text-sm mb-1">Architecture</h4>
+                            <p class="text-xs text-zinc-500 leading-relaxed">Built on decentralized storage layers ensuring redundancy and censorship resistance.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-medium text-sm mb-1">Anonymity</h4>
+                            <p class="text-xs text-zinc-500 leading-relaxed">Just connect your web3 wallet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- How It Works -->
+<section id="how-it-works" class="py-24 px-6 bg-black border-t border-white/5">
+  <div class="max-w-6xl mx-auto">
+    <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+      <div class="space-y-3">
+        <span class="text-indigo-400 text-[10px] font-semibold tracking-widest uppercase">
+          How It Works
+        </span>
+        <h2 class="text-4xl md:text-5xl font-medium text-white tracking-tighter">
+          End-to-end <span class="text-zinc-500">private sharing</span>
+        </h2>
+        <p class="text-sm text-zinc-400 max-w-md leading-relaxed font-light">
+          Shield coordinates a simple, wallet-gated flow between sender and receiver. 
+          Every link is bound to a specific EVM-compatible address and time-limited for safety.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+      <!-- Sender Flow -->
+      <div class="space-y-4">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-[10px] tracking-widest uppercase text-indigo-300 font-medium">
+          <iconify-icon icon="lucide:upload-cloud" width="14" class="text-indigo-300"></iconify-icon>
+          Sender
+        </div>
+        <h3 class="text-xl font-medium text-white tracking-tight">
+          Create a protected share link
+        </h3>
+
+        <div class="relative space-y-4">
+          <!-- Step 1 -->
+          <div class="relative flex gap-4 items-start">
+            <div class="flex flex-col items-center">
+              <div class="w-7 h-7 rounded-full bg-indigo-500 text-[11px] flex items-center justify-center font-medium text-white">
+                1
+              </div>
+              <div class="w-px flex-1 bg-gradient-to-b from-indigo-500/60 to-transparent mt-1 hidden md:block"></div>
+            </div>
+            <div class="flex-1 glass-panel rounded-xl p-4">
+              <p class="text-xs uppercase tracking-widest text-zinc-500 mb-1">Upload</p>
+              <p class="text-sm text-zinc-300">
+                Add the content you want to share — either a file or an encrypted text message — directly in your browser.
+              </p>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="relative flex gap-4 items-start">
+            <div class="flex flex-col items-center">
+              <div class="w-7 h-7 rounded-full bg-indigo-500 text-[11px] flex items-center justify-center font-medium text-white">
+                2
+              </div>
+              <div class="w-px flex-1 bg-gradient-to-b from-indigo-500/60 to-transparent mt-1 hidden md:block"></div>
+            </div>
+            <div class="flex-1 glass-panel rounded-xl p-4">
+              <p class="text-xs uppercase tracking-widest text-zinc-500 mb-1">Recipient wallet</p>
+              <p class="text-sm text-zinc-300">
+                Provide the receiver’s EVM-compatible wallet address. The link will only decrypt for this exact address.
+              </p>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="relative flex gap-4 items-start">
+            <div class="flex flex-col items-center">
+              <div class="w-7 h-7 rounded-full bg-indigo-500 text-[11px] flex items-center justify-center font-medium text-white">
+                3
+              </div>
+              <div class="w-px flex-1 bg-gradient-to-b from-indigo-500/60 to-transparent mt-1 hidden md:block"></div>
+            </div>
+            <div class="flex-1 glass-panel rounded-xl p-4">
+              <p class="text-xs uppercase tracking-widest text-zinc-500 mb-1">Access limits</p>
+              <p class="text-sm text-zinc-300">
+                Choose how long the link should stay valid (in seconds) and how many times the content can be opened before it expires.
+              </p>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="relative flex gap-4 items-start">
+            <div class="flex flex-col items-center">
+              <div class="w-7 h-7 rounded-full bg-indigo-500 text-[11px] flex items-center justify-center font-medium text-white">
+                4
+              </div>
+            </div>
+            <div class="flex-1 glass-panel rounded-xl p-4">
+              <p class="text-xs uppercase tracking-widest text-zinc-500 mb-1">Generate link</p>
+              <p class="text-sm text-zinc-300 mb-3">
+                Hit the <span class="font-medium text-white">Generate Link</span> button, sign the transaction in your connected wallet, and let Shield encrypt and register the share.
+              </p>
+              <p class="text-sm text-zinc-300">
+                Once confirmed, copy the share link and send it to the intended receiver through any channel you prefer.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Receiver Flow -->
+      <div class="space-y-4">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-[10px] tracking-widest uppercase text-indigo-300 font-medium">
+          <iconify-icon icon="lucide:download-cloud" width="14" class="text-indigo-300"></iconify-icon>
+          Receiver
+        </div>
+        <h3 class="text-xl font-medium text-white tracking-tight">
+          Prove ownership, then decrypt
+        </h3>
+
+        <div class="relative space-y-4">
+          <!-- Step 1 -->
+          <div class="relative flex gap-4 items-start">
+            <div class="flex flex-col items-center">
+              <div class="w-7 h-7 rounded-full bg-indigo-500 text-[11px] flex items-center justify-center font-medium text-white">
+                1
+              </div>
+              <div class="w-px flex-1 bg-gradient-to-b from-indigo-500/60 to-transparent mt-1 hidden md:block"></div>
+            </div>
+            <div class="flex-1 glass-panel rounded-xl p-4">
+              <p class="text-xs uppercase tracking-widest text-zinc-500 mb-1">Open &amp; connect</p>
+              <p class="text-sm text-zinc-300">
+                Open the shared link and connect your wallet in the Shield interface using any supported EVM-compatible wallet.
+              </p>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="relative flex gap-4 items-start">
+            <div class="flex flex-col items-center">
+              <div class="w-7 h-7 rounded-full bg-indigo-500 text-[11px] flex items-center justify-center font-medium text-white">
+                2
+              </div>
+              <div class="w-px flex-1 bg-gradient-to-b from-indigo-500/60 to-transparent mt-1 hidden md:block"></div>
+            </div>
+            <div class="flex-1 glass-panel rounded-xl p-4">
+              <p class="text-xs uppercase tracking-widest text-zinc-500 mb-1">Verify ownership</p>
+              <p class="text-sm text-zinc-300 mb-3">
+                Click the <span class="font-medium text-white">Verify Wallet Ownership</span> button and approve a gasless signature request in your wallet.
+              </p>
+              <p class="text-sm text-zinc-300">
+                Shield checks that the connected wallet matches the address chosen by the sender. If it matches and the link is still valid, the encrypted content is unlocked for you.
+              </p>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="relative flex gap-4 items-start">
+            <div class="flex flex-col items-center">
+              <div class="w-7 h-7 rounded-full bg-indigo-500 text-[11px] flex items-center justify-center font-medium text-white">
+                3
+              </div>
+            </div>
+            <div class="flex-1 glass-panel rounded-xl p-4">
+              <p class="text-xs uppercase tracking-widest text-zinc-500 mb-1">Access content</p>
+              <p class="text-sm text-zinc-300">
+                View the decrypted file or message and choose whether to copy, download, or save it — all without exposing it to any centralized server.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+    <!-- Who is it for -->
+    <section id="for-who" class="py-24 px-6 bg-zinc-950/50 border-t border-white/5">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <span class="text-indigo-400 text-[10px] font-semibold tracking-widest uppercase mb-4 block">Use Cases</span>
+                <h2 class="text-4xl md:text-5xl font-medium text-white tracking-tighter">Who is <span class="text-zinc-500">Shield For?</span></h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Freelancers -->
+                <div class="glass-panel p-8 rounded-xl space-y-4">
+                    <div class="flex items-center gap-3">
+                        <iconify-icon icon="lucide:user" class="text-indigo-400" width="18"></iconify-icon>
+                        <h3 class="font-medium text-white">Freelancers</h3>
+                    </div>
+                    <p class="text-sm text-zinc-400 font-light leading-relaxed">
+                        Securely deliver final project files, contracts, and invoices to clients without worrying about intermediaries.
+                    </p>
+                </div>
+                <!-- Journalists -->
+                <div class="glass-panel p-8 rounded-xl space-y-4">
+                    <div class="flex items-center gap-3">
+                        <iconify-icon icon="lucide:mic" class="text-indigo-400" width="18"></iconify-icon>
+                        <h3 class="font-medium text-white">Journalists & Researchers</h3>
+                    </div>
+                    <p class="text-sm text-zinc-400 font-light leading-relaxed">
+                        Protect sensitive information, anonymous sources, and unpublished research from unauthorized access.
+                    </p>
+                </div>
+                <!-- Legal -->
+                <div class="glass-panel p-8 rounded-xl space-y-4">
+                    <div class="flex items-center gap-3">
+                        <iconify-icon icon="lucide:scale" class="text-indigo-400" width="18"></iconify-icon>
+                        <h3 class="font-medium text-white">Legal Professionals</h3>
+                    </div>
+                    <p class="text-sm text-zinc-400 font-light leading-relaxed">
+                        Share confidential case files and discovery documents with clients and co-counsel with auditable end-to-end encryption.
+                    </p>
+                </div>
+                <!-- Developers -->
+                <div class="glass-panel p-8 rounded-xl space-y-4">
+                    <div class="flex items-center gap-3">
+                        <iconify-icon icon="lucide:code" class="text-indigo-400" width="18"></iconify-icon>
+                        <h3 class="font-medium text-white">Developers & Teams</h3>
+                    </div>
+                    <p class="text-sm text-zinc-400 font-light leading-relaxed">
+                        Privately share API keys, environment files, and code snippets that should never be seen by a third-party server.
+                    </p>
+                </div>
+                <!-- Creators -->
+                <div class="glass-panel p-8 rounded-xl space-y-4">
+                    <div class="flex items-center gap-3">
+                        <iconify-icon icon="lucide:camera" class="text-indigo-400" width="18"></iconify-icon>
+                        <h3 class="font-medium text-white">Creators & Artists</h3>
+                    </div>
+                    <p class="text-sm text-zinc-400 font-light leading-relaxed">
+                        Send pre-release music, film cuts, or design mockups to collaborators and partners with strict access controls.
+                    </p>
+                </div>
+                <!-- For You -->
+                <div class="glass-panel p-8 rounded-xl space-y-4 bg-indigo-500/10 border-indigo-500/20">
+                    <div class="flex items-center gap-3">
+                        <iconify-icon icon="lucide:lock" class="text-indigo-300" width="18"></iconify-icon>
+                        <h3 class="font-medium text-white">And... You</h3>
+                    </div>
+                    <p class="text-sm text-zinc-300 font-light leading-relaxed">
+                        Shield is for you, if you have any confidential content to share, ever.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap / Community Section -->
+    <section id="roadmap" class="py-24 px-6 bg-zinc-950/50 border-t border-white/5">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="text-indigo-400 text-[10px] font-semibold tracking-widest uppercase mb-4 block">The Future</span>
+                <h2 class="text-4xl md:text-5xl font-medium text-white tracking-tighter">Roadmap &amp; <span class="text-zinc-500">Community</span></h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="group relative h-[300px] rounded-xl overflow-hidden border border-white/5 bg-black">
+                    <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10" style="background-image: url('https://grainy-gradients.vercel.app/noise.svg');"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                    
+                    <div class="absolute bottom-10 left-10 right-10">
+                        <iconify-icon icon="lucide:map" width="32" class="text-indigo-400 mb-4"></iconify-icon>
+                        <h3 class="text-2xl font-medium text-white mb-2 tracking-tight">Upcoming Features</h3>
+                        <p class="text-zinc-400 text-sm mb-6 max-w-sm">We are building an API for developers looking to integrating secure sharing.</p>
+                        <div class="inline-flex gap-2">
+                             <span class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-1 rounded border border-indigo-500/20">API Coming Soon</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="group relative h-[300px] rounded-xl overflow-hidden border border-white/5 bg-black">
+                    <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10" style="background-image: url('https://grainy-gradients.vercel.app/noise.svg');"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                    
+                    <div class="absolute bottom-10 left-10 right-10">
+                        <iconify-icon icon="lucide:users" width="32" class="text-indigo-400 mb-4"></iconify-icon>
+                        <h3 class="text-2xl font-medium text-white mb-2 tracking-tight">Join the Community</h3>
+                        <p class="text-zinc-400 text-sm mb-6 max-w-sm">Help shape the future of decentralized privacy. Join our Discord server.</p>
+                        <a href="https://discord.com/invite/S4j9TpHCnW" target="_blank" rel="noopener noreferrer" class="text-white border-b border-indigo-500 pb-1 text-sm font-medium hover:text-indigo-400 transition-colors">Join Discord</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-24 px-6 bg-black">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-2xl font-medium text-white text-center mb-16 tracking-tight">Trusted by <span class="text-zinc-500">Users</span></h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Review 1 -->
+                <div class="bg-zinc-900/30 backdrop-blur-sm border border-white/5 p-8 rounded-xl">
+                    <div class="flex gap-1 text-indigo-500 mb-4 opacity-70">
+                        <iconify-icon icon="lucide:star" width="12"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="12"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="12"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="12"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="12"></iconify-icon>
+                    </div>
+                    <p class="text-zinc-300 text-sm leading-relaxed mb-6 font-light">"The dApp is intuitive and fast. I use it daily for sending sensitive contracts to clients."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-zinc-800 rounded-full flex items-center justify-center text-white text-xs font-medium">JD</div>
+                        <div>
+                            <p class="text-white text-xs font-medium">Alex Chen</p>
+                            <p class="text-zinc-500 text-[10px]">Consultant</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Review 2 -->
+                <div class="bg-zinc-900/30 backdrop-blur-sm border border-white/5 p-8 rounded-xl">
+                    <div class="flex gap-1 text-indigo-500 mb-4 opacity-70">
+                        <iconify-icon icon="lucide:star" width="12"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="12"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="12"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="12"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="12"></iconify-icon>
+                    </div>
+                    <p class="text-zinc-300 text-sm leading-relaxed mb-6 font-light">"Finally, a file transfer tool that doesn't feel like it's harvesting my metadata. Fast, clean, and secure."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-zinc-800 rounded-full flex items-center justify-center text-white text-xs font-medium">MK</div>
+                        <div>
+                            <p class="text-white text-xs font-medium">Maria K.</p>
+                            <p class="text-zinc-500 text-[10px]">Journalist</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Review 3 -->
+                <div class="bg-zinc-900/30 backdrop-blur-sm border border-white/5 p-8 rounded-xl">
+                    <div class="flex gap-1 text-indigo-500 mb-4 opacity-70">
+                        <iconify-icon icon="lucide:star" width="12"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="12"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="12"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="12"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="12"></iconify-icon>
+                    </div>
+                    <p class="text-zinc-300 text-sm leading-relaxed mb-6 font-light">"The self-destruct feature for sensitive documents is a game changer for our legal team."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-zinc-800 rounded-full flex items-center justify-center text-white text-xs font-medium">TR</div>
+                        <div>
+                            <p class="text-white text-xs font-medium">Thomas Ross</p>
+                            <p class="text-zinc-500 text-[10px]">Attorney</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sign Up Form (Reservation) -->
+    <section id="access" class="py-24 px-6 relative overflow-hidden bg-black">
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-indigo-900/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-lg mx-auto relative z-10">
+            <div class="text-center mb-10">
+                <span class="text-indigo-400 text-[10px] font-semibold tracking-widest uppercase mb-4 block">Get Started</span>
+                <h2 class="text-3xl font-medium text-white tracking-tight mb-4">Start Encrypting</h2>
+                <p class="text-zinc-500 text-sm">Protect what matters, with Shield.</p>
+            </div>
+
+            <form class="bg-zinc-900/20 border-white/5 border rounded-2xl p-8 shadow-2xl backdrop-blur-sm">
+    <a href="https://app.shieldhq.xyz" class="w-full bg-white text-black font-medium py-4 rounded-lg hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 group shadow-lg shadow-white/5">
+        Launch App
+        <iconify-icon icon="lucide:arrow-right" class="group-hover:translate-x-1 transition-transform" width="16"></iconify-icon>
+    </a>
+</form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-white/5 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                <div class="col-span-1 md:col-span-1">
+                    <a href="#" class="text-xl font-semibold tracking-tighter text-white block mb-6 flex items-center gap-2">
+                        <img src="/Shld.png" alt="Shield Logo" class="w-5 h-5"> Shield
+                    </a>
+                    <p class="text-zinc-500 text-xs leading-relaxed max-w-xs">
+                        The secure decentralized file transfer dApp. Your data, your rules.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-medium mb-4 text-xs">Product</h4>
+                    <ul class="space-y-2 text-xs text-zinc-500">
+                        <li><a href="#" class="hover:text-white transition-colors">Launch App</a></li>
+                        <li><a href="https://dune.com/shieldapp/shieldapp" class="hover:text-white transition-colors">Dune Dashboard</a></li>
+                        <li><a href="https://docs.shieldhq.xyz" class="hover:text-white transition-colors">Documentation</a></li>
+                        
+                        
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-medium mb-4 text-xs">Connect</h4>
+                    <div class="flex gap-4">
+                        <a href="https://github.com/shieldhqxyz" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-zinc-400 hover:bg-white hover:text-black transition-all">
+                            <iconify-icon icon="lucide:github" width="14" stroke-width="1.5"></iconify-icon>
+                        </a>
+                        <a href="https://x.com/0xshieldapp" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-zinc-400 hover:bg-white hover:text-black transition-all">
+                            <iconify-icon icon="lucide:twitter" width="14" stroke-width="1.5"></iconify-icon>
+                        </a>
+                        <a href="https://discord.com/invite/S4j9TpHCnW" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-zinc-400 hover:bg-white hover:text-black transition-all">
+                            <iconify-icon icon="lucide:disc" width="14" stroke-width="1.5"></iconify-icon>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-zinc-600 text-[10px]">© 2025 Shield. All rights reserved.</p>
+                <div class="flex gap-6 text-[10px] text-zinc-600">
+                    <a href="https://docs.shieldhq.xyz/privacy" class="hover:text-zinc-400">Privacy Policy</a>
+                    <a href="https://docs.shieldhq.xyz/tos" class="hover:text-zinc-400">Terms of Service</a>
+                    <a href="#" class="hover:text-zinc-400 flex items-center gap-1">
+                        <div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                        App Operational
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+</body></html>

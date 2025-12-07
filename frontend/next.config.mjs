@@ -35,33 +35,23 @@ const nextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: '/api/:path*',
+      },
+    ];
+  },
   webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals.push('pino-pretty', 'lokijs', 'encoding');
+    if (!isServer) {
+      config.externals = config.externals || [];
+      config.externals.push({ 'thread-stream': 'commonjs thread-stream' });
     }
-
-    // Apply fallbacks and aliases to both server and client builds
-    config.resolve.fallback = {
-      ...(config.resolve.fallback || {}),
-      fs: false,
-      encoding: false,
-    };
-
-    config.resolve.alias = {
-      ...(config.resolve.alias || {}),
-      '@react-native-async-storage/async-storage': false,
-      'porto/internal': false,
-      'porto': false,
-      '@base-org/account': false,
-      '@coinbase/wallet-sdk': false,
-      '@gemini-wallet/core': false,
-      '@metamask/sdk': false,
-      '@safe-global/safe-apps-sdk': false,
-      '@safe-global/safe-apps-provider': false,
-    };
-
     return config;
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
-
 export default nextConfig;

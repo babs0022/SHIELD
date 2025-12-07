@@ -4,11 +4,7 @@ import { Policy } from './ReceiverPageClient';
 
 async function getPolicy(policyId: string): Promise<Policy | null> {
   try {
-    const baseUrl = process.env.FRONTEND_URL
-      ? process.env.FRONTEND_URL
-      : process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000';
+    const baseUrl = process.env.FRONTEND_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
     
     const res = await fetch(`${baseUrl}/api/getPolicy/${policyId}`);
     if (!res.ok) {
@@ -21,19 +17,14 @@ async function getPolicy(policyId: string): Promise<Policy | null> {
   }
 }
 
-type Props = {
-  params: { policyId: string };
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const policyId = params.policyId;
+export async function generateMetadata(
+  { params }: { params: { policyId: string } }
+): Promise<Metadata> {
+  const resolvedParams = await params;
+  const policyId = resolvedParams.policyId;
   const policy = await getPolicy(policyId);
 
-  const baseUrl = process.env.FRONTEND_URL
-    ? process.env.FRONTEND_URL
-    : process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : 'http://localhost:3000';
+  const baseUrl = process.env.FRONTEND_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
   const title = 'Shield: Unlockable Content';
   const description = 'You have received unlockable content. Verify your wallet to view it.';
@@ -74,7 +65,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ReceiverPage({ params }: Props) {
-  const policy = await getPolicy(params.policyId);
+export default async function ReceiverPage({ params }: { params: { policyId: string } }) {
+  const resolvedParams = await params;
+  const policy = await getPolicy(resolvedParams.policyId);
   return <ReceiverPageClient policy={policy} />;
 }

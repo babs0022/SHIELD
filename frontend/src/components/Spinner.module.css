@@ -1,7 +1,7 @@
 .spinner {
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  border: 3px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
-  border-top: 3px solid #fff;
+  border-top: 3px solid #6366f1; /* indigo-500 */
   width: 18px;
   height: 18px;
   animation: spin 1s linear infinite;

@@ -18,140 +18,138 @@ const StyledWrapper = styled.div`
   .form {
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    gap: 20px;
     max-width: 550px;
-    padding: 40px;
+    padding: 30px;
     border-radius: 20px;
     position: relative;
-    background-color: transparent;
-    color: #fff;
-    border: none;
-    box-shadow: none;
-  }
-
-  .feedback-message {
-    font-size: 14px;
-    color: #16A34A;
-    margin-top: 10px;
-    text-align: center;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #e4e4e7; /* zinc-200 */
   }
 
   .title {
-    font-size: 32px;
+    font-size: 28px;
+    font-weight: 500;
     letter-spacing: -1px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    padding-left: 30px;
-    color: #16A34A;
+    background: linear-gradient(to bottom right, #ffffff, #a1a1aa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    margin-bottom: 10px;
   }
 
-  .title::before { width: 18px; height: 18px; }
-  .title::after { width: 18px; height: 18px; animation: pulse 1s linear infinite; }
-  .title::before, .title::after {
-    position: absolute;
-    content: "";
-    height: 16px;
-    width: 16px;
-    border-radius: 50%;
-    left: 0px;
-    background-color: #16A34A;
+  .message {
+    font-size: 14px;
+    color: #a1a1aa; /* zinc-400 */
+    text-align: center;
+    margin-bottom: 20px;
   }
 
-  .message { font-size: 15px; color: rgba(255, 255, 255, 0.7); }
   .flex { display: flex; width: 100%; gap: 15px; }
   .form label { position: relative; }
 
   .form label .input {
-    background-color: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    color: #fff;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: #e4e4e7;
     width: 100%;
-    padding: 20px 10px 10px 10px;
+    padding: 15px 10px 10px 10px;
     outline: 0;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
-    font-size: medium;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+  }
+
+  .form label .input:focus {
+    border-color: #6366f1; /* indigo-500 */
   }
   
   .form label .textarea {
-    height: 120px;
+    height: 100px;
     resize: none;
   }
 
-  .file-label span { color: #16A34A; font-size: 0.75em; margin-bottom: 5px; display: block; }
-  .file-label .input { padding: 10px; }
-
-  .form label .input + span {
-    color: rgba(255, 255, 255, 0.5);
+  .file-label span, .form label .input + span, .form label .timeLimitLabel, .form label .maxAttemptsLabel {
+    color: #a1a1aa; /* zinc-400 */
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     position: absolute;
     left: 10px;
-    top: 15px;
-    font-size: 1em;
-    cursor: text;
+    top: 5px;
     transition: 0.3s ease;
   }
 
-  .form label .input:placeholder-shown + span { top: 15px; font-size: 1em; }
-  .form label .input:focus + span, .form label .input:valid + span { color: #16A3A4; top: 4px; font-size: 0.75em; }
+  .form label .input:placeholder-shown + span {
+    top: 15px;
+    font-size: 14px;
+    text-transform: none;
+    letter-spacing: normal;
+  }
 
-  .form label .timeLimitLabel, .form label .maxAttemptsLabel {
-    color: #16A34A;
+  .form label .input:focus + span, .form label .input:valid + span {
+    color: #6366f1; /* indigo-500 */
+    top: 5px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .error-message {
-    color: #ff4d4d;
+    color: #ef4444; /* red-500 */
     font-size: 12px;
     margin-top: 5px;
     padding-left: 10px;
   }
 
-  .input { font-size: medium; }
-
   .submit { 
     border: none; 
     outline: none; 
     padding: 12px; 
-    border-radius: 10px; 
-    color: #fff; 
-    font-size: 16px; 
-    transform: .3s ease; 
-    background-image: linear-gradient(45deg, #16A34A, #008000);
-    box-shadow: 0 0 15px rgba(22, 163, 74, 0.4);
+    border-radius: 100px; 
+    color: #000; 
+    font-size: 14px; 
+    font-weight: 500;
+    background-color: #ffffff;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
   }
   .submit:hover { 
-    transform: scale(1.05);
-    box-shadow: 0 0 25px rgba(22, 163, 74, 0.7);
+    background-color: #e4e4e7; /* zinc-200 */
   }
   .submit:disabled {
-    background-image: linear-gradient(45deg, #4b5563, #6b7280);
+    background-color: #3f3f46; /* zinc-700 */
+    color: #71717a; /* zinc-500 */
     box-shadow: none;
     cursor: not-allowed;
-    transform: scale(1);
   }
   
   .switch-network-button {
-    background-image: linear-gradient(45deg, #ff8c00, #ff4500);
-    box-shadow: 0 0 15px rgba(255, 140, 0, 0.4);
+    background-color: #f59e0b; /* amber-500 */
+    color: #000;
   }
   .switch-network-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 25px rgba(255, 140, 0, 0.7);
+    background-color: #fbbf24; /* amber-400 */
   }
 
   .secureLinkContainer {
-    margin-top: 10px;
+    margin-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 20px;
   }
 
   .secureLinkTitle {
-    color: #16A34A;
-    font-size: 0.75em;
-    margin-bottom: 5px; 
+    color: #a1a1aa; /* zinc-400 */
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px; 
     display: block;
   }
 
@@ -162,71 +160,63 @@ const StyledWrapper = styled.div`
   }
 
   .link-wrapper input {
-    background-color: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    color: #fff;
+    background-color: rgba(0, 0, 0, 0.3);
+    color: #e4e4e7;
     width: 100%;
     padding: 10px;
     outline: 0;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    border-radius: 8px;
     font-size: 14px;
+    font-family: monospace;
   }
 
   .link-wrapper button {
     border: none;
     outline: none;
     padding: 10px;
-    border-radius: 10px;
-    color: #fff;
-    font-size: 14px;
-    background-color: rgba(22, 163, 74, 0.5);
+    border-radius: 8px;
+    color: #e4e4e7;
+    font-size: 12px;
+    background-color: rgba(255, 255, 255, 0.05);
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
 
   .link-wrapper button:hover {
-    background-color: rgba(22, 163, 74, 0.8);
+    background-color: rgba(255, 255, 255, 0.1);
   }
 
   .toggle-container {
     display: flex;
     justify-content: center;
     padding: 4px;
-    background-color: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 100px;
   }
   .toggle-container button {
     width: 50%;
     padding: 8px 0;
-    border-radius: 10px;
+    border-radius: 100px;
     border: none;
     background-color: transparent;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 14px;
+    color: #a1a1aa; /* zinc-400 */
+    font-size: 13px;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
   }
   .toggle-container button.active {
-    background-color: #16A34A;
+    background-color: #6366f1; /* indigo-500 */
     color: #fff;
-    box-shadow: 0 0 10px rgba(22, 163, 74, 0.5);
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
   }
-
-  @keyframes pulse { from { transform: scale(0.9); opacity: 1; } to { transform: scale(1.8); opacity: 0; } }
 
   @media (max-width: 768px) {
     .form {
       padding: 20px;
     }
-
-    .title {
-      font-size: 24px;
-      padding-left: 20px;
-    }
-
     .flex {
       flex-direction: column;
     }
@@ -424,8 +414,8 @@ const SecureLinkForm = () => {
 
         {shareMode === 'file' ? (
           <label className="file-label">
-            <span>Confidential File</span>
             <input className="input" type="file" onChange={handleFileChange} required />
+            <span>Confidential File</span>
           </label>
         ) : (
           <label>

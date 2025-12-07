@@ -1,35 +1,43 @@
 .container {
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 25px;
-  margin-bottom: 30px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 30px;
 }
 
 .title {
   font-size: 1.5rem;
-  margin-bottom: 20px;
+  font-weight: 500;
+  margin-bottom: 25px;
+  color: #a1a1aa; /* zinc-400 */
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .info {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .label {
-  font-size: 0.9rem;
-  color: #888;
-  margin-bottom: 5px;
+  font-size: 0.8rem;
+  color: #a1a1aa; /* zinc-400 */
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .value {
-  font-size: 1.1rem;
+  font-size: 1rem;
+  color: #e4e4e7; /* zinc-200 */
+  word-break: break-all;
 }
 
 .input {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   background-color: rgba(0, 0, 0, 0.2);
   color: #fff;
   font-size: 1rem;
@@ -39,6 +47,7 @@
   border-radius: 50%;
   object-fit: cover;
   margin-bottom: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .avatarUploader {
@@ -46,21 +55,6 @@
   flex-direction: column;
   align-items: center;
   margin-bottom: 20px;
-}
-
-.uploadButton {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-top: 10px;
-}
-
-.uploadButton:hover {
-  background: rgba(255, 255, 255, 0.1);
 }
 
 .actions {
@@ -71,23 +65,25 @@
 
 .button {
   flex-grow: 1;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: #6366f1; /* indigo-500 */
+  border: none;
   color: #fff;
   padding: 10px 15px;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s;
+  font-weight: 500;
 }
 
 .button:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background-color: #4f46e5; /* indigo-600 */
 }
 
 .cancelButton {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .cancelButton:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.1);
 }

@@ -4,10 +4,8 @@ import StyledComponentsRegistry from '../lib/StyledComponentsRegistry';
 import { Toaster } from 'react-hot-toast';
 import { ProfileProvider } from '@/contexts/ProfileContext';
 import Navbar from '@/components/Navbar';
-import dynamic from 'next/dynamic';
 import type { Metadata, Viewport } from 'next';
-
-const DynamicProviders = dynamic(() => import('./providers').then(mod => mod.Providers), { ssr: false });
+import ClientLayout from './ClientLayout';
 
 export const metadata: Metadata = {
   title: 'Shield - Secure Sharing',
@@ -20,11 +18,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Shield - Secure Sharing',
     description: 'Decentralized and secure file and message sharing.',
-    url: 'https://shieldhq.xyz',
+    url: 'https://app.shieldhq.xyz',
     siteName: 'Shield',
     images: [
       {
-        url: 'https://shieldhq.xyz/ogimage.png',
+        url: 'https://app.shieldhq.xyz/ogimage.png',
         width: 1200,
         height: 630,
       },
@@ -37,7 +35,7 @@ export const metadata: Metadata = {
     title: 'Shield - Secure Sharing',
     description: 'Decentralized and secure file and message sharing.',
     creator: '@shieldapp',
-    images: ['https://shieldhq.xyz/ogimage.png'],
+    images: ['https://app.shieldhq.xyz/ogimage.png'],
   },
 };
 
@@ -52,12 +50,12 @@ import { Analytics } from "@vercel/analytics/next";
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
       <body>
-        <DynamicProviders>
+        <ClientLayout>
           <ProfileProvider>
             <StyledComponentsRegistry>
               <Toaster />
@@ -67,7 +65,7 @@ export default function RootLayout({
               <Analytics />
             </StyledComponentsRegistry>
           </ProfileProvider>
-        </DynamicProviders>
+        </ClientLayout>
       </body>
     </html>
   )

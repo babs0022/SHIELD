@@ -4,10 +4,12 @@ import React, { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/navigation';
 import { SUPER_ADMIN_ADDRESSES, TEAM_ADMIN_ADDRESSES } from '@/config/admin';
-import Pattern from '@/components/Pattern';
 import styles from './AdminPage.module.css';
 import { toast } from 'react-hot-toast';
-import CopyIcon from '@/components/CopyIcon';
+import AdminLayout from './AdminLayout';
+import StatsGrid from './StatsGrid';
+import LinksTable from './LinksTable';
+import AdminManagement from './AdminManagement';
 
 interface AdminStatus {
   totalUsers: number;
@@ -51,14 +53,6 @@ export default function AdminPage() {
   const [links, setLinks] = useState<PolicyLink[]>([]);
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [newAdminAddress, setNewAdminAddress] = useState('');
-  const [newAdminRole, setNewAdminRole] = useState<'SUPER_ADMIN' | 'TEAM_ADMIN'>('TEAM_ADMIN');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [linksPerPage] = useState(10);
-
-  const baseUrl = `https://${process.env.NEXT_PUBLIC_FRONTEND_URL || process.env.NEXT_PUBLIC_VERCEL_URL || 'localhost:3000'}`;
 
   const fetchAdminData = async () => {
     const token = localStorage.getItem('reown-siwe-token');
@@ -111,7 +105,7 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    if (!isConnected || !address) { // Wait for address to be available
+    if (!isConnected || !address) {
       return;
     }
 
@@ -125,7 +119,7 @@ export default function AdminPage() {
         setIsSuperAdmin(superAdmin);
         await fetchAdminData();
       } else {
-        router.push('/'); // Redirect if not an admin
+        router.push('/');
       }
       setLoading(false);
     };
@@ -153,13 +147,13 @@ export default function AdminPage() {
       }
 
       toast.success(`Link ${policyId} revoked successfully!`);
-      fetchAdminData(); // Refresh data
+      fetchAdminData();
     } catch (err) {
       toast.error((err as Error).message);
     }
   };
 
-  const handleAddAdmin = async (e: React.FormEvent) => {
+  const handleAddAdmin = async (e: React.FormEvent, newAdminAddress: string, newAdminRole: 'SUPER_ADMIN' | 'TEAM_ADMIN') => {
     e.preventDefault();
     if (!newAdminAddress) {
       toast.error('Admin address cannot be empty.');
@@ -183,8 +177,7 @@ export default function AdminPage() {
       }
 
       toast.success(`Admin ${newAdminAddress} (${newAdminRole}) added successfully!`);
-      setNewAdminAddress('');
-      fetchAdminData(); // Refresh data
+      fetchAdminData();
     } catch (err) {
       toast.error((err as Error).message);
     }
@@ -210,240 +203,40 @@ export default function AdminPage() {
       }
 
       toast.success(`Admin ${addressToRemove} removed successfully!`);
-      fetchAdminData(); // Refresh data
+      fetchAdminData();
     } catch (err) {
       toast.error((err as Error).message);
     }
   };
 
-  const filteredLinks = links.filter(link => {
-    const matchesSearch = searchTerm === '' || 
-                          link.policy_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          link.recipient_address.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === 'all' || (link.status || '').toLowerCase() === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
-
-  // Pagination Logic
-  const indexOfLastLink = currentPage * linksPerPage;
-  const indexOfFirstLink = indexOfLastLink - linksPerPage;
-  const currentLinks = filteredLinks.slice(indexOfFirstLink, indexOfLastLink);
-  const totalPages = Math.ceil(filteredLinks.length / linksPerPage);
-
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      toast.success('Copied to clipboard!');
-    }, (err) => {
-      toast.error('Failed to copy!');
-      console.error('Could not copy text: ', err);
-    });
-  };
-
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-4">
-        <Pattern />
-        <div className={styles.contentWrapper}>
-          <h1 className={styles.title}>Loading Admin Page...</h1>
-        </div>
-      </div>
+      <AdminLayout>
+        <h1 className={styles.title}>Loading Admin Page...</h1>
+      </AdminLayout>
     );
   }
 
   if (!isAdmin) {
-    return null; // Should have been redirected by now
+    return null;
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen p-4">
-      <Pattern />
-      <div className={styles.contentWrapper}>
-        <h1 className={styles.title}>Admin Dashboard</h1>
-        {error && <p className={styles.error}>{error}</p>}
+    <AdminLayout>
+      <h1 className={styles.title}>Admin Dashboard</h1>
+      {error && <p className={styles.error}>{error}</p>}
 
-        {adminStatus && (
-          <div className={styles.dashboardGrid}>
-            <div className={styles.statCard}>
-              <h3>Total Users</h3>
-              <p>{adminStatus.totalUsers}</p>
-            </div>
-            <div className={styles.statCard}>
-              <h3>Total Links Created</h3>
-              <p>{adminStatus.totalLinksCreated}</p>
-            </div>
-            <div className={styles.statCard}>
-              <h3>Total Links Opened</h3>
-              <p>{adminStatus.totalLinksOpened}</p>
-            </div>
+      <StatsGrid adminStatus={adminStatus} />
+      <LinksTable links={links} handleRevokeLink={handleRevokeLink} />
 
-            <div className={styles.statCard}>
-              <h3>Active Users (24h)</h3>
-              <p>{adminStatus.activeUsers['24h']}</p>
-            </div>
-            <div className={styles.statCard}>
-              <h3>Active Users (7d)</h3>
-              <p>{adminStatus.activeUsers['7d']}</p>
-            </div>
-            <div className={styles.statCard}>
-              <h3>Active Users (30d)</h3>
-              <p>{adminStatus.activeUsers['30d']}</p>
-            </div>
-
-            <div className={styles.fullWidthCard}>
-              <h3>Application Status</h3>
-              <p>Uptime: {adminStatus.applicationStatus.uptime}</p>
-              <p>Avg. Response Time: {adminStatus.applicationStatus.averageResponseTime}</p>
-              <h4>Endpoint Status:</h4>
-              <ul>
-                {adminStatus.applicationStatus.endpoints.map((endpoint, index) => (
-                  <li key={index}>
-                    <span>{endpoint.name}</span>
-                    <span>{endpoint.status} (Avg: {endpoint.avgResponseTime})</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
-
-        <h2 className={styles.sectionTitle}>All Links</h2>
-        <div className={styles.controls}>
-          <input
-            type="text"
-            placeholder="Search by Policy ID or Recipient Address"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className={styles.searchInput}
-          />
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className={styles.statusFilter}
-          >
-            <option value="all">All Statuses</option>
-            <option value="active">Active</option>
-            <option value="expired">Expired</option>
-            <option value="revoked">Revoked</option>
-          </select>
-        </div>
-        <div className={styles.tableContainer}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Policy ID</th>
-                <th>Recipient Address</th>
-                <th>Created At</th>
-                <th>Status</th>
-                <th>Access Count</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentLinks.map((link) => (
-                <tr key={link.policy_id}>
-                  <td className={styles.policyId}>
-                    {link.policy_id.substring(0, 10)}... 
-                    <CopyIcon className={styles.copyIconSmall} onClick={() => handleCopy(`${baseUrl}/r/${link.policy_id}`)} />
-                  </td>
-                  <td className={styles.address}>
-                    {link.recipient_address}
-                    <CopyIcon className={styles.copyIconSmall} onClick={() => handleCopy(link.recipient_address)} />
-                  </td>
-                  <td>{new Date(link.created_at).toLocaleString()}</td>
-                  <td><span className={`${styles.statusBadge} ${styles[(link.status || 'unknown').toLowerCase()]}`}>{link.status || 'Unknown'}</span></td>
-                  <td>{link.access_count}</td>
-                  <td>
-                    {link.status === 'active' && (
-                      <button onClick={() => handleRevokeLink(link.policy_id)} className={styles.revokeButton}>
-                        Revoke
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className={styles.pagination}>
-          <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
-            Previous
-          </button>
-          <span>
-            Page
-            <input
-              type="number"
-              value={currentPage}
-              onChange={e => {
-                const page = e.target.value ? Number(e.target.value) : 1;
-                setCurrentPage(page > totalPages ? totalPages : page < 1 ? 1 : page);
-              }}
-              className={styles.pageInput}
-            />
-            of {totalPages}
-          </span>
-          <button onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
-            Next
-          </button>
-        </div>
-
-        {isSuperAdmin && (
-          <>
-            <h2 className={styles.sectionTitle}>Admin Management</h2>
-            <div className={styles.adminManagementContainer}>
-              <form onSubmit={handleAddAdmin} className={styles.addAdminForm}>
-                <input
-                  type="text"
-                  placeholder="New Admin Wallet Address"
-                  value={newAdminAddress}
-                  onChange={(e) => setNewAdminAddress(e.target.value)}
-                  className={styles.searchInput}
-                />
-                <select
-                  value={newAdminRole}
-                  onChange={(e) => setNewAdminRole(e.target.value as 'SUPER_ADMIN' | 'TEAM_ADMIN')}
-                  className={styles.statusFilter}
-                >
-                  <option value="TEAM_ADMIN">Team Admin</option>
-                  <option value="SUPER_ADMIN">Super Admin</option>
-                </select>
-                <button type="submit" className={styles.button}>
-                  Add Admin
-                </button>
-              </form>
-
-              <div className={styles.tableContainer}>
-                <table className={styles.table}>
-                  <thead>
-                    <tr>
-                      <th>Address</th>
-                      <th>Role</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {admins.map((admin) => (
-                      <tr key={admin.address}>
-                        <td className={styles.address}>
-                          {admin.address}
-                          <CopyIcon className={styles.copyIconSmall} onClick={() => handleCopy(admin.address)} />
-                        </td>
-                        <td>{admin.role}</td>
-                        <td>
-                          {admin.address.toLowerCase() !== address?.toLowerCase() && (
-                            <button onClick={() => handleRemoveAdmin(admin.address)} className={styles.revokeButton}>
-                              Remove
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-    </div>
+      {isSuperAdmin && (
+        <AdminManagement
+          admins={admins}
+          currentAdminAddress={address}
+          handleAddAdmin={handleAddAdmin}
+          handleRemoveAdmin={handleRemoveAdmin}
+        />
+      )}
+    </AdminLayout>
   );
 }

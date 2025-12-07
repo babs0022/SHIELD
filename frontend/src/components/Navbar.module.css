@@ -2,9 +2,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  background-color: black;
-  border-bottom: none;
+  padding: 0.75rem 2rem;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -20,18 +21,20 @@
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 1.5rem;
-  color: #16A34A;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #e4e4e7; /* zinc-200 */
   text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.brand:hover {
+  color: #ffffff;
 }
 
 .brandText {
-  display: none; /* Hidden on mobile by default */
-}
-
-.navLinks {
-  display: none; /* Hidden on mobile by default */
+  display: none;
 }
 
 .linksContainer {
@@ -40,48 +43,30 @@
   gap: 1rem;
 }
 
-/* Tablet and Desktop styles */
 @media (min-width: 768px) {
   .brandText {
     display: inline;
   }
-
-  .navLinks {
-    display: flex;
-    gap: 1.5rem;
-  }
-}
-
-.link {
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.7);
-  text-decoration: none;
-  padding: 0.5rem;
-  border-radius: 8px;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-.link:hover {
-  color: #fff;
-  background-color: rgba(22, 163, 74, 0.1);
 }
 
 .connectButton {
-  background-color: #16A34A;
-  color: white;
+  background-color: #ffffff;
+  color: #000000;
   border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
+  padding: 8px 16px;
+  border-radius: 100px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-left: 10px;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .connectButton:hover {
-  background-color: #148a3f;
+  background-color: #e4e4e7; /* zinc-200 */
 }
 
 .connectButton:disabled {
-  background-color: #4b5563;
+  background-color: #3f3f46; /* zinc-700 */
+  color: #71717a; /* zinc-500 */
   cursor: not-allowed;
 }

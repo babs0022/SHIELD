@@ -3,6 +3,7 @@
 # To allow most search engines to crawl your entire site, use the following:
 User-agent: *
 Allow: /
+Sitemap: https://app.shieldhq.xyz/sitemap.xml
 
 # To disallow all search engines from crawling your site, use the following:
 # User-agent: *

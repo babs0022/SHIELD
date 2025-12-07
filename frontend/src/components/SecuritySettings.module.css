@@ -1,42 +1,54 @@
 .dangerZone {
-  border: 1px solid #ff8a80;
-  border-radius: 12px;
-  margin-top: 30px;
+  border: 1px solid rgba(239, 68, 68, 0.2); /* red-500 */
+  border-radius: 16px;
+  background-color: rgba(239, 68, 68, 0.05);
 }
 
 .dangerTitle {
-  font-size: 1.2rem;
-  color: #ff8a80;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #f87171; /* red-400 */
   padding: 15px 20px;
-  border-bottom: 1px solid #ff8a80;
+  border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .dangerContent {
   padding: 20px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 15px;
+  align-items: flex-start;
 }
 
 .dangerContent p {
-  color: rgba(255, 255, 255, 0.7);
+  color: #a1a1aa; /* zinc-400 */
   margin: 0;
+  font-size: 0.9rem;
 }
 
 .dangerButton {
   border: none;
   outline: none;
   padding: 10px 16px;
-  border-radius: 10px;
+  border-radius: 8px;
   color: #fff;
   font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
-  background-color: #d32f2f;
-  box-shadow: 0 0 15px rgba(211, 47, 47, 0.4);
-  transition: all 0.3s ease;
+  background-color: #ef4444; /* red-500 */
+  transition: background-color 0.3s ease;
 }
 
 .dangerButton:hover {
-  background-color: #c62828;
-  box-shadow: 0 0 25px rgba(211, 47, 47, 0.7);
+  background-color: #dc2626; /* red-600 */
+}
+
+@media (min-width: 768px) {
+  .dangerContent {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
