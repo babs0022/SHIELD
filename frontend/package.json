@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
     "lint": "next lint",
@@ -43,7 +43,9 @@
     "tailwindcss": "^3.4.17",
     "uuid": "^13.0.0",
     "viem": "^2.39.0",
-    "wagmi": "^2.19.5"
+    "wagmi": "^2.19.5",
+    "@shield/types": "1.0.0",
+    "@walletconnect/ethereum-provider": "^2.10.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

@@ -95,7 +95,7 @@ export default function Navbar() {
     <nav className={styles.navbar}>
       <div className={styles.navLeft}>
         <Link href="/" className={styles.brand}>
-          <Image src="/Shld.png" alt="Shield Logo" width={32} height={32} />
+          <Image src="/Shld.svg" alt="Shield Logo" width={32} height={32} />
           <span className={styles.brandText}>Shield</span>
         </Link>
       </div>

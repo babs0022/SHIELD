@@ -26,15 +26,7 @@ const nextConfig = {
       },
     ],
   },
-  transpilePackages: ['@metamask/sdk'],
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: '/api/:path*',
-      },
-    ];
-  },
+  transpilePackages: ['@metamask/sdk', '@walletconnect/ethereum-provider'],
   async rewrites() {
     return [
       {
@@ -47,6 +39,9 @@ const nextConfig = {
     if (!isServer) {
       config.externals = config.externals || [];
       config.externals.push({ 'thread-stream': 'commonjs thread-stream' });
+      config.resolve.alias['@react-native-async-storage/async-storage'] = false;
+      config.resolve.alias['porto'] = false;
+      config.resolve.alias['porto/internal'] = false;
     }
     return config;
   },
