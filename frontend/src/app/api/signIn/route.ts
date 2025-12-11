@@ -50,7 +50,6 @@ export async function POST(request: NextRequest) {
       RETURNING *, (first_login_at = last_login_at) as is_new_user;
     `;
     const user = users[0];
-    const showOnboarding = !user.onboarding_completed;
 
     if (!process.env.JWT_SECRET) {
       throw new Error('JWT_SECRET is not defined in environment variables.');
@@ -62,7 +61,7 @@ export async function POST(request: NextRequest) {
       .setExpirationTime('1d')
       .sign(secret);
 
-    return NextResponse.json({ success: true, user, token, showOnboarding });
+    return NextResponse.json({ success: true, user, token });
   } catch (error) {
     console.error('Error in signIn API:', error);
     return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });

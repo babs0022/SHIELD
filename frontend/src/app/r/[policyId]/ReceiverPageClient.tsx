@@ -10,7 +10,7 @@ import { SiweMessage } from 'siwe';
 import { toast } from 'react-hot-toast';
 import styles from './ReceiverPage.module.css';
 import DownloadIcon from '@/components/DownloadIcon';
-import CopyIcon from '@/components/CopyIcon';
+import { CopyIcon } from '@/components/CopyIcon';
 
 type VerificationStatus = 'idle' | 'verifying' | 'success' | 'failed' | 'invalid';
 export interface Policy {

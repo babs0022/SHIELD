@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import styles from './AdminPage.module.css';
-import CopyIcon from '@/components/CopyIcon';
+import { CopyIcon } from '@/components/CopyIcon';
 import { toast } from 'react-hot-toast';
 
 interface PolicyLink {
