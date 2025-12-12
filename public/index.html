@@ -26,8 +26,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
     <style>
+        @font-face {
+            font-family: 'Coinbase Sans';
+            src: url('/WOFF2/Coinbase-Sans/Coinbase_Sans-Regular-web-1.32.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Coinbase Sans';
+            src: url('/WOFF2/Coinbase-Sans/Coinbase_Sans-Bold-web-1.32.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+        }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Coinbase Sans', 'Inter', sans-serif;
             background-color: #000000;
             color: #e4e4e7; /* zinc-200 */
         }
@@ -55,6 +67,24 @@
         }
         .checkbox-wrapper input:checked + div svg {
             display: block;
+        }
+        .fancy-strikethrough {
+            position: relative;
+            display: inline-block;
+        }
+        .fancy-strikethrough::after {
+            content: '';
+            position: absolute;
+            left: -2%;
+            right: -2%;
+            top: 50%;
+            height: 5px;
+            background: #ef4444; /* red-500 */
+            transform: translateY(-50%) rotate(-2.5deg);
+            border-radius: 5px;
+        }
+        .force-text-fill {
+            -webkit-text-fill-color: initial !important;
         }
     </style>
 <link id="all-fonts-link-font-geist" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist">.font-geist { font-family: 'Geist', sans-family !important; }</style><link id="all-fonts-link-font-roboto" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-roboto">.font-roboto { font-family: 'Roboto', sans-serif !important; }</style><link id="all-fonts-link-font-montserrat" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-montserrat">.font-montserrat { font-family: 'Montserrat', sans-serif !important; }</style><link id="all-fonts-link-font-poppins" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-poppins">.font-poppins { font-family: 'Poppins', sans-serif !important; }</style><link id="all-fonts-link-font-playfair" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&amp;display=swap"><style id="all-fonts-style-font-playfair">.font-playfair { font-family: 'Playfair Display', serif !important; }</style><link id="all-fonts-link-font-instrument-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-instrument-serif">.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }</style><link id="all-fonts-link-font-merriweather" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&amp;display=swap"><style id="all-fonts-style-font-merriweather">.font-merriweather { font-family: 'Merriweather', serif !important; }</style>
@@ -93,7 +123,7 @@
             <div class="bg-gradient-to-t from-black via-black/80 to-transparent absolute top-0 right-0 bottom-0 left-0"></div>
         </div>
 
-        <div class="relative z-10 text-center px-4 max-w-4xl mx-auto space-y-8">
+        <div class="relative z-10 text-center px-4 max-w-4xl lg:max-w-6xl mx-auto space-y-8">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
                 <span class="relative flex h-1.5 w-1.5">
                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
@@ -102,8 +132,8 @@
                 <span class="text-[10px] font-medium text-zinc-300 tracking-wide uppercase">Shield dApp Live</span>
             </div>
             
-            <h1 class="text-5xl md:text-7xl lg:text-8xl font-medium tracking-tighter leading-[1.1] text-gradient">
-                Privacy as the <br> <span class="italic text-zinc-500 font-normal">Default State</span>
+            <h1 class="text-6xl md:text-8xl lg:text-9xl font-medium tracking-tighter leading-[1.1] text-gradient">
+                <span class="whitespace-nowrap">Share what Matters,</span> <br> <span class="text-white font-normal fancy-strikethrough force-text-fill">SECURELY!</span>
             </h1>
             
             <p class="text-zinc-400 text-base md:text-lg font-light max-w-lg mx-auto leading-relaxed">
