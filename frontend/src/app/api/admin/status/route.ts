@@ -22,8 +22,12 @@ export async function GET(req: NextRequest) {
 
   try {
     if (!process.env.JWT_SECRET) {
-      throw new Error('JWT_SECRET is not defined');
+      console.error('API Error: JWT_SECRET is not defined.');
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
     }
+    // Log a portion of the secret to confirm it's loaded, without exposing it.
+    console.log(`JWT_SECRET is present. Starts with: ${process.env.JWT_SECRET.substring(0, 3)}, Ends with: ${process.env.JWT_SECRET.slice(-3)}`);
+    
     console.log('Verifying JWT...');
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secret);
@@ -31,7 +35,7 @@ export async function GET(req: NextRequest) {
     console.log(`JWT verified for address: ${userWalletAddress}`);
 
     if (!isAdmin(userWalletAddress)) {
-      console.error(`Address ${userWalletAddress} is not an admin.`);
+      console.error(`Forbidden: Address ${userWalletAddress} is not an admin.`);
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
     console.log('Admin check passed.');
