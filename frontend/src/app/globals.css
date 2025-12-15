@@ -1,11 +1,73 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500&display=swap');
+/* Regular */
+@font-face {
+  font-family: 'Coinbase Sans';
+  src: url('/WOFF2/Coinbase-Sans/Coinbase_Sans-Regular-web-1.32.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Regular Italic */
+@font-face {
+  font-family: 'Coinbase Sans';
+  src: url('/WOFF2/Coinbase-Sans/Coinbase_Sans-Regular_Italic-web-1.32.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Medium */
+@font-face {
+  font-family: 'Coinbase Sans';
+  src: url('/WOFF2/Coinbase-Sans/Coinbase_Sans-Medium-web-1.32.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+}
+
+/* Medium Italic */
+@font-face {
+  font-family: 'Coinbase Sans';
+  src: url('/WOFF2/Coinbase-Sans/Coinbase_Sans-Medium_Italic-web-1.32.woff2') format('woff2');
+  font-weight: 500;
+  font-style: italic;
+}
+
+/* Bold */
+@font-face {
+  font-family: 'Coinbase Sans';
+  src: url('/WOFF2/Coinbase-Sans/Coinbase_Sans-Bold-web-1.32.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Bold Italic */
+@font-face {
+  font-family: 'Coinbase Sans';
+  src: url('/WOFF2/Coinbase-Sans/Coinbase_Sans-Bold_Italic-web-1.32.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* Light */
+@font-face {
+  font-family: 'Coinbase Sans';
+  src: url('/WOFF2/Coinbase-Sans/Coinbase_Sans-Light-web-1.32.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+}
+
+/* Light Italic */
+@font-face {
+  font-family: 'Coinbase Sans';
+  src: url('/WOFF2/Coinbase-Sans/Coinbase_Sans-Light_Italic-web-1.32.woff2') format('woff2');
+  font-weight: 300;
+  font-style: italic;
+}
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-  font-family: 'Instrument Sans', sans-serif;
+  font-family: 'Coinbase Sans', sans-serif;
   color: #E5E7EB; /* A light gray for text on dark backgrounds */
   /* Applying the background pattern directly */
   background-color: black;
@@ -32,5 +94,15 @@ body {
 
 main {
   padding-top: 80px; /* Match the navbar height */
+}
+
+/* Prevent text selection on interactive elements */
+button,
+[role="button"],
+[style*="cursor: pointer"] {
+  user-select: none;
+  -webkit-user-select: none; /* For Safari */
+  -moz-user-select: none; /* For Firefox */
+  -ms-user-select: none; /* For Internet Explorer/Edge */
 }
 

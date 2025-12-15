@@ -11,22 +11,21 @@ export async function POST(request: NextRequest) {
       creatorId,
       contentCid,
       recipientAddress,
-      secretKey,
       mimeType,
       isText,
       expiry,
       maxAttempts,
     } = data;
 
-    if (!policyId || !creatorId || !contentCid || !recipientAddress || !secretKey) {
+    if (!policyId || !creatorId || !contentCid || !recipientAddress) {
       return NextResponse.json({ error: "Missing required metadata." }, { status: 400 });
     }
 
     const expiryTimestamp = Math.floor(Date.now() / 1000) + parseInt(expiry, 10);
 
     await sql`
-      INSERT INTO policies (policy_id, creator_id, resource_cid, recipient_address, secret_key, mime_type, is_text, expiry, max_attempts, attempts, valid, status)
-      VALUES (${policyId}, ${creatorId}, ${contentCid}, ${recipientAddress}, ${secretKey}, ${mimeType}, ${isText}, ${expiryTimestamp}, ${parseInt(maxAttempts, 10)}, ${0}, ${true}, ${'active'})
+      INSERT INTO policies (policy_id, creator_id, resource_cid, recipient_address, mime_type, is_text, expiry, max_attempts, attempts, valid, status)
+      VALUES (${policyId}, ${creatorId}, ${contentCid}, ${recipientAddress}, ${mimeType}, ${isText}, ${expiryTimestamp}, ${parseInt(maxAttempts, 10)}, ${0}, ${true}, ${'active'})
     `;
 
     const baseUrl = process.env.FRONTEND_URL

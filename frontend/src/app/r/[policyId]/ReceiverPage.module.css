@@ -26,6 +26,13 @@
   margin-bottom: 10px;
 }
 
+.subtitle {
+  font-size: 16px;
+  color: #a1a1aa; /* zinc-400 */
+  margin-top: -10px; /* Adjust as needed for spacing */
+  margin-bottom: 20px;
+}
+
 .info {
   font-size: 14px;
   color: #a1a1aa; /* zinc-400 */

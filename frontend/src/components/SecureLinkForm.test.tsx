@@ -139,7 +139,7 @@ describe('SecureLinkForm', () => {
     fireEvent.click(screen.getByRole('button', { name: /Generate Link/i }));
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Please provide the content you want to share.');
+      expect(toast.error).toHaveBeenCalledWith('Please fill out all fields correctly and connect your wallet.');
     });
   });
 
@@ -182,9 +182,13 @@ describe('SecureLinkForm', () => {
 
     // Assert loading states and API calls
     await waitFor(() => {
-      expect(toast.loading).toHaveBeenCalledWith('Preparing content...', expect.any(Object));
-      expect(mockFetch).toHaveBeenCalledWith('/api/prepareContent', expect.any(Object));
-      expect(screen.getByText(/Preparing.../i)).toBeInTheDocument();
+      expect(toast.loading).toHaveBeenCalledWith('Encrypting content...'); // Updated toast message
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Uploading to IPFS.../i)).toBeInTheDocument(); // Updated status message
+      expect(toast.loading).toHaveBeenCalledWith('Uploading to IPFS...', expect.any(Object)); // Updated toast message
+      // No direct fetch mock for Pinata, as it's handled by axios in the component
     });
 
     await waitFor(() => {
@@ -202,7 +206,7 @@ describe('SecureLinkForm', () => {
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith('/api/storeMetadata', expect.any(Object));
       expect(toast.success).toHaveBeenCalledWith('Secure link generated successfully!', expect.any(Object));
-      expect(screen.getByDisplayValue(mockLink)).toBeInTheDocument();
+      expect(screen.getByDisplayValue(`${mockLink}#{\"alg\":\"A256GCM\",\"ext\":true,\"k\":\"AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyIs\",\"key_ops\":[\"encrypt\",\"decrypt\"],\"kty\":\"oct\"}`)).toBeInTheDocument();
     });
   });
 
@@ -219,46 +223,26 @@ describe('SecureLinkForm', () => {
     fireEvent.click(screen.getByRole('button', { name: /Generate Link/i }));
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Wallet signature rejected. Please confirm the transaction in your wallet to create the link.', expect.any(Object));
+      expect(toast.error).toHaveBeenCalledWith('Wallet signature rejected. Please try again.'); // Updated toast message
       expect(screen.queryByText(/Processing.../i)).not.toBeInTheDocument();
-    });
-  });
-
-  it('handles prepareContent API failure', async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      json: async () => ({ error: 'Content preparation failed' }),
-    });
-
-    render(<SecureLinkForm />);
-
-    // Fill form to enable submission
-    fireEvent.click(screen.getByRole('button', { name: /Text/i }));
-    fireEvent.change(screen.getByLabelText(/Confidential Text/i), { target: { value: 'test' } });
-    fireEvent.change(screen.getByLabelText(/Recipient Address/i), { target: { value: '0xRecipientAddress' } });
-
-    fireEvent.click(screen.getByRole('button', { name: /Generate Link/i }));
-
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Content preparation failed', expect.any(Object));
     });
   });
 
   it('handles storeMetadata API failure', async () => {
     const mockPolicyId = '0x0101010101010101010101010101010101010101010101010101010101010101';
     const mockContentCid = 'mockCid';
-    const mockSecretKey = 'mockSecret';
     const mockMimeType = 'text/plain';
 
-    mockFetch
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ contentCid: mockContentCid, secretKey: mockSecretKey, mimeType: mockMimeType }),
-      })
-      .mockResolvedValueOnce({
-        ok: false,
-        json: async () => ({ error: 'Metadata storage failed' }),
-      });
+    // Mock axios.post for Pinata upload
+    jest.spyOn(axios, 'post').mockResolvedValueOnce({
+      status: 200,
+      data: { IpfsHash: mockContentCid },
+    });
+
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ error: 'Metadata storage failed' }),
+    });
 
     render(<SecureLinkForm />);
 
@@ -270,27 +254,29 @@ describe('SecureLinkForm', () => {
     fireEvent.click(screen.getByRole('button', { name: /Generate Link/i }));
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Metadata storage failed', expect.any(Object));
+      expect(toast.error).toHaveBeenCalledWith('Metadata storage failed');
     });
   });
 
   it('copies the secure link to clipboard', async () => {
     const mockPolicyId = '0x0101010101010101010101010101010101010101010101010101010101010101';
     const mockContentCid = 'mockCid';
-    const mockSecretKey = 'mockSecret';
     const mockMimeType = 'text/plain';
     const mockLink = `https://shieldhq.xyz/r/${mockPolicyId}`;
+    const mockKeyString = '{\"alg\":\"A256GCM\",\"ext\":true,\"k\":\"AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyIs\",\"key_ops\":[\"encrypt\",\"decrypt\"],\"kty\":\"oct\"}';
+    const finalMockLink = `${mockLink}#${mockKeyString}`;
+
+    // Mock axios.post for Pinata upload
+    jest.spyOn(axios, 'post').mockResolvedValueOnce({
+      status: 200,
+      data: { IpfsHash: mockContentCid },
+    });
 
     // Mock successful link creation
-    mockFetch
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ contentCid: mockContentCid, secretKey: mockSecretKey, mimeType: mockMimeType }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ link: mockLink }),
-      });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ link: mockLink }),
+    });
 
     render(<SecureLinkForm />);
 
@@ -302,15 +288,34 @@ describe('SecureLinkForm', () => {
 
     // Wait for link to be generated and displayed
     await waitFor(() => {
-      expect(screen.getByDisplayValue(mockLink)).toBeInTheDocument();
+      expect(screen.getByDisplayValue(finalMockLink)).toBeInTheDocument();
     });
 
     // Click copy button
     fireEvent.click(screen.getByRole('button', { name: /Copy/i }));
 
     await waitFor(() => {
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(mockLink);
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(finalMockLink);
       expect(toast.success).toHaveBeenCalledWith('Link copied to clipboard!');
+    });
+  });
+
+  it('displays the selected file name for file sharing', async () => {
+    render(<SecureLinkForm />);
+
+    const file = new File(['dummy content'], 'my-confidential-file.txt', { type: 'text/plain' });
+    const fileInput = screen.getByLabelText(/Confidential File/i).closest('label')?.querySelector('input[type="file"]');
+    
+    if (!fileInput) throw new Error('File input not found');
+
+    fireEvent.change(fileInput, {
+      target: { files: [file] },
+    });
+
+    await waitFor(() => {
+      const fileLabel = screen.getByLabelText(/Confidential File/i).closest('label');
+      expect(fileLabel).toHaveAttribute('data-file-name', 'my-confidential-file.txt');
+      expect(screen.getByText('my-confidential-file.txt')).toBeInTheDocument();
     });
   });
 });
