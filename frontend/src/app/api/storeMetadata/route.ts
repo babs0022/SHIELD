@@ -37,13 +37,13 @@ export async function POST(request: NextRequest) {
       contentLength,
     } = validation.data;
 
-    const users = await sql`SELECT tier, daily_link_count, last_link_creation_date, subscription_expires_at FROM users WHERE wallet_address = ${creatorId}`;
+    const users = await sql`SELECT tier, daily_link_count, last_link_creation_date FROM users WHERE wallet_address = ${creatorId}`;
     let user = users[0];
 
     // If user doesn't exist, create a free tier user record.
     if (!user) {
       await sql`INSERT INTO users (wallet_address, tier, daily_link_count, last_link_creation_date) VALUES (${creatorId}, 'free', 0, ${new Date()})`;
-      const newUser = await sql`SELECT tier, daily_link_count, last_link_creation_date, subscription_expires_at FROM users WHERE wallet_address = ${creatorId}`;
+      const newUser = await sql`SELECT tier, daily_link_count, last_link_creation_date FROM users WHERE wallet_address = ${creatorId}`;
       user = newUser[0];
     }
     
@@ -57,15 +57,15 @@ export async function POST(request: NextRequest) {
     const limits = tierLimits[user.tier] || tierLimits.free; // Default to free if tier is not set
 
     if (dailyCount >= limits.daily) {
-        return NextResponse.json({ error: "You have reached your daily limit for creating links. Upgrade to Pro for more!" }, { status: 429 });
+      return NextResponse.json({ error: "You have reached your daily limit for creating links." }, { status: 429 });
     }
 
     if (isText && contentLength && contentLength > limits.textChars) {
-        return NextResponse.json({ error: `Text content exceeds the limit of ${limits.textChars} characters for your tier. Upgrade to Pro!` }, { status: 413 });
+      return NextResponse.json({ error: `Text content exceeds the limit of ${limits.textChars} characters for your tier.` }, { status: 413 });
     }
 
     if (!isText && contentLength && contentLength > limits.fileSize) {
-        return NextResponse.json({ error: `File size exceeds the limit of ${limits.fileSize / 1024 / 1024}MB for your tier. Upgrade to Pro!` }, { status: 413 });
+      return NextResponse.json({ error: `File size exceeds the limit of ${limits.fileSize / 1024 / 1024}MB for your tier.` }, { status: 413 });
     }
 
     const expiryTimestamp = Math.floor(Date.now() / 1000) + parseInt(expiry, 10);
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
       SET daily_link_count = daily_link_count + 1, last_link_creation_date = ${new Date()}
       WHERE wallet_address = ${creatorId}
     `;
-
+    
     const baseUrl = process.env.FRONTEND_URL
       ? process.env.FRONTEND_URL
       : process.env.VERCEL_URL

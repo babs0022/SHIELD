@@ -31,20 +31,19 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // Fetch stats sequentially to ensure a stable connection with the serverless DB
-    const totalUsersResult = await sql`SELECT COUNT(*) FROM users`;
-    const proUsersResult = await sql`SELECT COUNT(*) FROM users WHERE tier = 'pro'`;
-    const totalLinksResult = await sql`SELECT COUNT(*) FROM policies`;
+    // For now, this will fetch all Pro users.
+    // In the future, this query would be modified to exclude users with a payment record.
+    const grantedUsers = await sql`
+      SELECT wallet_address, subscription_expires_at
+      FROM users
+      WHERE tier = 'pro' AND subscription_expires_at IS NOT NULL
+      ORDER BY subscription_expires_at DESC
+    `;
 
-    const stats = {
-      totalUsers: parseInt(totalUsersResult[0].count, 10),
-      proUsers: parseInt(proUsersResult[0].count, 10),
-      totalLinks: parseInt(totalLinksResult[0].count, 10),
-    };
-
-    return NextResponse.json(stats);
+    return NextResponse.json(grantedUsers);
 
   } catch (error) {
+    console.error('Error fetching granted pro users:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

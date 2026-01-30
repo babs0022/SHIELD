@@ -1,242 +1,177 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useAccount } from 'wagmi';
-import { useRouter } from 'next/navigation';
-import { SUPER_ADMIN_ADDRESSES, TEAM_ADMIN_ADDRESSES } from '@/config/admin';
+import React, { useState, useEffect } from 'react';
 import styles from './AdminPage.module.css';
-import { toast } from 'react-hot-toast';
-import AdminLayout from './AdminLayout';
-import StatsGrid from './StatsGrid';
-import LinksTable from './LinksTable';
-import AdminManagement from './AdminManagement';
+import StatsCard from '@/components/StatsCard';
 
-interface AdminStatus {
+interface AdminStats {
   totalUsers: number;
-  totalLinksCreated: number;
-  totalLinksOpened: number;
-  activeUsers: {
-    '24h': number;
-    '7d': number;
-    '30d': number;
-  };
-  applicationStatus: {
-    uptime: string;
-    averageResponseTime: string;
-    endpoints: Array<{ name: string; status: string; avgResponseTime: string }>;
-  };
+  proUsers: number;
+  totalLinks: number;
 }
 
-interface PolicyLink {
-  policy_id: string;
-  resource_cid: string;
-  recipient_address: string;
-  created_at: string;
-  status: string;
-  access_count: number;
-  mime_type: string;
-  is_text: boolean;
+interface GrantedUser {
+  wallet_address: string;
+  subscription_expires_at: string;
 }
 
-interface AdminUser {
-  address: string;
-  role: 'SUPER_ADMIN' | 'TEAM_ADMIN';
-}
-
-export default function AdminPage() {
-  const { address, isConnected } = useAccount();
-  const router = useRouter();
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+export default function AdminClient() {
+  const [stats, setStats] = useState<AdminStats | null>(null);
+  const [grantedUsers, setGrantedUsers] = useState<GrantedUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const [adminStatus, setAdminStatus] = useState<AdminStatus | null>(null);
-  const [links, setLinks] = useState<PolicyLink[]>([]);
-  const [admins, setAdmins] = useState<AdminUser[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
-  const fetchAdminData = async () => {
-    const token = localStorage.getItem('reown-siwe-token');
-    if (!token) {
-      setError('Authentication token not found.');
-      toast.error('Authentication token not found.');
-      return;
-    }
+  // State for the upgrade form
+  const [userAddress, setUserAddress] = useState('');
+  const [duration, setDuration] = useState(30);
+  const [isUpgrading, setIsUpgrading] = useState(false);
+  const [upgradeMessage, setUpgradeMessage] = useState('');
 
-    const headers = {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    };
-
+  const fetchData = async () => {
     try {
-      const statusResponse = await fetch('/api/admin/status', { headers });
-      if (!statusResponse.ok) {
-        const errorData = await statusResponse.json();
-        throw new Error(errorData.error || 'Failed to fetch admin status');
-      }
-      const statusData: AdminStatus = await statusResponse.json();
-      setAdminStatus(statusData);
+      const token = localStorage.getItem('reown-siwe-token');
+      const headers = { 'Authorization': `Bearer ${token}` };
 
-      const linksResponse = await fetch('/api/admin/links', { headers });
-      if (!linksResponse.ok) {
-        const errorData = await linksResponse.json();
-        throw new Error(errorData.error || 'Failed to fetch links');
-      }
-      const linksData: PolicyLink[] = await linksResponse.json();
-      setLinks(linksData);
+      // Fetch stats and granted users in parallel
+      const [statsRes, grantedUsersRes] = await Promise.all([
+        fetch('/api/admin/status', { headers }),
+        fetch('/api/admin/granted-users', { headers })
+      ]);
 
-      if (isSuperAdmin) {
-        const adminsResponse = await fetch('/api/admin/manage-admins', { headers });
-        if (!adminsResponse.ok) {
-          const errorData = await adminsResponse.json();
-          throw new Error(errorData.error || 'Failed to fetch admins');
-        }
-        const adminsData = await adminsResponse.json();
-        const formattedAdmins: AdminUser[] = [
-          ...adminsData.superAdmins.map((addr: string) => ({ address: addr, role: 'SUPER_ADMIN' })),
-          ...adminsData.teamAdmins.map((addr: string) => ({ address: addr, role: 'TEAM_ADMIN' })),
-        ];
-        setAdmins(formattedAdmins);
-      }
+      if (!statsRes.ok) throw new Error('Failed to fetch admin stats. Are you an admin?');
+      if (!grantedUsersRes.ok) throw new Error('Failed to fetch granted users.');
 
-    } catch (err) {
-      setError((err as Error).message);
-      toast.error((err as Error).message);
+      const statsData = await statsRes.json();
+      const grantedUsersData = await grantedUsersRes.json();
+      
+      setStats(statsData);
+      setGrantedUsers(grantedUsersData);
+
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (!isConnected || !address) {
-      return;
-    }
+    fetchData();
+  }, []);
 
-    const checkAdminStatus = async () => {
-      const connectedAddress = address?.toLowerCase();
-      const superAdmin = SUPER_ADMIN_ADDRESSES.map(addr => addr.toLowerCase()).includes(connectedAddress || '');
-      const teamAdmin = TEAM_ADMIN_ADDRESSES.map(addr => addr.toLowerCase()).includes(connectedAddress || '');
-
-      if (superAdmin || teamAdmin) {
-        setIsAdmin(true);
-        setIsSuperAdmin(superAdmin);
-        await fetchAdminData();
-      } else {
-        router.push('/');
-      }
-      setLoading(false);
-    };
-
-    checkAdminStatus();
-  }, [address, isConnected, router, isSuperAdmin]);
-
-  const handleRevokeLink = async (policyId: string) => {
-    if (!confirm(`Are you sure you want to revoke link ${policyId}?`)) return;
-
-    try {
-      const token = localStorage.getItem('reown-siwe-token');
-      const response = await fetch('/api/admin/links', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ policyId, action: 'revoke' }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to revoke link');
-      }
-
-      toast.success(`Link ${policyId} revoked successfully!`);
-      fetchAdminData();
-    } catch (err) {
-      toast.error((err as Error).message);
-    }
-  };
-
-  const handleAddAdmin = async (e: React.FormEvent, newAdminAddress: string, newAdminRole: 'SUPER_ADMIN' | 'TEAM_ADMIN') => {
+  const handleUpgrade = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newAdminAddress) {
-      toast.error('Admin address cannot be empty.');
-      return;
-    }
-
+    setIsUpgrading(true);
+    setUpgradeMessage('');
     try {
       const token = localStorage.getItem('reown-siwe-token');
-      const response = await fetch('/api/admin/manage-admins', {
+      const response = await fetch('/api/admin/upgrade', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ address: newAdminAddress, role: newAdminRole }),
+        body: JSON.stringify({
+          userAddress: userAddress,
+          durationInDays: Number(duration)
+        }),
       });
 
+      const data = await response.json();
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to add admin');
+        throw new Error(data.details?.fieldErrors?.userAddress?.[0] || data.error || 'Failed to upgrade user.');
       }
+      
+      setUpgradeMessage(data.message);
+      setUserAddress('');
+      setDuration(30);
+      
+      // Refresh data after a successful upgrade
+      await fetchData();
 
-      toast.success(`Admin ${newAdminAddress} (${newAdminRole}) added successfully!`);
-      fetchAdminData();
-    } catch (err) {
-      toast.error((err as Error).message);
-    }
-  };
-
-  const handleRemoveAdmin = async (addressToRemove: string) => {
-    if (!confirm(`Are you sure you want to remove admin ${addressToRemove}?`)) return;
-
-    try {
-      const token = localStorage.getItem('reown-siwe-token');
-      const response = await fetch('/api/admin/manage-admins', {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ address: addressToRemove }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to remove admin');
-      }
-
-      toast.success(`Admin ${addressToRemove} removed successfully!`);
-      fetchAdminData();
-    } catch (err) {
-      toast.error((err as Error).message);
+    } catch (err: any) {
+      setUpgradeMessage(err.message);
+    } finally {
+      setIsUpgrading(false);
     }
   };
 
   if (loading) {
-    return (
-      <AdminLayout>
-        <h1 className={styles.title}>Loading Admin Page...</h1>
-      </AdminLayout>
-    );
+    return <div className={styles.container}>Loading dashboard...</div>;
   }
 
-  if (!isAdmin) {
-    return null;
+  if (error) {
+    return <div className={styles.container}><p className={styles.error}>{error}</p></div>;
   }
 
   return (
-    <AdminLayout>
+    <div className={styles.container}>
       <h1 className={styles.title}>Admin Dashboard</h1>
-      {error && <p className={styles.error}>{error}</p>}
 
-      <StatsGrid adminStatus={adminStatus} />
-      <LinksTable links={links} handleRevokeLink={handleRevokeLink} />
+      <div className={styles.statsGrid}>
+        <StatsCard title="Total Users" value={stats?.totalUsers ?? 0} />
+        <StatsCard title="Total Pro Users" value={stats?.proUsers ?? 0} />
+        <StatsCard title="Granted Pro" value={grantedUsers.length} />
+        <StatsCard title="Total Links Created" value={stats?.totalLinks ?? 0} />
+      </div>
 
-      {isSuperAdmin && (
-        <AdminManagement
-          admins={admins}
-          currentAdminAddress={address}
-          handleAddAdmin={handleAddAdmin}
-          handleRemoveAdmin={handleRemoveAdmin}
-        />
-      )}
-    </AdminLayout>
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>Grant Pro Access</h2>
+        <form onSubmit={handleUpgrade} className={styles.form}>
+          <div className={styles.inputGroup}>
+            <label htmlFor="userAddress">User Wallet Address</label>
+            <input
+              id="userAddress"
+              type="text"
+              value={userAddress}
+              onChange={(e) => setUserAddress(e.target.value)}
+              placeholder="0x..."
+              required
+            />
+          </div>
+          <div className={styles.inputGroup}>
+            <label htmlFor="duration">Duration (in days)</label>
+            <input
+              id="duration"
+              type="number"
+              value={duration}
+              onChange={(e) => setDuration(Number(e.target.value))}
+              required
+            />
+          </div>
+          <button type="submit" disabled={isUpgrading}>
+            {isUpgrading ? 'Processing...' : 'Grant Pro'}
+          </button>
+        </form>
+        {upgradeMessage && <p className={styles.message}>{upgradeMessage}</p>}
+      </div>
+
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>Manually Granted Pro Users</h2>
+        <div className={styles.tableContainer}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Wallet Address</th>
+                <th>Subscription Expires</th>
+              </tr>
+            </thead>
+            <tbody>
+              {grantedUsers.length > 0 ? (
+                grantedUsers.map(user => (
+                  <tr key={user.wallet_address}>
+                    <td>{user.wallet_address}</td>
+                    <td>{new Date(user.subscription_expires_at).toLocaleDateString()}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={2}>No manually granted Pro users found.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 }

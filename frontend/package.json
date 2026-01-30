@@ -66,7 +66,6 @@
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.4.0",
     "patch-package": "^8.0.1",
-    "pino-pretty": "^13.1.1",
     "postcss": "^8.5.6",
     "postinstall-postinstall": "^2.1.0",
     "raw-loader": "^4.0.2",

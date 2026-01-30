@@ -1,4 +1,3 @@
-// frontend/src/app/api/upgrade/verify-payment/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { createPublicClient, http, Hex, parseAbiItem } from 'viem';
 import { base } from 'viem/chains';
@@ -8,6 +7,7 @@ import { jwtVerify } from 'jose';
 const USDC_CONTRACT_ADDRESS = process.env.USDC_CONTRACT_ADDRESS as Hex | undefined;
 const UPGRADE_WALLET_ADDRESS = process.env.UPGRADE_WALLET_ADDRESS as Hex | undefined;
 const JWT_SECRET = process.env.JWT_SECRET;
+const BASE_RPC_URL = process.env.BASE_RPC_URL || "https://mainnet.base.org";
 
 if (!USDC_CONTRACT_ADDRESS) {
   throw new Error("USDC_CONTRACT_ADDRESS is not set in server environment");
@@ -34,12 +34,18 @@ export async function POST(request: NextRequest) {
 
     const token = authHeader.split(' ')[1];
     const secret = new TextEncoder().encode(JWT_SECRET);
-    const { payload } = await jwtVerify(token, secret);
+    let payload;
+    try {
+        const { payload: jwtPayload } = await jwtVerify(token, secret);
+        payload = jwtPayload;
+    } catch (jwtError) {
+        return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
+    }
     const userAddress = payload.address as string;
 
     const publicClient = createPublicClient({
       chain: base,
-      transport: http(process.env.BASE_RPC_URL || "https://mainnet.base.org"),
+      transport: http(BASE_RPC_URL),
     });
 
     const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
@@ -50,10 +56,10 @@ export async function POST(request: NextRequest) {
 
     // Decode the logs to find the Transfer event
     const transferEvent = parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 value)');
-    const transferLog = receipt.logs.find(log => {
+    const transferLog = receipt.logs.find(logItem => {
         try {
-            return log.address.toLowerCase() === USDC_CONTRACT_ADDRESS.toLowerCase() &&
-                   log.topics[0] === '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'; // keccak256 hash of Transfer(address,address,uint256)
+            return logItem.address.toLowerCase() === USDC_CONTRACT_ADDRESS.toLowerCase() &&
+                   logItem.topics[0] === '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'; // keccak256 hash of Transfer(address,address,uint256)
         } catch (e) {
             return false;
         }
@@ -75,11 +81,11 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Transaction recipient is incorrect.' }, { status: 400 });
     }
     
-    // The test amount we are expecting
+    // The test amount we are expecting (0.0005 USDC for now)
     const expectedAmount = BigInt(500); 
 
     if (value !== expectedAmount) {
-         return NextResponse.json({ error: `Incorrect payment amount. Expected ${expectedAmount}, got ${value}.` }, { status: 400 });
+        return NextResponse.json({ error: `Incorrect payment amount. Expected ${expectedAmount}, got ${value}.` }, { status: 400 });
     }
     
     // All checks pass, update the user's tier

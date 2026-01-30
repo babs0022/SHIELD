@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
     }
 
-    const address = decodedToken.address as string;
+    const wallet_address = decodedToken.address as string;
 
     // Calculate expiry date (e.g., 30 days from now)
     const expiryDate = new Date();
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     await sql`
       UPDATE users
       SET tier = 'pro', subscription_expires_at = ${expiryDate.toISOString()}
-      WHERE wallet_address = ${address}
+      WHERE wallet_address = ${wallet_address}
     `;
 
     return NextResponse.json({ success: true, message: 'Successfully upgraded to Pro tier!' });

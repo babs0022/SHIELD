@@ -32,16 +32,15 @@ export async function GET(request: NextRequest) {
 
     let user = users[0];
 
-    // If user doesn't exist, create a free tier user record
     if (!user) {
       await sql`
-        INSERT INTO users (address, tier, daily_link_count, last_link_creation_date)
-        VALUES (${address}, 'free', 0, ${new Date().toISOString().split('T')[0]})
+        INSERT INTO users (wallet_address, tier, daily_link_count, last_link_creation_date)
+        VALUES (${wallet_address}, 'free', 0, ${new Date().toISOString()})
       `;
       const newUser = await sql`
         SELECT tier, daily_link_count, last_link_creation_date, subscription_expires_at
         FROM users
-        WHEREwallet_address = ${address}
+        WHERE wallet_address = ${wallet_address}
       `;
       user = newUser[0];
     }

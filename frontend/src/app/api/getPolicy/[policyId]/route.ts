@@ -7,7 +7,6 @@ export async function GET(
   request: NextRequest
 ) {
   try {
-    // Extract policyId directly from the URL pathname to avoid issues with the params object
     const url = new URL(request.url);
     const policyId = url.pathname.split('/').pop();
 

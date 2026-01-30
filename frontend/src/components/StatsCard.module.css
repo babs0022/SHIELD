@@ -1,29 +1,19 @@
 .card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 25px;
-  display: flex;
-  justify-content: space-around;
-  text-align: center;
+  background-color: #111111;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 1.5rem;
 }
 
-.statItem {
-  display: flex;
-  flex-direction: column;
-}
-
-.statValue {
-  font-size: 2.2rem;
+.title {
+  font-size: 1rem;
+  color: #a1a1aa;
+  margin-bottom: 0.5rem;
   font-weight: 500;
-  color: #e4e4e7; /* zinc-200 */
 }
 
-.statLabel {
-  font-size: 0.8rem;
-  color: #a1a1aa; /* zinc-400 */
-  margin-top: 5px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.value {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #e4e4e7;
 }
