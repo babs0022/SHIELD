@@ -6,10 +6,13 @@ import { toast } from 'react-hot-toast';
 interface Profile {
   displayName: string;
   pfpUrl: string;
+  tier: string;
+  subscriptionExpiresAt: string | null;
 }
 
 interface ProfileContextType {
   profile: Profile | null;
+  userTier: string | null;
   isLoading: boolean;
   fetchProfile: () => Promise<void>;
   updateProfile: (newProfile: Partial<Profile>) => Promise<void>;
@@ -19,6 +22,7 @@ const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
 export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [userTier, setUserTier] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchProfile = useCallback(async () => {
@@ -36,9 +40,22 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setProfile(null);
       }
+
+      const tierResponse = await fetch(`/api/user/status`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (tierResponse.ok) {
+        const data = await tierResponse.json();
+        setUserTier(data.tier);
+      } else {
+        setUserTier('free');
+      }
+
     } catch (error) {
-      console.error('Failed to fetch profile:', error);
       setProfile(null);
+      setUserTier('free');
     } finally {
       setIsLoading(false);
     }
@@ -64,13 +81,12 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
       await fetchProfile();
       toast.success('Profile updated successfully!', { id: toastId });
     } catch (error) {
-      console.error('Failed to update profile:', error);
       toast.error('Could not update profile.', { id: toastId });
     }
   }, [fetchProfile]);
 
   return (
-    <ProfileContext.Provider value={{ profile, isLoading, fetchProfile, updateProfile }}>
+    <ProfileContext.Provider value={{ profile, userTier, isLoading, fetchProfile, updateProfile }}>
       {children}
     </ProfileContext.Provider>
   );

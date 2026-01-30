@@ -6,6 +6,7 @@ import Link from 'next/link';
 import styles from './UserMenu.module.css';
 import ChevronDownIcon from './ChevronDownIcon';
 import ProfileIcon from './ProfileIcon';
+import PriceIcon from './PriceIcon';
 import DocsIcon from './DocsIcon';
 import AdminIcon from './AdminIcon';
 import SignOutIcon from './SignOutIcon';
@@ -16,7 +17,7 @@ import { SUPER_ADMIN_ADDRESSES, TEAM_ADMIN_ADDRESSES } from '@/config/admin';
 export default function UserMenu({ onSignOut }: { onSignOut: () => void }) {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
-  const { profile, isLoading } = useProfile();
+  const { profile, userTier, isLoading } = useProfile();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -92,6 +93,10 @@ export default function UserMenu({ onSignOut }: { onSignOut: () => void }) {
               Admin
             </Link>
           )}
+          <Link href="/upgrade" className={styles.dropdownItem} onClick={() => setIsOpen(false)}>
+            <PriceIcon className={styles.dropdownIcon} />
+            {userTier === 'pro' ? 'Subscription' : 'Pricing'}
+          </Link>
           <div className={styles.separator}></div>
           <button onClick={handleSignOut} className={`${styles.dropdownItem} ${styles.signOut}`}>
             <SignOutIcon className={styles.dropdownIcon} />
@@ -100,5 +105,4 @@ export default function UserMenu({ onSignOut }: { onSignOut: () => void }) {
         </div>
       )}
     </div>
-  );
-}
+  );}

@@ -5,37 +5,31 @@ import { createPublicClient, createWalletClient, http, Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { base } from 'viem/chains';
 import { ShieldABI } from '@/lib/ShieldABI';
+import { z } from 'zod';
+
+const siweSchema = z.object({
+  message: z.any(),
+  signature: z.string(),
+  policyId: z.string(),
+});
+
 
 const rpcUrl = process.env.BASE_MAINNET_RPC_URL;
-const privateKey = process.env.SERVER_WALLET_PRIVATE_KEY as Hex | undefined;
 const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as Hex | undefined;
-
-if (!privateKey) {
-  throw new Error("SERVER_WALLET_PRIVATE_KEY is not set");
-}
-
-if (!contractAddress) {
-  throw new Error("NEXT_PUBLIC_CONTRACT_ADDRESS is not set");
-}
-
-const account = privateKeyToAccount(privateKey);
-
 const publicClient = createPublicClient({
   chain: base,
   transport: http(rpcUrl),
 });
 
-const walletClient = createWalletClient({
-  account,
-  chain: base,
-  transport: http(rpcUrl),
-});
-
 export async function POST(request: Request) {
-  const { message, signature, policyId } = await request.json();
-  if (!message || !signature || !policyId) {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  const body = await request.json();
+  const validation = siweSchema.safeParse(body);
+
+  if (!validation.success) {
+    return NextResponse.json({ error: "Invalid request.", details: validation.error.flatten() }, { status: 400 });
   }
+
+  const { message, signature, policyId } = validation.data;
 
   try {
     const siweMessage = new SiweMessage(message);
@@ -67,21 +61,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "This link is no longer valid. It may have expired or reached its maximum number of access attempts." }, { status: 400 });
     }
 
-    const { request: simRequest } = await publicClient.simulateContract({
-        account,
-        address: contractAddress,
-        abi: ShieldABI,
-        functionName: 'logAttempt',
-        args: [policyId, true],
-    });
-
-    const txHash = await walletClient.writeContract(simRequest);
-    await publicClient.waitForTransactionReceipt({ hash: txHash });
-
-    return NextResponse.json({ success: true, secretKey: policy.secret_key });
+    return NextResponse.json({ success: true });
 
   } catch (error) {
-    console.error("Error in /api/verify-siwe:", error);
     const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
     return NextResponse.json({ error: "Failed to verify signature.", details: errorMessage }, { status: 500 });
   }

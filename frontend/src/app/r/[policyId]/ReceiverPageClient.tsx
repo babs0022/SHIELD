@@ -4,12 +4,13 @@ import React from 'react';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Pattern from '@/components/Pattern';
-import { useAccount, useSignMessage } from 'wagmi';
+import { useAccount, useSignMessage, useWriteContract, usePublicClient } from 'wagmi';
 import { SiweMessage } from 'siwe';
 import { toast } from 'react-hot-toast';
 import styles from './ReceiverPage.module.css';
 import DownloadIcon from '@/components/DownloadIcon';
 import { CopyIcon } from '@/components/CopyIcon';
+import { ShieldABI } from '@/lib/ShieldABI';
 
 // Web Crypto API helpers for client-side decryption
 async function importKeyFromString(keyString: string): Promise<CryptoKey> {
@@ -46,6 +47,8 @@ export default function ReceiverPageClient({ policy: initialPolicy }: { policy: 
   const policyId = params?.policyId as `0x${string}`;
   const { address, isConnected, status } = useAccount();
   const { signMessageAsync } = useSignMessage();
+  const { writeContractAsync } = useWriteContract();
+  const publicClient = usePublicClient();
 
   const [verificationStatus, setVerificationStatus] = useState<VerificationStatus>('idle');
   const [error, setError] = useState<string>('');
@@ -105,17 +108,27 @@ export default function ReceiverPageClient({ policy: initialPolicy }: { policy: 
 
       const signature = await signMessageAsync({ message: message.prepareMessage() });
 
-      setInfo('Verifying signature...');
-      const response = await fetch('/api/verify-siwe', {
+      const authResponse = await fetch('/api/verify-siwe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message, signature, policyId }),
       });
 
-      if (!response.ok) {
-        const { error } = await response.json();
-        throw new Error(error || 'Signature verification failed on the server.');
+      if (!authResponse.ok) {
+        const { error } = await authResponse.json();
+        throw new Error(error || 'Authorization failed on the server.');
       }
+
+      setInfo('Please confirm the transaction in your wallet...');
+      const txHash = await writeContractAsync({
+        address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as Hex,
+        abi: ShieldABI,
+        functionName: 'logAttempt',
+        args: [policyId, true],
+      });
+
+      setInfo('Verifying transaction...');
+      await publicClient.waitForTransactionReceipt({ hash: txHash });
       
       toast.success('Wallet verified!');
       setInfo('Decrypting content...');
@@ -150,7 +163,7 @@ export default function ReceiverPageClient({ policy: initialPolicy }: { policy: 
     try {
       const secretKey = await importKeyFromString(keyString);
 
-      const response = await fetch(`https://gateway.pinata.cloud/ipfs/${policyData.resourceCid}`);
+      const response = await fetch(`https://ipfs.io/ipfs/${policyData.resourceCid}`);
       if (!response.ok) {
         throw new Error('Failed to fetch the encrypted content from IPFS.');
       }

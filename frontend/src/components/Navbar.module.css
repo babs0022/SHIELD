@@ -70,3 +70,19 @@
   color: #71717a; /* zinc-500 */
   cursor: not-allowed;
 }
+
+.upgradeLink {
+  background-color: #ffffff;
+  color: #000000;
+  padding: 8px 16px;
+  border-radius: 100px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.upgradeLink:hover {
+  background-color: #e4e4e7; /* zinc-200 */
+}
+

@@ -1,0 +1,173 @@
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #111111;
+  border: 1px solid #2a2a2a;
+  border-radius: 24px;
+  text-align: center;
+}
+
+.title {
+  font-size: 2.2rem;
+  font-weight: 500;
+  color: #e4e4e7;
+  margin-bottom: 0.5rem;
+}
+
+.description {
+  color: #a1a1aa;
+  font-size: 1rem;
+  margin-bottom: 2.5rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.benefitsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.benefitCard {
+  background-color: #1a1a1a;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #2a2a2a;
+}
+
+.benefitCard h3 {
+  font-size: 0.9rem;
+  color: #a1a1aa;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.benefitValue {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #e4e4e7;
+  margin: 0;
+}
+
+.benefitOldValue {
+  font-size: 0.8rem;
+  color: #71717a;
+  margin: 0;
+}
+
+.proStatus {
+  background-color: rgba(138, 138, 255, 0.1);
+  border: 1px solid rgba(138, 138, 255, 0.2);
+  color: #e4e4e7;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.proStatus p {
+  margin: 0;
+}
+
+.expiryDate {
+  font-size: 0.9rem;
+  color: #a1a1aa;
+  margin-top: 0.5rem;
+}
+
+.pricingGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.tierCard {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  padding: 2rem;
+  border: 1px solid #3a3a3a;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.tierCard:hover {
+  border-color: #8A8AFF;
+  transform: translateY(-5px);
+}
+
+.yearlyCard {
+  border-color: #8A8AFF;
+  position: relative;
+  overflow: hidden;
+}
+
+.yearlyCard::before {
+  content: 'Best Value';
+  position: absolute;
+  top: 15px;
+  right: -30px;
+  background-color: #8A8AFF;
+  color: #fff;
+  padding: 4px 30px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transform: rotate(45deg);
+}
+
+.tierCard h2 {
+  font-size: 1.75rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.price {
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #e4e4e7;
+  margin-bottom: 0.25rem;
+}
+
+.currency {
+  font-size: 1rem;
+  color: #a1a1aa;
+  font-weight: 400;
+}
+
+.duration {
+  color: #a1a1aa;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.upgradeButton {
+  padding: 14px;
+  width: 100%;
+  border: none;
+  border-radius: 100px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #000;
+  background-color: #ffffff;
+}
+
+.upgradeButton:hover:not(:disabled) {
+  background-color: #e4e4e7;
+}
+
+.upgradeButton:disabled {
+  background-color: #3f3f46;
+  color: #71717a;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .pricingGrid {
+    grid-template-columns: 1fr;
+  }
+}

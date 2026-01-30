@@ -2,10 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
 const isProtectedRoute = (req: NextRequest) => {
-  console.log('Checking if route is protected:', req.nextUrl.pathname);
   const protectedPaths = ['/admin', '/api/admin'];
   return protectedPaths.some(path => req.nextUrl.pathname.startsWith(path));
 };
+
+const ipRequestCounts = new Map<string, number[]>();
+const PUBLIC_RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const PUBLIC_MAX_REQUESTS = 20;
+const ADMIN_RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const ADMIN_MAX_REQUESTS = 100; // More lenient for admins
 
 export async function middleware(req: NextRequest) {
   const { method, url } = req;
@@ -13,7 +18,28 @@ export async function middleware(req: NextRequest) {
 
   log('Middleware processing request...');
 
-  if (isProtectedRoute(req)) {
+  const isProtected = isProtectedRoute(req);
+  const maxRequests = isProtected ? ADMIN_MAX_REQUESTS : PUBLIC_MAX_REQUESTS;
+  const window = isProtected ? ADMIN_RATE_LIMIT_WINDOW : PUBLIC_RATE_LIMIT_WINDOW;
+  
+  const ip = req.ip ?? '127.0.0.1';
+  const now = Date.now();
+
+  const requests = ipRequestCounts.get(ip)?.filter(timestamp => now - timestamp < window) ?? [];
+  requests.push(now);
+  ipRequestCounts.set(ip, requests);
+
+  if (requests.length > maxRequests) {
+    // Return a JSON response to prevent frontend parsing errors
+    return new NextResponse(JSON.stringify({ message: 'Too many requests' }), { status: 429, headers: { 'Content-Type': 'application/json' } });
+  }
+
+  // Skip auth for pre-flight OPTIONS and availability HEAD requests on protected routes
+  if (isProtected && (req.method === 'OPTIONS' || req.method === 'HEAD')) {
+    return NextResponse.next();
+  }
+  
+  if (isProtected) {
     log('Route is protected. Authenticating...');
     const token = req.headers.get('authorization')?.split(' ')[1];
 

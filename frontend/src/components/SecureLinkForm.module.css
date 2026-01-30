@@ -126,6 +126,22 @@
   resize: vertical;
 }
 
+.errorTextarea {
+  border-color: #ef4444; /* Red-500 */
+}
+
+.charCounter {
+  font-size: 0.75rem;
+  color: #a1a1aa;
+  text-align: right;
+  margin-top: 5px;
+}
+
+.errorText {
+  color: #ef4444; /* Red-500 */
+  font-weight: 500;
+}
+
 .fileLabel {
   display: flex;
   flex-direction: column;

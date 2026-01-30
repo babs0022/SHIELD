@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "C:\\Users\\BabsBuild\\SHIELD\\contracts\\contracts\\Shield.sol": {
-      "lastModificationDate": 1763739209484,
-      "contentHash": "4f725b2152c68ec75cb4b5d1593ad2e0",
+      "lastModificationDate": 1769456271292,
+      "contentHash": "f23cef1d4abe8f9ca0296afa45261264",
       "sourceName": "contracts/Shield.sol",
       "solcConfig": {
         "version": "0.8.24",

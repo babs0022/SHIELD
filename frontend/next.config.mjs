@@ -36,10 +36,14 @@ const nextConfig = {
     ];
   },
   webpack: (config, { isServer }) => {
-    if (!isServer) {
+    if (isServer) {
+      // Don't bundle @metamask/sdk on the server
+      config.externals.push('@metamask/sdk');
+    } else {
+      // Client-side specific config
       config.externals = config.externals || [];
       config.externals.push({ 'thread-stream': 'commonjs thread-stream' });
-      config.resolve.alias['@react-native-async-storage/async-storage'] = false;
+      config.resolve.alias['@react-native-async-storage/async-storage'] = path.resolve(__dirname, 'empty-module.js');
       config.resolve.alias['porto'] = false;
       config.resolve.alias['porto/internal'] = false;
     }

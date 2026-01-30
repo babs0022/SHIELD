@@ -7,12 +7,25 @@ async function getPolicy(policyId: string): Promise<Policy | null> {
     const baseUrl = process.env.FRONTEND_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
     
     const res = await fetch(`${baseUrl}/api/getPolicy/${policyId}`);
+    
     if (!res.ok) {
+      console.error(`DEBUG: Failed to fetch policy. Status: ${res.status}`);
       return null;
     }
-    return res.json();
+
+    const data = await res.json();
+
+    // Manually map fields to ensure camelCase
+    const mappedPolicy: Policy = {
+      resourceCid: data.resourceCid,
+      recipient_address: data.recipient_address,
+      mimeType: data.mimeType,
+      isText: data.isText,
+    };
+
+    return mappedPolicy;
+
   } catch (error) {
-    console.error('Failed to fetch policy:', error);
     return null;
   }
 }

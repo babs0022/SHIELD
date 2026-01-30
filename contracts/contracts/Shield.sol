@@ -33,6 +33,7 @@ contract Shield {
         AccessPolicy storage policy = policies[policyId];
         require(policy.sender != address(0), "Policy does not exist");
         require(policy.valid, "Policy is not valid");
+        require(msg.sender == policy.recipient, "Only the recipient can log an attempt");
         require(block.timestamp < policy.expiry, "Policy has expired");
         require(policy.attempts < policy.maxAttempts, "Max attempts reached");
 

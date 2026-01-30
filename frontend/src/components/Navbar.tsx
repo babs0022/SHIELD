@@ -18,7 +18,39 @@ export default function Navbar() {
   const { signMessageAsync } = useSignMessage();
   const { fetchProfile } = useProfile();
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+  const [userTier, setUserTier] = useState<string | null>(null);
   const profileFetchedForAddress = React.useRef<string | null>(null);
+
+  React.useEffect(() => {
+    const fetchTier = async () => {
+      if (!isConnected || !address) {
+        setUserTier(null);
+        return;
+      }
+      const token = localStorage.getItem('reown-siwe-token');
+      if (!token) {
+        setUserTier('free'); // Default to free if no JWT token (not signed in)
+        return;
+      }
+      try {
+        const response = await fetch('/api/user/status', {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUserTier(data.tier);
+        } else {
+          console.error('Failed to fetch user tier for navbar');
+          setUserTier('free'); // Default to free on error
+        }
+      } catch (error) {
+        console.error('Error fetching user tier for navbar:', error);
+        setUserTier('free'); // Default to free on error
+      }
+    };
+
+    fetchTier();
+  }, [address, isConnected, isAuthenticated]);
 
   React.useEffect(() => {
     const token = localStorage.getItem('reown-siwe-token');
@@ -101,7 +133,11 @@ export default function Navbar() {
       </div>
 
       <div className={styles.linksContainer}>
-        
+        {userTier === 'free' && isConnected && isAuthenticated && (
+          <Link href="/upgrade" className={styles.upgradeLink}>
+            Upgrade to Pro
+          </Link>
+        )}
         {isConnected && isAuthenticated ? (
           <UserMenu onSignOut={handleSignOut} />
         ) : (
