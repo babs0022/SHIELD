@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     const transferEvent = parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 value)');
     const transferLog = receipt.logs.find(logItem => {
         try {
-            return logItem.address.toLowerCase() === USDC_CONTRACT_ADDRESS.toLowerCase() &&
+            return logItem.address.toLowerCase() === USDC_CONTRACT_ADDRESS!.toLowerCase() &&
                    logItem.topics[0] === '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'; // keccak256 hash of Transfer(address,address,uint256)
         } catch (e) {
             return false;
@@ -77,12 +77,15 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Transaction sender does not match authenticated user.' }, { status: 400 });
     }
 
-    if (toAddress.toLowerCase() !== UPGRADE_WALLET_ADDRESS.toLowerCase()) {
+    if (toAddress.toLowerCase() !== UPGRADE_WALLET_ADDRESS!.toLowerCase()) {
         return NextResponse.json({ error: 'Transaction recipient is incorrect.' }, { status: 400 });
     }
     
-    // The test amount we are expecting (0.0005 USDC for now)
-    const expectedAmount = BigInt(500); 
+    // Define prices in their smallest unit (USDC has 6 decimals)
+    const MONTHLY_PRICE_USDC = BigInt(9990000); // 9.99 * 10^6
+    const YEARLY_PRICE_USDC = BigInt(99990000); // 99.99 * 10^6
+
+    const expectedAmount = subscriptionType === 'yearly' ? YEARLY_PRICE_USDC : MONTHLY_PRICE_USDC;
 
     if (value !== expectedAmount) {
         return NextResponse.json({ error: `Incorrect payment amount. Expected ${expectedAmount}, got ${value}.` }, { status: 400 });

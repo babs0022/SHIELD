@@ -11,9 +11,13 @@ import styles from './Upgrade.module.css';
 const UPGRADE_WALLET_ADDRESS = process.env.NEXT_PUBLIC_UPGRADE_WALLET_ADDRESS as Hex | undefined;
 const USDC_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_USDC_CONTRACT_ADDRESS as Hex | undefined;
 
-// Assuming USDC has 6 decimals
-const MONTHLY_PRICE_USDC = 9.99;
-const YEARLY_PRICE_USDC = 99.99;
+// Prices in USDC units for transactions (6 decimals)
+const MONTHLY_PRICE_USDC_UNITS = BigInt(9990000); // 9.99 USDC
+const YEARLY_PRICE_USDC_UNITS = BigInt(99990000); // 99.99 USDC
+
+// Prices for display purposes
+const MONTHLY_PRICE_DISPLAY = 9.99;
+const YEARLY_PRICE_DISPLAY = 99.99;
 
 export default function UpgradeClient() {
   const { address, isConnected } = useAccount();
@@ -54,9 +58,7 @@ export default function UpgradeClient() {
     const toastId = toast.loading(`Initiating ${subscriptionType} upgrade...`);
 
     try {
-      const amount = subscriptionType === 'monthly' ? MONTHLY_PRICE_USDC : YEARLY_PRICE_USDC;
-      const amountWei = parseEther(amount.toString()); // Convert to smallest unit, assuming USDC is 6 decimals, not 18
-      const usdcAmount = BigInt(Math.round(amount * (10**6)));
+      const usdcAmount = subscriptionType === 'monthly' ? MONTHLY_PRICE_USDC_UNITS : YEARLY_PRICE_USDC_UNITS;
 
       // Transfer USDC to the upgrade wallet address
       const transferHash = await writeContractAsync({
@@ -156,7 +158,7 @@ export default function UpgradeClient() {
         <div className={styles.pricingGrid}>
           <div className={styles.tierCard}>
             <h2>Monthly</h2>
-            <p className={styles.price}>${MONTHLY_PRICE_USDC} <span className={styles.currency}>USDC</span></p>
+            <p className={styles.price}>${MONTHLY_PRICE_DISPLAY} <span className={styles.currency}>USDC</span></p>
             <p className={styles.duration}>per month</p>
             <button
               className={styles.upgradeButton}
@@ -169,8 +171,8 @@ export default function UpgradeClient() {
 
           <div className={`${styles.tierCard} ${styles.yearlyCard}`}>
             <h2>Yearly</h2>
-            <p className={styles.price}>${YEARLY_PRICE_USDC} <span className={styles.currency}>USDC</span></p>
-            <p className={styles.duration}>per year (Save ${MONTHLY_PRICE_USDC * 12 - YEARLY_PRICE_USDC})</p>
+            <p className={styles.price}>${YEARLY_PRICE_DISPLAY} <span className={styles.currency}>USDC</span></p>
+            <p className={styles.duration}>per year (Save ${MONTHLY_PRICE_DISPLAY * 12 - YEARLY_PRICE_DISPLAY})</p>
             <button
               className={styles.upgradeButton}
               onClick={() => handleUpgrade('yearly')}

@@ -1,37 +1,30 @@
 .container {
-  max-width: 1200px;
-  margin: 2rem auto;
   padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
   color: #e4e4e7;
 }
 
 .title {
-  font-size: 2.5rem;
-  font-weight: 600;
+  font-size: 2rem;
+  font-weight: 500;
   margin-bottom: 2rem;
-  border-bottom: 1px solid #2a2a2a;
-  padding-bottom: 1rem;
-}
-
-.error {
-  color: #ef4444;
-  background-color: rgba(239, 68, 68, 0.1);
-  padding: 1rem;
-  border-radius: 8px;
+  text-align: center;
 }
 
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
+  margin-bottom: 3rem;
 }
 
 .section {
   background-color: #111111;
   border: 1px solid #2a2a2a;
-  border-radius: 12px;
+  border-radius: 24px;
   padding: 2rem;
-  margin-top: 3rem;
+  margin-bottom: 2rem;
 }
 
 .sectionTitle {
@@ -48,45 +41,105 @@
 }
 
 .inputGroup {
-  display: flex;
-  flex-direction: column;
+  position: relative;
 }
 
-.inputGroup label {
-  margin-bottom: 0.5rem;
-  color: #a1a1aa;
-  font-size: 0.9rem;
-}
-
-.inputGroup input {
-  padding: 0.75rem 1rem;
+.input {
+  width: 100%;
+  padding: 12px;
+  padding-top: 18px;
   border: 1px solid #3a3a3a;
   border-radius: 8px;
   background-color: #1a1a1a;
   color: #e4e4e7;
   font-size: 1rem;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
-.inputGroup input:focus {
+.input:focus {
   border-color: #8A8AFF;
   outline: none;
 }
 
+.inputGroup label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #a1a1aa;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  background-color: transparent;
+  padding: 0 5px;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.75rem;
+}
+
+.input:focus + label,
+.input:not(:placeholder-shown) + label {
+  top: 8px;
+  font-size: 0.65rem;
+  color: #8A8AFF;
+  background-color: #1a1a1a;
+}
+
+.message {
+  color: #a1a1aa;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+.error {
+  color: #f87171;
+}
+
+.tableContainer {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table th,
+.table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.table th {
+  font-weight: 500;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.actionButton,
 .form button {
-  padding: 0.75rem 1.5rem;
+  padding: 12px 20px;
   border: none;
-  border-radius: 8px;
-  background-color: #8A8AFF;
-  color: #fff;
+  border-radius: 100px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  align-self: flex-start;
+  transition: all 0.2s ease;
+  color: #000;
+  background-color: #ffffff;
 }
 
-.form button:hover:not(:disabled) {
-  background-color: #7070ff;
+.actionButton:hover,
+.form button:not(:disabled):hover {
+  background-color: #e4e4e7;
 }
 
 .form button:disabled {
@@ -95,45 +148,26 @@
   cursor: not-allowed;
 }
 
-.message {
-  margin-top: 1.5rem;
-  padding: 1rem;
-  border-radius: 8px;
-  background-color: rgba(138, 138, 255, 0.1);
-  border: 1px solid rgba(138, 138, 255, 0.2);
-  color: #e4e4e7;
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.tableContainer {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
   margin-top: 1.5rem;
 }
 
-.table th,
-.table td {
-  padding: 0.75rem 1rem;
-  text-align: left;
-  border-bottom: 1px solid #2a2a2a;
+.pagination button {
+  padding: 8px 12px;
 }
 
-.table th {
-  color: #a1a1aa;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.table tbody tr:hover {
-  background-color: #1a1a1a;
-}
-
-.table td {
-  font-family: monospace;
-  font-size: 0.9rem;
+.titleSkeleton {
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2rem;
 }
