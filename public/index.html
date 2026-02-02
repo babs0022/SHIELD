@@ -86,6 +86,11 @@
         .force-text-fill {
             -webkit-text-fill-color: initial !important;
         }
+        .faq-item .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
     </style>
 <link id="all-fonts-link-font-geist" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-geist">.font-geist { font-family: 'Geist', sans-family !important; }</style><link id="all-fonts-link-font-roboto" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-roboto">.font-roboto { font-family: 'Roboto', sans-serif !important; }</style><link id="all-fonts-link-font-montserrat" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-montserrat">.font-montserrat { font-family: 'Montserrat', sans-serif !important; }</style><link id="all-fonts-link-font-poppins" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-poppins">.font-poppins { font-family: 'Poppins', sans-serif !important; }</style><link id="all-fonts-link-font-playfair" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&amp;display=swap"><style id="all-fonts-style-font-playfair">.font-playfair { font-family: 'Playfair Display', serif !important; }</style><link id="all-fonts-link-font-instrument-serif" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600;700&amp;display=swap"><style id="all-fonts-style-font-instrument-serif">.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }</style><link id="all-fonts-link-font-merriweather" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&amp;display=swap"><style id="all-fonts-style-font-merriweather">.font-merriweather { font-family: 'Merriweather', serif !important; }</style>
 <body class="antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
@@ -100,7 +105,9 @@
             <div class="hidden md:flex items-center space-x-8 text-xs font-medium tracking-wide text-zinc-400">
                 <a href="#about" class="hover:text-white transition-colors">About</a>
                 <a href="#features" class="hover:text-white transition-colors">Features</a>
+                <a href="#pricing" class="hover:text-white transition-colors">Pricing</a>
                 <a href="#security" class="hover:text-white transition-colors">Security</a>
+                <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
                 <a href="#roadmap" class="hover:text-white transition-colors">Roadmap</a>
             </div>
             <div class="flex items-center gap-4">
@@ -432,6 +439,70 @@
   </div>
 </section>
 
+<!-- Pricing Section -->
+<section id="pricing" class="py-24 px-6 bg-black relative overflow-hidden">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center max-w-2xl mx-auto mb-16">
+            <span class="text-indigo-400 text-[10px] font-semibold tracking-widest uppercase mb-4 block">Pricing</span>
+            <h2 class="text-4xl md:text-5xl font-medium text-white tracking-tighter">Simple, Transparent Plans</h2>
+            <p class="text-sm text-zinc-400 max-w-md mx-auto leading-relaxed font-light mt-4">
+                Choose the plan that's right for you. Start for free or upgrade for higher limits and more features.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <!-- Free Tier -->
+            <div class="glass-panel p-8 rounded-2xl flex flex-col">
+                <h3 class="text-2xl font-medium text-white">Free</h3>
+                <p class="text-zinc-400 text-sm mt-2 mb-6">For light, occasional use.</p>
+                <div class="text-5xl font-medium text-white tracking-tight mb-6">$0<span class="text-lg text-zinc-500">/ forever</span></div>
+                <ul class="space-y-4 text-zinc-300 text-sm font-light flex-1">
+                    <li class="flex items-center gap-3">
+                        <iconify-icon icon="lucide:check-circle" class="text-indigo-400" width="16"></iconify-icon>
+                        5 Links Per Day
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <iconify-icon icon="lucide:check-circle" class="text-indigo-400" width="16"></iconify-icon>
+                        20MB Max File Size
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <iconify-icon icon="lucide:check-circle" class="text-indigo-400" width="16"></iconify-icon>
+                        500 Character Text Limit
+                    </li>
+                </ul>
+                <a href="https://app.shieldhq.xyz" class="mt-8 w-full text-center bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-sm text-white text-xs font-medium tracking-wide rounded-full py-3 transition-all duration-300">
+                    Get Started
+                </a>
+            </div>
+
+            <!-- Pro Tier -->
+            <div class="relative border border-indigo-500/50 p-8 rounded-2xl flex flex-col bg-indigo-950/20">
+                <div class="absolute top-0 right-0 -mt-3 -mr-3 px-3 py-1 text-[10px] font-medium text-white uppercase tracking-wider bg-indigo-500 rounded-full">Most Popular</div>
+                <h3 class="text-2xl font-medium text-white">Pro</h3>
+                <p class="text-indigo-300 text-sm mt-2 mb-6">For professionals and power users.</p>
+                <div class="text-5xl font-medium text-white tracking-tight mb-6">$9.99<span class="text-lg text-zinc-500">/ month</span></div>
+                <ul class="space-y-4 text-zinc-300 text-sm font-light flex-1">
+                    <li class="flex items-center gap-3">
+                        <iconify-icon icon="lucide:check-circle" class="text-indigo-400" width="16"></iconify-icon>
+                        50 Links Per Day
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <iconify-icon icon="lucide:check-circle" class="text-indigo-400" width="16"></iconify-icon>
+                        100MB Max File Size
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <iconify-icon icon="lucide:check-circle" class="text-indigo-400" width="16"></iconify-icon>
+                        Unlimited Text Length
+                    </li>
+                </ul>
+                <a href="https://app.shieldhq.xyz/upgrade" class="mt-8 w-full text-center bg-white text-black hover:bg-zinc-200 font-medium tracking-wide rounded-full py-3 transition-all duration-300">
+                    Upgrade to Pro
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
     <!-- Who is it for -->
     <section id="for-who" class="py-24 px-6 bg-zinc-950/50 border-t border-white/5">
         <div class="max-w-6xl mx-auto">
@@ -534,6 +605,63 @@
                         <h3 class="text-2xl font-medium text-white mb-2 tracking-tight">Join the Community</h3>
                         <p class="text-zinc-400 text-sm mb-6 max-w-sm">Help shape the future of decentralized privacy. Join our Discord server.</p>
                         <a href="https://discord.com/invite/S4j9TpHCnW" target="_blank" rel="noopener noreferrer" class="text-white border-b border-indigo-500 pb-1 text-sm font-medium hover:text-indigo-400 transition-colors">Join Discord</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-24 px-6 bg-black border-t border-white/5">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="text-indigo-400 text-[10px] font-semibold tracking-widest uppercase mb-4 block">Questions?</span>
+                <h2 class="text-4xl md:text-5xl font-medium text-white tracking-tighter">Frequently Asked Questions</h2>
+            </div>
+            <div class="space-y-4">
+                <div class="faq-item glass-panel rounded-xl p-6">
+                    <div class="faq-question flex justify-between items-center cursor-pointer">
+                        <h3 class="text-lg font-medium text-white">Is Shield free to use?</h3>
+                        <iconify-icon icon="lucide:chevron-down" class="text-zinc-400 transition-transform duration-300" width="20"></iconify-icon>
+                    </div>
+                    <div class="faq-answer pt-4 text-sm text-zinc-400 font-light leading-relaxed">
+                        Yes! Shield offers a comprehensive Free tier that allows you to create up to 5 secure links per day, with a maximum file size of 20MB and a 500-character limit for text. For higher limits and advanced features, you can easily upgrade to our Pro tier.
+                    </div>
+                </div>
+                <div class="faq-item glass-panel rounded-xl p-6">
+                    <div class="faq-question flex justify-between items-center cursor-pointer">
+                        <h3 class="text-lg font-medium text-white">What makes Shield secure?</h3>
+                        <iconify-icon icon="lucide:chevron-down" class="text-zinc-400 transition-transform duration-300" width="20"></iconify-icon>
+                    </div>
+                    <div class="faq-answer pt-4 text-sm text-zinc-400 font-light leading-relaxed">
+                        Shield uses end-to-end encryption (AES-256) directly in your browser. The encryption key is generated on your device and never sent to our servers. Only the person with the unique link and the correct wallet address can decrypt the content.
+                    </div>
+                </div>
+                <div class="faq-item glass-panel rounded-xl p-6">
+                    <div class="faq-question flex justify-between items-center cursor-pointer">
+                        <h3 class="text-lg font-medium text-white">Where are my files stored?</h3>
+                        <iconify-icon icon="lucide:chevron-down" class="text-zinc-400 transition-transform duration-300" width="20"></iconify-icon>
+                    </div>
+                    <div class="faq-answer pt-4 text-sm text-zinc-400 font-light leading-relaxed">
+                        Your encrypted files are stored on IPFS (InterPlanetary File System), a decentralized storage network. This ensures your data is not held on a central server and is resistant to censorship or single points of failure.
+                    </div>
+                </div>
+                <div class="faq-item glass-panel rounded-xl p-6">
+                    <div class="faq-question flex justify-between items-center cursor-pointer">
+                        <h3 class="text-lg font-medium text-white">Do I need cryptocurrency to use Shield?</h3>
+                        <iconify-icon icon="lucide:chevron-down" class="text-zinc-400 transition-transform duration-300" width="20"></iconify-icon>
+                    </div>
+                    <div class="faq-answer pt-4 text-sm text-zinc-400 font-light leading-relaxed">
+                        You only need an EVM-compatible wallet (like MetaMask or Coinbase Wallet) to sign in and prove your identity. All on-chain actions, including creating links on the Free and pro tier, require a small amount of $ETH for gas fees on the Base network.
+                    </div>
+                </div>
+                 <div class="faq-item glass-panel rounded-xl p-6">
+                    <div class="faq-question flex justify-between items-center cursor-pointer">
+                        <h3 class="text-lg font-medium text-white">Can Shield access my data?</h3>
+                        <iconify-icon icon="lucide:chevron-down" class="text-zinc-400 transition-transform duration-300" width="20"></iconify-icon>
+                    </div>
+                    <div class="faq-answer pt-4 text-sm text-zinc-400 font-light leading-relaxed">
+                        No. Due to our client-side, end-to-end encryption model, we have zero knowledge of your data. The encryption and decryption processes happen entirely on your device. We cannot view, access, or share your content.
                     </div>
                 </div>
             </div>
@@ -677,5 +805,35 @@
         </div>
     </footer>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                const answer = item.querySelector('.faq-answer');
+                const icon = question.querySelector('iconify-icon');
 
+                question.addEventListener('click', () => {
+                    const isOpening = answer.style.maxHeight === '0px' || !answer.style.maxHeight;
+                    
+                    // Close all other items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.querySelector('.faq-answer').style.maxHeight = '0px';
+                            otherItem.querySelector('.faq-question iconify-icon').style.transform = 'rotate(0deg)';
+                        }
+                    });
+
+                    // Open the clicked item
+                    if (isOpening) {
+                        answer.style.maxHeight = answer.scrollHeight + 'px';
+                        icon.style.transform = 'rotate(180deg)';
+                    } else {
+                        answer.style.maxHeight = '0px';
+                        icon.style.transform = 'rotate(0deg)';
+                    }
+                });
+            });
+        });
+    </script>
 </body></html>
