@@ -1,0 +1,302 @@
+{
+  "repo_notes": [
+    {
+      "content": ""
+    }
+  ],
+  "pages": [
+    {
+      "title": "Overview",
+      "purpose": "Introduce the SHIELD repository, explaining its purpose as a decentralized, zero-knowledge content sharing platform with Web3 wallet-gated access control",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Architecture",
+      "purpose": "Describe the overall system architecture, including the hybrid design combining client-side encryption, blockchain access control, IPFS storage, and centralized metadata",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Frontend Application",
+      "purpose": "Detail the Next.js frontend application structure, including providers, routing, and Web3 integration",
+      "parent": "Architecture",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Smart Contract Layer",
+      "purpose": "Explain the Shield smart contract on Base network, including the AccessPolicy struct, policy creation, validation, and attempt logging",
+      "parent": "Architecture",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Backend API Routes",
+      "purpose": "Document the Next.js API routes for user management, policy metadata, admin operations, and payment verification",
+      "parent": "Architecture",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Storage Architecture",
+      "purpose": "Describe the hybrid storage model using IPFS for encrypted content, PostgreSQL for metadata, and blockchain for access control",
+      "parent": "Architecture",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Core Features",
+      "purpose": "Overview of SHIELD's main features including secure sharing, access control, encryption, and user tier system",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Content Sharing Flow",
+      "purpose": "Explain the complete lifecycle of creating a secure link: encryption, IPFS upload, policy creation, and metadata storage",
+      "parent": "Core Features",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Access Control and Policy Validation",
+      "purpose": "Detail how access policies are enforced through smart contracts, including recipient verification, expiry checks, and attempt limits",
+      "parent": "Core Features",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Authentication System",
+      "purpose": "Describe the Sign-in with Ethereum (SIWE) authentication flow, JWT token management, and middleware authorization",
+      "parent": "Core Features",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "User Tier System",
+      "purpose": "Explain the free vs pro tier structure, usage limits, tier enforcement, and automatic subscription management",
+      "parent": "Core Features",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Client-Side Encryption",
+      "purpose": "Detail the zero-knowledge encryption architecture using Web Crypto API with AES-256-GCM, key generation, and URL fragment storage",
+      "parent": "Core Features",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "User Workflows",
+      "purpose": "Step-by-step guides for end users performing common tasks in SHIELD",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Creating Secure Links",
+      "purpose": "Walk through the sender workflow: uploading content, defining access conditions, creating the policy, and sharing the link",
+      "parent": "User Workflows",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Accessing Shared Content",
+      "purpose": "Walk through the receiver workflow: opening the link, verifying wallet ownership, validating the policy, and decrypting content",
+      "parent": "User Workflows",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Managing Your Profile",
+      "purpose": "Guide users through profile management: updating display name, uploading profile pictures, and viewing created links",
+      "parent": "User Workflows",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Upgrading to Pro",
+      "purpose": "Explain the pro tier upgrade process: USDC payment, on-chain verification, and subscription management",
+      "parent": "User Workflows",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Administration",
+      "purpose": "Documentation for administrators managing the SHIELD platform",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Admin Dashboard Overview",
+      "purpose": "Describe the admin dashboard UI, system statistics, and navigation between admin functions",
+      "parent": "Administration",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "User Management",
+      "purpose": "Explain admin capabilities for viewing, filtering, searching users, and manually granting pro access",
+      "parent": "Administration",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Policy and Link Management",
+      "purpose": "Document admin tools for viewing all policies, tracking access counts, and revoking active links",
+      "parent": "Administration",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Admin Role Management",
+      "purpose": "Explain the super admin vs team admin roles, permission differences, and how to manage admin lists",
+      "parent": "Administration",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Technical Reference",
+      "purpose": "Deep technical documentation for developers working with or extending SHIELD",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Web3 Integration",
+      "purpose": "Document the wagmi hooks, Web3Modal setup, wallet connection, and blockchain interaction patterns",
+      "parent": "Technical Reference",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "IPFS Integration",
+      "purpose": "Explain the Pinata integration for IPFS uploads, content retrieval via gateways, and CID handling",
+      "parent": "Technical Reference",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Database Schema",
+      "purpose": "Document the PostgreSQL schema including users, policies, and onboarding_surveys tables with relationships",
+      "parent": "Technical Reference",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "API Reference",
+      "purpose": "Complete API endpoint documentation with request/response schemas, authentication requirements, and examples",
+      "parent": "Technical Reference",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Smart Contract ABI",
+      "purpose": "Detail the Shield contract ABI, function signatures, events, and how to interact with the contract",
+      "parent": "Technical Reference",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "UI Components",
+      "purpose": "Document reusable React components including styling patterns, props interfaces, and usage examples",
+      "parent": "Technical Reference",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Deployment and Configuration",
+      "purpose": "Guide for deploying SHIELD and configuring the environment",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    }
+  ]
+}
